@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { HamburgerLogo, MascaraIcon } from "./icons";
+import { motion, AnimatePresence } from "framer-motion";
+import { HamburgerLogo, MascaraIcon, SephoraToken } from "./icons";
 import { Ticket, newTicket, type TicketData } from "./Ticket";
 import {
   loadConfig,
