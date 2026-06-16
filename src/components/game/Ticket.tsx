@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { MotionButton, motionSpring } from "@/components/MotionButton";
 import type { GameConfig } from "@/lib/game-config";
 
 function makeCode() {
@@ -48,7 +49,7 @@ export function Ticket({
     return () => clearTimeout(t);
   }, []);
 
-  const spring = { type: "spring" as const, stiffness: 420, damping: 26, mass: 0.7 };
+  const spring = motionSpring;
 
   return (
     <AnimatePresence>
@@ -136,38 +137,35 @@ export function Ticket({
             transition={{ duration: 0.22, delay: 0.24, ease: [0.22, 1, 0.36, 1] }}
             className="flex w-full gap-2 print:hidden"
           >
-            <motion.button
-              whileHover={{ scale: 1.04, y: -1 }}
-              whileTap={{ scale: 0.94 }}
-              transition={spring}
-              onClick={() => window.print()}
-              className="flex-1 rounded-full px-5 py-3 text-sm font-black uppercase tracking-widest text-white"
+            <MotionButton
+              intent="primary"
+              size="full"
+              className="flex-1 font-black uppercase tracking-widest"
               style={{
                 backgroundColor: "var(--sephora-pink)",
                 boxShadow: "0 10px 24px -10px rgba(237,111,126,0.7)",
               }}
+              onClick={() => window.print()}
             >
               Imprimer
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.04, y: -1 }}
-              whileTap={{ scale: 0.94 }}
-              transition={spring}
+            </MotionButton>
+            <MotionButton
+              intent="secondary"
+              size="full"
+              className="flex-1 font-black uppercase tracking-widest"
               onClick={onReplay}
-              className="flex-1 rounded-full border border-foreground/20 px-5 py-3 text-sm font-black uppercase tracking-widest"
             >
               Rejouer
-            </motion.button>
+            </MotionButton>
           </motion.div>
-          <motion.button
-            whileHover={{ scale: 1.06 }}
-            whileTap={{ scale: 0.92 }}
-            transition={spring}
+          <MotionButton
+            intent="link"
+            size="sm"
+            className="uppercase tracking-widest"
             onClick={onClose}
-            className="text-[10px] uppercase tracking-widest text-muted-foreground print:hidden"
           >
             Fermer
-          </motion.button>
+          </MotionButton>
         </motion.div>
       </motion.div>
     </AnimatePresence>
