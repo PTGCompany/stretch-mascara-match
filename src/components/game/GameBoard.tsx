@@ -168,38 +168,58 @@ export function GameBoard() {
             const s = states[i] ?? "hidden";
             const isRevealed = s !== "hidden";
             const isTarget = s === "revealed-target";
+            const isWrong = s === "revealed-empty";
             return (
               <motion.button
                 key={i}
                 initial={{ opacity: 0, scale: 0.6 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  delay: Math.min(0.12, 0.04 + i * 0.005),
-                  type: "spring",
-                  stiffness: 520,
-                  damping: 26,
-                  mass: 0.6,
-                }}
+                animate={
+                  isWrong
+                    ? { opacity: 1, scale: 1, x: [0, -4, 4, -3, 3, 0] }
+                    : { opacity: 1, scale: 1, x: 0 }
+                }
+                transition={
+                  isWrong
+                    ? { x: { duration: 0.28, ease: "easeInOut" } }
+                    : {
+                        delay: Math.min(0.12, 0.04 + i * 0.005),
+                        type: "spring",
+                        stiffness: 520,
+                        damping: 26,
+                        mass: 0.6,
+                      }
+                }
                 whileTap={
-                  phase === "playing" && !isRevealed ? { scale: 0.92 } : undefined
+                  phase === "playing" && !isRevealed
+                    ? { scale: 0.9 }
+                    : undefined
+                }
+                whileHover={
+                  phase === "playing" && !isRevealed
+                    ? { scale: 1.04 }
+                    : undefined
                 }
                 onClick={() => onTap(i)}
                 disabled={phase !== "playing" || isRevealed}
                 aria-label={`Token ${i + 1}`}
                 className="group relative aspect-square w-full rounded-full"
-                style={{ perspective: 800 }}
+                style={{ perspective: 800, touchAction: "manipulation" }}
               >
                 <motion.div
                   animate={{ rotateY: isRevealed ? 180 : 0 }}
-                  transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
                   className="absolute inset-0"
-                  style={{ transformStyle: "preserve-3d" }}
+                  style={{
+                    transformStyle: "preserve-3d",
+                    willChange: "transform",
+                  }}
                 >
                   {/* back (token face) */}
                   <div
                     className="absolute inset-0 rounded-full bg-token"
                     style={{
                       backfaceVisibility: "hidden",
+                      WebkitBackfaceVisibility: "hidden",
                       boxShadow:
                         "inset 0 0 0 1px rgba(255,255,255,0.06), 0 6px 14px -6px rgba(0,0,0,0.45)",
                     }}
@@ -207,10 +227,17 @@ export function GameBoard() {
                     <SephoraToken />
                   </div>
                   {/* front (revealed) */}
-                  <div
+                  <motion.div
+                    animate={
+                      isTarget
+                        ? { scale: [1, 1.08, 1] }
+                        : { scale: 1 }
+                    }
+                    transition={{ duration: 0.32, ease: "easeOut", delay: 0.18 }}
                     className="absolute inset-0 rounded-full bg-white"
                     style={{
                       backfaceVisibility: "hidden",
+                      WebkitBackfaceVisibility: "hidden",
                       transform: "rotateY(180deg)",
                       boxShadow: isTarget
                         ? "0 0 0 2px var(--sephora-pink), 0 8px 24px -8px rgba(229,9,127,0.6)"
@@ -224,7 +251,7 @@ export function GameBoard() {
                         <div className="h-1.5 w-1.5 rounded-full bg-black/15" />
                       </div>
                     )}
-                  </div>
+                  </motion.div>
                 </motion.div>
               </motion.button>
             );
@@ -236,11 +263,20 @@ export function GameBoard() {
           <div className="flex items-baseline justify-center gap-1">
             <motion.div
               key={timeLeft + phase}
-              initial={{ scale: 1.15, opacity: 0.6 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.14 }}
+              initial={{ scale: 1.18, opacity: 0.5 }}
+              animate={
+                phase === "playing" && timeLeft <= 5
+                  ? { scale: [1, 1.1, 1], opacity: 1 }
+                  : { scale: 1, opacity: 1 }
+              }
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
               className="font-display text-[56px] leading-none tabular-nums"
-              style={{ color: "var(--sephora-pink)" }}
+              style={{
+                color:
+                  phase === "playing" && timeLeft <= 5
+                    ? "#ff1f8a"
+                    : "var(--sephora-pink)",
+              }}
             >
               {phase === "idle" ? config.durationSeconds : timeLeft}
             </motion.div>
@@ -252,15 +288,40 @@ export function GameBoard() {
             </span>
           </div>
           <div className="mt-3 h-[6px] w-full overflow-hidden rounded-full bg-black/5">
-            <div
-              className="h-full rounded-full transition-all duration-1000 ease-linear"
-              style={{
+            <motion.div
+              className="h-full rounded-full"
+              animate={{
                 width: `${phase === "playing" ? progress : phase === "idle" ? 100 : 0}%`,
-                backgroundColor: "var(--sephora-pink)",
               }}
+              transition={{ duration: 0.9, ease: "linear" }}
+              style={{ backgroundColor: "var(--sephora-pink)" }}
             />
           </div>
+          {phase === "playing" && (
+            <motion.div
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.18 }}
+              className="mt-4 flex items-center justify-center gap-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/60"
+            >
+              <span>
+                Trouvés{" "}
+                <span style={{ color: "var(--sephora-pink)" }}>
+                  {targetsFound}/{config.targetsRequired}
+                </span>
+              </span>
+              <span className="h-1 w-1 rounded-full bg-black/20" />
+              <span>
+                Essais{" "}
+                <span style={{ color: "var(--sephora-pink)" }}>
+                  {attemptsUsed}/{config.attemptsAllowed}
+                </span>
+              </span>
+            </motion.div>
+          )}
         </div>
+
+
 
 
         {/* admin link */}
@@ -320,14 +381,30 @@ export function GameBoard() {
                   </h2>
                 )}
                 <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.96 }}
+                  initial={{ scale: 0.96, opacity: 0 }}
+                  animate={
+                    phase === "idle"
+                      ? {
+                          scale: [1, 1.04, 1],
+                          opacity: 1,
+                          boxShadow: [
+                            "0 12px 30px -10px rgba(229,9,127,0.55)",
+                            "0 18px 44px -10px rgba(229,9,127,0.85)",
+                            "0 12px 30px -10px rgba(229,9,127,0.55)",
+                          ],
+                        }
+                      : { scale: 1, opacity: 1 }
+                  }
+                  transition={
+                    phase === "idle"
+                      ? { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
+                      : { duration: 0.18, ease: [0.22, 1, 0.36, 1] }
+                  }
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={start}
                   className="wordmark rounded-full px-12 py-4 text-[13px] text-white"
-                  style={{
-                    backgroundColor: "var(--sephora-pink)",
-                    boxShadow: "0 12px 30px -10px rgba(229,9,127,0.6)",
-                  }}
+                  style={{ backgroundColor: "var(--sephora-pink)" }}
                 >
                   {phase === "idle" ? "Commencer" : "Rejouer"}
                 </motion.button>
