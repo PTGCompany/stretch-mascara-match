@@ -429,9 +429,9 @@ export function GameBoard() {
                   animate={
                     phase === "idle"
                       ? {
-                          scale: [1, 1.045, 1],
                           opacity: 1,
                           y: 0,
+                          scale: 1,
                           boxShadow: [
                             "0 12px 30px -10px rgba(237,111,126,0.55)",
                             "0 22px 50px -10px rgba(237,111,126,0.9)",
@@ -442,11 +442,30 @@ export function GameBoard() {
                   }
                   transition={
                     phase === "idle"
-                      ? { duration: 2.4, repeat: Infinity, ease: "easeInOut" }
+                      ? {
+                          boxShadow: {
+                            duration: 2.4,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          },
+                          default: {
+                            type: "spring",
+                            stiffness: 380,
+                            damping: 24,
+                            mass: 0.7,
+                          },
+                        }
                       : { type: "spring", stiffness: 380, damping: 24, mass: 0.7 }
                   }
-                  whileHover={{ scale: 1.06, y: -2 }}
-                  whileTap={{ scale: 0.94 }}
+                  whileHover={{
+                    scale: 1.06,
+                    y: -2,
+                    transition: { type: "spring", stiffness: 520, damping: 24, mass: 0.6 },
+                  }}
+                  whileTap={{
+                    scale: 0.94,
+                    transition: { type: "spring", stiffness: 600, damping: 26 },
+                  }}
                   onClick={start}
                   className="wordmark px-12 py-4 text-[13px]"
                   style={{ backgroundColor: "var(--sephora-pink)" }}
