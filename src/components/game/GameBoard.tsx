@@ -51,14 +51,12 @@ export function GameBoard() {
     lockRef.current = false;
     setPhase("playing");
   }, []);
-    startedAt.current = Date.now();
-    lockRef.current = false;
-    setPhase("playing");
-  }, []);
 
   const finish = useCallback(
     (result: SessionResult, found: number, used: number) => {
       lockRef.current = true;
+      const t = result === "WIN" ? newTicket() : null;
+      if (t) setTicket(t);
       setPhase(result === "WIN" ? "win" : "loss");
       saveSession({
         id: crypto.randomUUID(),
@@ -67,6 +65,7 @@ export function GameBoard() {
         attemptsUsed: used,
         durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
         createdAt: Date.now(),
+        ticketCode: t?.code,
       });
     },
     [],
