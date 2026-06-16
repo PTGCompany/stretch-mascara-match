@@ -314,7 +314,7 @@ export function GameBoard() {
             </div>
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }
