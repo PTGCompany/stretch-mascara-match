@@ -282,38 +282,58 @@ export function GameBoard() {
         )}
 
         {/* overlay */}
-        {phase !== "playing" && !(phase === "win" && ticket) && (
-          <div className="absolute inset-0 flex items-center justify-center rounded-[2.5rem] bg-card/95 backdrop-blur-sm">
-            <div className="flex flex-col items-center gap-6 px-8 text-center">
-              {phase === "idle" && (
-                <>
-                  <h2 className="text-3xl font-black">
-                    PRÊT(E) À <span style={{ color: "var(--sephora-pink)" }}>JOUER</span> ?
-                  </h2>
-                  <p className="max-w-[28ch] text-xs font-bold uppercase tracking-wider text-foreground/70">
-                    {config.instruction}
-                  </p>
-                </>
-              )}
-              {phase === "loss" && (
-                <h2 className="text-3xl font-black leading-tight">
-                  DOMMAGE,
-                  <br />
-                  <span style={{ color: "var(--sephora-pink)" }}>
-                    RETENTEZ VOTRE CHANCE !
-                  </span>
-                </h2>
-              )}
-              <button
-                onClick={start}
-                className="rounded-full px-10 py-4 text-base font-black uppercase tracking-widest text-white transition-transform active:scale-95"
-                style={{ backgroundColor: "var(--sephora-pink)" }}
+        <AnimatePresence>
+          {phase !== "playing" && !(phase === "win" && ticket) && (
+            <motion.div
+              key={phase}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0 flex items-center justify-center rounded-[2.25rem] bg-card/95 backdrop-blur-sm"
+            >
+              <motion.div
+                initial={{ y: 16, opacity: 0, scale: 0.97 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                transition={{ delay: 0.05, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="flex flex-col items-center gap-7 px-8 text-center"
               >
-                {phase === "idle" ? "Commencer" : "Rejouer"}
-              </button>
-            </div>
-          </div>
-        )}
+                {phase === "idle" && (
+                  <>
+                    <h2 className="font-display text-[34px] leading-none">
+                      PRÊT(E) À{" "}
+                      <span style={{ color: "var(--sephora-pink)" }}>JOUER</span> ?
+                    </h2>
+                    <p className="max-w-[28ch] text-[11px] font-semibold uppercase tracking-[0.2em] text-black/65">
+                      {config.instruction}
+                    </p>
+                  </>
+                )}
+                {phase === "loss" && (
+                  <h2 className="font-display text-[32px] leading-tight">
+                    DOMMAGE,
+                    <br />
+                    <span style={{ color: "var(--sephora-pink)" }}>
+                      RETENTEZ VOTRE CHANCE !
+                    </span>
+                  </h2>
+                )}
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={start}
+                  className="wordmark rounded-full px-12 py-4 text-[13px] text-white"
+                  style={{
+                    backgroundColor: "var(--sephora-pink)",
+                    boxShadow: "0 12px 30px -10px rgba(229,9,127,0.6)",
+                  }}
+                >
+                  {phase === "idle" ? "Commencer" : "Rejouer"}
+                </motion.button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </div>
   );
