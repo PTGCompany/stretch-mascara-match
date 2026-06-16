@@ -31,6 +31,7 @@ export function GameBoard() {
   const [targetsFound, setTargetsFound] = useState(0);
   const [attemptsUsed, setAttemptsUsed] = useState(0);
   const [timeLeft, setTimeLeft] = useState(config.durationSeconds);
+  const [ticket, setTicket] = useState<TicketData | null>(null);
   const startedAt = useRef<number>(0);
   const lockRef = useRef(false);
 
@@ -45,6 +46,11 @@ export function GameBoard() {
     setTargetsFound(0);
     setAttemptsUsed(0);
     setTimeLeft(cfg.durationSeconds);
+    setTicket(null);
+    startedAt.current = Date.now();
+    lockRef.current = false;
+    setPhase("playing");
+  }, []);
     startedAt.current = Date.now();
     lockRef.current = false;
     setPhase("playing");
