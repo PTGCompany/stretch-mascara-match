@@ -320,7 +320,8 @@ export function GameBoard() {
             </motion.div>
           )}
         </div>
-        </div>
+
+
 
 
         {/* admin link */}
