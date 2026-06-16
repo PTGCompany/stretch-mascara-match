@@ -111,27 +111,63 @@ export function GameBoard() {
   );
 
   return (
-    <div className="relative flex min-h-dvh w-full items-center justify-center overflow-hidden bg-background p-4">
-      {/* ambient glow */}
+    <div className="relative flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden bg-background px-4 py-6">
+      {/* ambient coral glow */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full opacity-40 blur-3xl"
+        className="pointer-events-none absolute -top-40 left-1/2 h-[620px] w-[620px] -translate-x-1/2 rounded-full opacity-60 blur-3xl"
         style={{
           background:
-            "radial-gradient(circle, rgba(229,9,127,0.55) 0%, rgba(0,0,0,0) 70%)",
+            "radial-gradient(circle, rgba(237,111,126,0.55) 0%, rgba(0,0,0,0) 70%)",
         }}
       />
+
+      {/* SEPHORA COLLECTION brand banner */}
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+        className="relative z-10 mb-5 flex w-full max-w-[560px] items-center justify-between overflow-hidden rounded-2xl px-6 py-4"
+        style={{
+          background:
+            "linear-gradient(90deg, #ed6f7e 0%, #f08a98 55%, #ec7686 100%)",
+          boxShadow: "0 20px 40px -20px rgba(237,111,126,0.55)",
+        }}
+      >
+        <span
+          className="wordmark text-white"
+          style={{ fontSize: 15, letterSpacing: "0.42em" }}
+        >
+          SEPHORA COLLECTION
+        </span>
+        <span
+          className="wordmark hidden text-white/80 sm:inline"
+          style={{ fontSize: 10, letterSpacing: "0.3em" }}
+        >
+          MEMORY GAME
+        </span>
+      </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 24, scale: 0.985 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
         className="relative w-full max-w-[560px] rounded-[2.25rem] bg-card px-6 pb-10 pt-7 text-card-foreground"
         style={{ boxShadow: "var(--shadow-card)" }}
       >
         {/* header — Sephora wordmark, centered, with hairline rule */}
         <div className="flex flex-col items-center pb-5">
           <HamburgerLogo />
+          <div
+            className="mt-2 wordmark"
+            style={{
+              fontSize: 9,
+              letterSpacing: "0.42em",
+              color: "var(--sephora-coral-deep)",
+            }}
+          >
+            COLLECTION
+          </div>
           <div className="mt-4 h-px w-full bg-black/8" />
         </div>
 
