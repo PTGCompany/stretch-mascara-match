@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { MotionButton } from "@/components/MotionButton";
 import {
   DEFAULT_CONFIG,
   clearSessions,
