@@ -125,7 +125,7 @@ export function GameBoard() {
       <motion.div
         initial={{ opacity: 0, y: 24, scale: 0.985 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
         className="relative w-full max-w-[560px] rounded-[2.25rem] bg-card px-6 pb-10 pt-7 text-card-foreground"
         style={{ boxShadow: "var(--shadow-card)" }}
       >
@@ -139,7 +139,7 @@ export function GameBoard() {
         <motion.h1
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.5, ease: "easeOut" }}
+          transition={{ delay: 0.05, duration: 0.16, ease: "easeOut" }}
           className="font-display text-center text-[40px] leading-[0.95] sm:text-[52px]"
         >
           {config.title}
@@ -151,7 +151,7 @@ export function GameBoard() {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
+          transition={{ delay: 0.1, duration: 0.16 }}
           className="mx-auto mt-4 max-w-[30ch] text-center text-[11px] font-semibold uppercase leading-snug tracking-[0.18em] text-black/70"
         >
           {config.instruction}
@@ -174,13 +174,14 @@ export function GameBoard() {
                 initial={{ opacity: 0, scale: 0.6 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{
-                  delay: 0.35 + i * 0.015,
+                  delay: Math.min(0.12, 0.04 + i * 0.005),
                   type: "spring",
-                  stiffness: 320,
-                  damping: 22,
+                  stiffness: 520,
+                  damping: 26,
+                  mass: 0.6,
                 }}
                 whileTap={
-                  phase === "playing" && !isRevealed ? { scale: 0.9 } : undefined
+                  phase === "playing" && !isRevealed ? { scale: 0.92 } : undefined
                 }
                 onClick={() => onTap(i)}
                 disabled={phase !== "playing" || isRevealed}
@@ -190,7 +191,7 @@ export function GameBoard() {
               >
                 <motion.div
                   animate={{ rotateY: isRevealed ? 180 : 0 }}
-                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
                   className="absolute inset-0"
                   style={{ transformStyle: "preserve-3d" }}
                 >
@@ -237,7 +238,7 @@ export function GameBoard() {
               key={timeLeft + phase}
               initial={{ scale: 1.15, opacity: 0.6 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.14 }}
               className="font-display text-[56px] leading-none tabular-nums"
               style={{ color: "var(--sephora-pink)" }}
             >
@@ -289,13 +290,13 @@ export function GameBoard() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.16 }}
               className="absolute inset-0 flex items-center justify-center rounded-[2.25rem] bg-card/95 backdrop-blur-sm"
             >
               <motion.div
-                initial={{ y: 16, opacity: 0, scale: 0.97 }}
+                initial={{ y: 8, opacity: 0, scale: 0.98 }}
                 animate={{ y: 0, opacity: 1, scale: 1 }}
-                transition={{ delay: 0.05, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
                 className="flex flex-col items-center gap-7 px-8 text-center"
               >
                 {phase === "idle" && (
