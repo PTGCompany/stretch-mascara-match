@@ -198,6 +198,7 @@ function AdminPage() {
                 <tr>
                   <th className="p-2 text-left">When</th>
                   <th className="p-2 text-left">Result</th>
+                  <th className="p-2 text-left">Ticket</th>
                   <th className="p-2 text-left">Found</th>
                   <th className="p-2 text-left">Attempts</th>
                   <th className="p-2 text-left">Duration</th>
@@ -208,6 +209,7 @@ function AdminPage() {
                   <tr key={s.id} className="border-t">
                     <td className="p-2">{new Date(s.createdAt).toLocaleString()}</td>
                     <td className="p-2 font-bold">{s.result}</td>
+                    <td className="p-2 font-mono">{s.ticketCode ?? "—"}</td>
                     <td className="p-2">{s.targetsFound}</td>
                     <td className="p-2">{s.attemptsUsed}</td>
                     <td className="p-2">{s.durationSeconds}s</td>
@@ -215,7 +217,7 @@ function AdminPage() {
                 ))}
                 {sessions.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="p-4 text-center text-muted-foreground">
+                    <td colSpan={6} className="p-4 text-center text-muted-foreground">
                       No sessions yet.
                     </td>
                   </tr>
