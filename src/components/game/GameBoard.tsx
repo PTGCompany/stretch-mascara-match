@@ -424,7 +424,7 @@ export function GameBoard() {
                     </span>
                   </h2>
                 )}
-                <motion.button
+                <MotionButton
                   initial={{ scale: 0.92, opacity: 0, y: 8 }}
                   animate={
                     phase === "idle"
@@ -445,21 +445,14 @@ export function GameBoard() {
                       ? { duration: 2.4, repeat: Infinity, ease: "easeInOut" }
                       : { type: "spring", stiffness: 380, damping: 24, mass: 0.7 }
                   }
-                  whileHover={{
-                    scale: 1.06,
-                    y: -2,
-                    transition: { type: "spring", stiffness: 420, damping: 18 },
-                  }}
-                  whileTap={{
-                    scale: 0.94,
-                    transition: { type: "spring", stiffness: 600, damping: 26 },
-                  }}
+                  whileHover={{ scale: 1.06, y: -2 }}
+                  whileTap={{ scale: 0.94 }}
                   onClick={start}
-                  className="wordmark rounded-full px-12 py-4 text-[13px] text-white"
+                  className="wordmark px-12 py-4 text-[13px]"
                   style={{ backgroundColor: "var(--sephora-pink)" }}
                 >
                   {phase === "idle" ? "Commencer" : "Rejouer"}
-                </motion.button>
+                </MotionButton>
               </motion.div>
             </motion.div>
           )}
