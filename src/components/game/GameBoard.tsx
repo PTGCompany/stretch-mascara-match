@@ -263,11 +263,20 @@ export function GameBoard() {
           <div className="flex items-baseline justify-center gap-1">
             <motion.div
               key={timeLeft + phase}
-              initial={{ scale: 1.15, opacity: 0.6 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.14 }}
+              initial={{ scale: 1.18, opacity: 0.5 }}
+              animate={
+                phase === "playing" && timeLeft <= 5
+                  ? { scale: [1, 1.1, 1], opacity: 1 }
+                  : { scale: 1, opacity: 1 }
+              }
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
               className="font-display text-[56px] leading-none tabular-nums"
-              style={{ color: "var(--sephora-pink)" }}
+              style={{
+                color:
+                  phase === "playing" && timeLeft <= 5
+                    ? "#ff1f8a"
+                    : "var(--sephora-pink)",
+              }}
             >
               {phase === "idle" ? config.durationSeconds : timeLeft}
             </motion.div>
@@ -279,14 +288,38 @@ export function GameBoard() {
             </span>
           </div>
           <div className="mt-3 h-[6px] w-full overflow-hidden rounded-full bg-black/5">
-            <div
-              className="h-full rounded-full transition-all duration-1000 ease-linear"
-              style={{
+            <motion.div
+              className="h-full rounded-full"
+              animate={{
                 width: `${phase === "playing" ? progress : phase === "idle" ? 100 : 0}%`,
-                backgroundColor: "var(--sephora-pink)",
               }}
+              transition={{ duration: 0.9, ease: "linear" }}
+              style={{ backgroundColor: "var(--sephora-pink)" }}
             />
           </div>
+          {phase === "playing" && (
+            <motion.div
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.18 }}
+              className="mt-4 flex items-center justify-center gap-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/60"
+            >
+              <span>
+                Trouvés{" "}
+                <span style={{ color: "var(--sephora-pink)" }}>
+                  {targetsFound}/{config.targetsRequired}
+                </span>
+              </span>
+              <span className="h-1 w-1 rounded-full bg-black/20" />
+              <span>
+                Essais{" "}
+                <span style={{ color: "var(--sephora-pink)" }}>
+                  {attemptsUsed}/{config.attemptsAllowed}
+                </span>
+              </span>
+            </motion.div>
+          )}
+        </div>
         </div>
 
 
