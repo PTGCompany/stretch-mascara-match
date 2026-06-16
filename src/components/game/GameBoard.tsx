@@ -381,14 +381,30 @@ export function GameBoard() {
                   </h2>
                 )}
                 <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.96 }}
+                  initial={{ scale: 0.96, opacity: 0 }}
+                  animate={
+                    phase === "idle"
+                      ? {
+                          scale: [1, 1.04, 1],
+                          opacity: 1,
+                          boxShadow: [
+                            "0 12px 30px -10px rgba(229,9,127,0.55)",
+                            "0 18px 44px -10px rgba(229,9,127,0.85)",
+                            "0 12px 30px -10px rgba(229,9,127,0.55)",
+                          ],
+                        }
+                      : { scale: 1, opacity: 1 }
+                  }
+                  transition={
+                    phase === "idle"
+                      ? { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
+                      : { duration: 0.18, ease: [0.22, 1, 0.36, 1] }
+                  }
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={start}
                   className="wordmark rounded-full px-12 py-4 text-[13px] text-white"
-                  style={{
-                    backgroundColor: "var(--sephora-pink)",
-                    boxShadow: "0 12px 30px -10px rgba(229,9,127,0.6)",
-                  }}
+                  style={{ backgroundColor: "var(--sephora-pink)" }}
                 >
                   {phase === "idle" ? "Commencer" : "Rejouer"}
                 </motion.button>
