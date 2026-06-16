@@ -111,30 +111,55 @@ export function GameBoard() {
   );
 
   return (
-    <div className="flex min-h-dvh w-full items-center justify-center bg-background p-4">
+    <div className="relative flex min-h-dvh w-full items-center justify-center overflow-hidden bg-background p-4">
+      {/* ambient glow */}
       <div
-        className="relative w-full max-w-[560px] rounded-[2.5rem] bg-card px-6 pb-10 pt-7 text-card-foreground"
+        aria-hidden
+        className="pointer-events-none absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full opacity-40 blur-3xl"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(229,9,127,0.55) 0%, rgba(0,0,0,0) 70%)",
+        }}
+      />
+
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.985 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        className="relative w-full max-w-[560px] rounded-[2.25rem] bg-card px-6 pb-10 pt-7 text-card-foreground"
         style={{ boxShadow: "var(--shadow-card)" }}
       >
-        {/* header */}
-        <div className="flex items-center justify-center pb-4">
+        {/* header — Sephora wordmark, centered, with hairline rule */}
+        <div className="flex flex-col items-center pb-5">
           <HamburgerLogo />
+          <div className="mt-4 h-px w-full bg-black/8" />
         </div>
 
         {/* title */}
-        <h1 className="text-center text-4xl font-black tracking-tight sm:text-5xl">
-          {config.title}{" "}
+        <motion.h1
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.5, ease: "easeOut" }}
+          className="font-display text-center text-[40px] leading-[0.95] sm:text-[52px]"
+        >
+          {config.title}
+          <br />
           <span style={{ color: "var(--sephora-pink)" }}>
             {config.titleAccent}
           </span>
-        </h1>
-        <p className="mx-auto mt-3 max-w-[28ch] text-center text-[11px] font-bold uppercase leading-snug tracking-wider text-foreground/80 sm:text-xs">
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="mx-auto mt-4 max-w-[30ch] text-center text-[11px] font-semibold uppercase leading-snug tracking-[0.18em] text-black/70"
+        >
           {config.instruction}
-        </p>
+        </motion.p>
 
         {/* grid */}
         <div
-          className="mx-auto mt-6 grid gap-3"
+          className="mx-auto mt-7 grid gap-3"
           style={{
             gridTemplateColumns: `repeat(${config.gridCols}, minmax(0, 1fr))`,
           }}
@@ -144,63 +169,88 @@ export function GameBoard() {
             const isRevealed = s !== "hidden";
             const isTarget = s === "revealed-target";
             return (
-              <button
+              <motion.button
                 key={i}
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  delay: 0.35 + i * 0.015,
+                  type: "spring",
+                  stiffness: 320,
+                  damping: 22,
+                }}
+                whileTap={
+                  phase === "playing" && !isRevealed ? { scale: 0.9 } : undefined
+                }
                 onClick={() => onTap(i)}
                 disabled={phase !== "playing" || isRevealed}
                 aria-label={`Token ${i + 1}`}
-                className="group relative aspect-square w-full rounded-full transition-transform active:scale-95 disabled:active:scale-100"
+                className="group relative aspect-square w-full rounded-full"
+                style={{ perspective: 800 }}
               >
-                <div
-                  className={[
-                    "absolute inset-0 rounded-full transition-all duration-300",
-                    isRevealed
-                      ? "bg-white ring-2"
-                      : "bg-token text-token-foreground",
-                  ].join(" ")}
-                  style={
-                    isRevealed
-                      ? {
-                          boxShadow: isTarget
-                            ? "0 0 0 3px var(--sephora-pink)"
-                            : "0 0 0 2px var(--border)",
-                        }
-                      : undefined
-                  }
+                <motion.div
+                  animate={{ rotateY: isRevealed ? 180 : 0 }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  className="absolute inset-0"
+                  style={{ transformStyle: "preserve-3d" }}
                 >
-                  {!isRevealed && (
-                    <div className="flex h-full w-full flex-col items-center justify-center leading-none">
-                      <span className="text-[8px] font-black tracking-wider text-white sm:text-[9px]">
-                        SEPHORA
-                      </span>
-                      <span className="text-[6px] font-bold tracking-widest text-white sm:text-[7px]">
-                        COLLECTION
-                      </span>
-                    </div>
-                  )}
-                  {isRevealed && isTarget && (
-                    <MascaraIcon className="absolute inset-0 m-auto h-[78%] w-[78%]" />
-                  )}
-                  {isRevealed && !isTarget && (
-                    <div className="absolute inset-0 m-auto flex items-center justify-center">
-                      <div className="h-2 w-2 rounded-full bg-muted-foreground/30" />
-                    </div>
-                  )}
-                </div>
-              </button>
+                  {/* back (token face) */}
+                  <div
+                    className="absolute inset-0 rounded-full bg-token"
+                    style={{
+                      backfaceVisibility: "hidden",
+                      boxShadow:
+                        "inset 0 0 0 1px rgba(255,255,255,0.06), 0 6px 14px -6px rgba(0,0,0,0.45)",
+                    }}
+                  >
+                    <SephoraToken />
+                  </div>
+                  {/* front (revealed) */}
+                  <div
+                    className="absolute inset-0 rounded-full bg-white"
+                    style={{
+                      backfaceVisibility: "hidden",
+                      transform: "rotateY(180deg)",
+                      boxShadow: isTarget
+                        ? "0 0 0 2px var(--sephora-pink), 0 8px 24px -8px rgba(229,9,127,0.6)"
+                        : "0 0 0 1px var(--border)",
+                    }}
+                  >
+                    {isTarget ? (
+                      <MascaraIcon className="absolute inset-0 m-auto h-[80%] w-[80%]" />
+                    ) : (
+                      <div className="absolute inset-0 m-auto flex items-center justify-center">
+                        <div className="h-1.5 w-1.5 rounded-full bg-black/15" />
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              </motion.button>
             );
           })}
         </div>
 
         {/* timer + progress */}
         <div className="mt-8">
-          <div
-            className="text-center text-5xl font-black tabular-nums"
-            style={{ color: "var(--sephora-pink)" }}
-          >
-            {phase === "idle" ? config.durationSeconds : timeLeft}"
+          <div className="flex items-baseline justify-center gap-1">
+            <motion.div
+              key={timeLeft + phase}
+              initial={{ scale: 1.15, opacity: 0.6 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.25 }}
+              className="font-display text-[56px] leading-none tabular-nums"
+              style={{ color: "var(--sephora-pink)" }}
+            >
+              {phase === "idle" ? config.durationSeconds : timeLeft}
+            </motion.div>
+            <span
+              className="font-display text-2xl"
+              style={{ color: "var(--sephora-pink)" }}
+            >
+              s
+            </span>
           </div>
-          <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
+          <div className="mt-3 h-[6px] w-full overflow-hidden rounded-full bg-black/5">
             <div
               className="h-full rounded-full transition-all duration-1000 ease-linear"
               style={{
@@ -210,6 +260,7 @@ export function GameBoard() {
             />
           </div>
         </div>
+
 
         {/* admin link */}
         <Link
