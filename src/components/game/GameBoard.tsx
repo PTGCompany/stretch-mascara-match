@@ -361,13 +361,20 @@ export function GameBoard() {
 
 
         {/* admin link */}
-        <Link
-          to="/admin"
-          className="absolute right-4 top-4 text-muted-foreground/60 transition-colors hover:text-foreground"
-          aria-label="Admin"
+        <motion.div
+          className="absolute right-4 top-4"
+          whileHover={{ scale: 1.15, rotate: 35 }}
+          whileTap={{ scale: 0.9, rotate: -10 }}
+          transition={{ type: "spring", stiffness: 420, damping: 18 }}
         >
-          <Settings className="h-4 w-4" />
-        </Link>
+          <Link
+            to="/admin"
+            className="block text-muted-foreground/60 transition-colors hover:text-foreground"
+            aria-label="Admin"
+          >
+            <Settings className="h-4 w-4" />
+          </Link>
+        </motion.div>
 
         {/* ticket overlay on win */}
         {phase === "win" && ticket && (
