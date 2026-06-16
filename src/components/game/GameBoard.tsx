@@ -361,13 +361,20 @@ export function GameBoard() {
 
 
         {/* admin link */}
-        <Link
-          to="/admin"
-          className="absolute right-4 top-4 text-muted-foreground/60 transition-colors hover:text-foreground"
-          aria-label="Admin"
+        <motion.div
+          className="absolute right-4 top-4"
+          whileHover={{ scale: 1.15, rotate: 35 }}
+          whileTap={{ scale: 0.9, rotate: -10 }}
+          transition={{ type: "spring", stiffness: 420, damping: 18 }}
         >
-          <Settings className="h-4 w-4" />
-        </Link>
+          <Link
+            to="/admin"
+            className="block text-muted-foreground/60 transition-colors hover:text-foreground"
+            aria-label="Admin"
+          >
+            <Settings className="h-4 w-4" />
+          </Link>
+        </motion.div>
 
         {/* ticket overlay on win */}
         {phase === "win" && ticket && (
@@ -417,27 +424,35 @@ export function GameBoard() {
                   </h2>
                 )}
                 <motion.button
-                  initial={{ scale: 0.96, opacity: 0 }}
+                  initial={{ scale: 0.92, opacity: 0, y: 8 }}
                   animate={
                     phase === "idle"
                       ? {
-                          scale: [1, 1.04, 1],
+                          scale: [1, 1.045, 1],
                           opacity: 1,
+                          y: 0,
                           boxShadow: [
-                            "0 12px 30px -10px rgba(229,9,127,0.55)",
-                            "0 18px 44px -10px rgba(229,9,127,0.85)",
-                            "0 12px 30px -10px rgba(229,9,127,0.55)",
+                            "0 12px 30px -10px rgba(237,111,126,0.55)",
+                            "0 22px 50px -10px rgba(237,111,126,0.9)",
+                            "0 12px 30px -10px rgba(237,111,126,0.55)",
                           ],
                         }
-                      : { scale: 1, opacity: 1 }
+                      : { scale: 1, opacity: 1, y: 0 }
                   }
                   transition={
                     phase === "idle"
-                      ? { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
-                      : { duration: 0.18, ease: [0.22, 1, 0.36, 1] }
+                      ? { duration: 2.4, repeat: Infinity, ease: "easeInOut" }
+                      : { type: "spring", stiffness: 380, damping: 24, mass: 0.7 }
                   }
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{
+                    scale: 1.06,
+                    y: -2,
+                    transition: { type: "spring", stiffness: 420, damping: 18 },
+                  }}
+                  whileTap={{
+                    scale: 0.94,
+                    transition: { type: "spring", stiffness: 600, damping: 26 },
+                  }}
                   onClick={start}
                   className="wordmark rounded-full px-12 py-4 text-[13px] text-white"
                   style={{ backgroundColor: "var(--sephora-pink)" }}
