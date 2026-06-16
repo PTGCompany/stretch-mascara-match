@@ -50,11 +50,11 @@ function AdminPage() {
   };
 
   const exportCsv = () => {
-    const header = "id,result,targetsFound,attemptsUsed,durationSeconds,createdAt\n";
+    const header = "id,result,ticketCode,targetsFound,attemptsUsed,durationSeconds,createdAt\n";
     const rows = sessions
       .map(
         (s) =>
-          `${s.id},${s.result},${s.targetsFound},${s.attemptsUsed},${s.durationSeconds},${new Date(s.createdAt).toISOString()}`,
+          `${s.id},${s.result},${s.ticketCode ?? ""},${s.targetsFound},${s.attemptsUsed},${s.durationSeconds},${new Date(s.createdAt).toISOString()}`,
       )
       .join("\n");
     const blob = new Blob([header + rows], { type: "text/csv" });
