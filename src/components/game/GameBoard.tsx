@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { MotionButton } from "@/components/MotionButton";
 import { HamburgerLogo, MascaraIcon, SephoraToken } from "./icons";
 import { Ticket, newTicket, type TicketData } from "./Ticket";
 import {
@@ -206,7 +207,7 @@ export function GameBoard() {
             const isTarget = s === "revealed-target";
             const isWrong = s === "revealed-empty";
             return (
-              <motion.button
+              <MotionButton
                 key={i}
                 initial={{ opacity: 0, scale: 0.6 }}
                 animate={
@@ -228,17 +229,17 @@ export function GameBoard() {
                 whileTap={
                   phase === "playing" && !isRevealed
                     ? { scale: 0.9 }
-                    : undefined
+                    : { scale: 1 }
                 }
                 whileHover={
                   phase === "playing" && !isRevealed
                     ? { scale: 1.04 }
-                    : undefined
+                    : { scale: 1 }
                 }
                 onClick={() => onTap(i)}
                 disabled={phase !== "playing" || isRevealed}
                 aria-label={`Token ${i + 1}`}
-                className="group relative aspect-square w-full rounded-full"
+                intent="token"
                 style={{ perspective: 800, touchAction: "manipulation" }}
               >
                 <motion.div
@@ -289,7 +290,7 @@ export function GameBoard() {
                     )}
                   </motion.div>
                 </motion.div>
-              </motion.button>
+              </MotionButton>
             );
           })}
         </div>
@@ -423,7 +424,7 @@ export function GameBoard() {
                     </span>
                   </h2>
                 )}
-                <motion.button
+                <MotionButton
                   initial={{ scale: 0.92, opacity: 0, y: 8 }}
                   animate={
                     phase === "idle"
@@ -444,21 +445,14 @@ export function GameBoard() {
                       ? { duration: 2.4, repeat: Infinity, ease: "easeInOut" }
                       : { type: "spring", stiffness: 380, damping: 24, mass: 0.7 }
                   }
-                  whileHover={{
-                    scale: 1.06,
-                    y: -2,
-                    transition: { type: "spring", stiffness: 420, damping: 18 },
-                  }}
-                  whileTap={{
-                    scale: 0.94,
-                    transition: { type: "spring", stiffness: 600, damping: 26 },
-                  }}
+                  whileHover={{ scale: 1.06, y: -2 }}
+                  whileTap={{ scale: 0.94 }}
                   onClick={start}
-                  className="wordmark rounded-full px-12 py-4 text-[13px] text-white"
+                  className="wordmark px-12 py-4 text-[13px]"
                   style={{ backgroundColor: "var(--sephora-pink)" }}
                 >
                   {phase === "idle" ? "Commencer" : "Rejouer"}
-                </motion.button>
+                </MotionButton>
               </motion.div>
             </motion.div>
           )}

@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { MotionButton } from "@/components/MotionButton";
 import {
   DEFAULT_CONFIG,
   clearSessions,
@@ -166,13 +167,9 @@ function AdminPage() {
             </Field>
           </div>
           <div className="mt-6 flex items-center gap-3">
-            <button
-              onClick={save}
-              className="rounded-full px-6 py-2 text-sm font-bold uppercase text-white"
-              style={{ backgroundColor: "var(--sephora-pink)" }}
-            >
+            <MotionButton intent="primary" size="sm" onClick={save}>
               Save
-            </button>
+            </MotionButton>
             {saved && <span className="text-xs text-muted-foreground">Saved ✓</span>}
           </div>
         </section>
@@ -182,8 +179,12 @@ function AdminPage() {
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-black">Sessions</h2>
             <div className="flex gap-2">
-              <button onClick={exportCsv} className="btn-ghost">Export CSV</button>
-              <button onClick={reset} className="btn-ghost text-destructive">Reset</button>
+              <MotionButton intent="ghost" size="sm" onClick={exportCsv}>
+                Export CSV
+              </MotionButton>
+              <MotionButton intent="danger" size="sm" onClick={reset}>
+                Reset
+              </MotionButton>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
