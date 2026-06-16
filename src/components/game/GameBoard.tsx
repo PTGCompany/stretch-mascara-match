@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HamburgerLogo, MascaraIcon } from "./icons";
+import { Ticket, newTicket, type TicketData } from "./Ticket";
 import {
   loadConfig,
   saveSession,
@@ -30,6 +31,7 @@ export function GameBoard() {
   const [targetsFound, setTargetsFound] = useState(0);
   const [attemptsUsed, setAttemptsUsed] = useState(0);
   const [timeLeft, setTimeLeft] = useState(config.durationSeconds);
+  const [ticket, setTicket] = useState<TicketData | null>(null);
   const startedAt = useRef<number>(0);
   const lockRef = useRef(false);
 
@@ -44,6 +46,7 @@ export function GameBoard() {
     setTargetsFound(0);
     setAttemptsUsed(0);
     setTimeLeft(cfg.durationSeconds);
+    setTicket(null);
     startedAt.current = Date.now();
     lockRef.current = false;
     setPhase("playing");
@@ -52,6 +55,8 @@ export function GameBoard() {
   const finish = useCallback(
     (result: SessionResult, found: number, used: number) => {
       lockRef.current = true;
+      const t = result === "WIN" ? newTicket() : null;
+      if (t) setTicket(t);
       setPhase(result === "WIN" ? "win" : "loss");
       saveSession({
         id: crypto.randomUUID(),
@@ -60,6 +65,7 @@ export function GameBoard() {
         attemptsUsed: used,
         durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
         createdAt: Date.now(),
+        ticketCode: t?.code,
       });
     },
     [],
@@ -213,8 +219,18 @@ export function GameBoard() {
           <Settings className="h-4 w-4" />
         </Link>
 
+        {/* ticket overlay on win */}
+        {phase === "win" && ticket && (
+          <Ticket
+            data={ticket}
+            config={config}
+            onClose={() => setTicket(null)}
+            onReplay={start}
+          />
+        )}
+
         {/* overlay */}
-        {phase !== "playing" && (
+        {phase !== "playing" && !(phase === "win" && ticket) && (
           <div className="absolute inset-0 flex items-center justify-center rounded-[2.5rem] bg-card/95 backdrop-blur-sm">
             <div className="flex flex-col items-center gap-6 px-8 text-center">
               {phase === "idle" && (
@@ -226,14 +242,6 @@ export function GameBoard() {
                     {config.instruction}
                   </p>
                 </>
-              )}
-              {phase === "win" && (
-                <h2 className="text-3xl font-black">
-                  BRAVO,{" "}
-                  <span style={{ color: "var(--sephora-pink)" }}>
-                    C'EST GAGNÉ !
-                  </span>
-                </h2>
               )}
               {phase === "loss" && (
                 <h2 className="text-3xl font-black leading-tight">
