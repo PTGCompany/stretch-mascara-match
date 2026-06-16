@@ -34,38 +34,42 @@
   --color-sephora-pink-soft: var(--sephora-pink-soft);
   --color-token: var(--token);
   --color-token-foreground: var(--token-foreground);
-  --font-display: "Helvetica Neue", "Inter", system-ui, sans-serif;
+  --font-display: "Archivo Black", "Helvetica Neue", system-ui, sans-serif;
+  --font-sans: "Archivo", "Helvetica Neue", system-ui, sans-serif;
 }
 
 :root {
-  --radius: 1.25rem;
-  --background: oklch(0 0 0);
-  --foreground: oklch(0.15 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0 0);
-  --primary: oklch(0.15 0 0);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.96 0 0);
-  --secondary-foreground: oklch(0.15 0 0);
-  --muted: oklch(0.95 0 0);
-  --muted-foreground: oklch(0.5 0 0);
-  --accent: oklch(0.96 0 0);
-  --accent-foreground: oklch(0.15 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.92 0 0);
-  --input: oklch(0.92 0 0);
-  --ring: oklch(0.65 0.24 5);
+  --radius: 1.75rem;
+  /* Sephora canvas: signature deep black */
+  --background: #000000;
+  --foreground: #0a0a0a;
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  --primary: #000000;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4f4;
+  --secondary-foreground: #000000;
+  --muted: #f1f1f1;
+  --muted-foreground: #6b6b6b;
+  --accent: #f4f4f4;
+  --accent-foreground: #000000;
+  --destructive: #d11149;
+  --destructive-foreground: #ffffff;
+  --border: #ebebeb;
+  --input: #ebebeb;
+  --ring: #e5097f;
 
-  /* Sephora */
-  --sephora-pink: oklch(0.65 0.24 5);
-  --sephora-pink-soft: oklch(0.92 0.08 5);
-  --token: oklch(0.08 0 0);
-  --token-foreground: oklch(1 0 0);
+  /* Sephora signature magenta */
+  --sephora-pink: #e5097f;
+  --sephora-pink-soft: #ffe6f2;
+  --token: #000000;
+  --token-foreground: #ffffff;
 
-  --shadow-card: 0 30px 60px -20px oklch(0 0 0 / 0.45);
+  --shadow-card:
+    0 40px 80px -30px rgba(0, 0, 0, 0.55),
+    0 20px 40px -20px rgba(229, 9, 127, 0.18);
 }
 
 .dark {
