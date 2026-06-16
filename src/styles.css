@@ -40,8 +40,8 @@
 
 :root {
   --radius: 1.75rem;
-  /* Sephora canvas: signature deep black */
-  --background: #000000;
+  /* Sephora canvas: deep black with coral pink accents from brand banner */
+  --background: #0a0a0a;
   --foreground: #0a0a0a;
   --card: #ffffff;
   --card-foreground: #000000;
@@ -53,23 +53,27 @@
   --secondary-foreground: #000000;
   --muted: #f1f1f1;
   --muted-foreground: #6b6b6b;
-  --accent: #f4f4f4;
+  --accent: #fde6ea;
   --accent-foreground: #000000;
   --destructive: #d11149;
   --destructive-foreground: #ffffff;
   --border: #ebebeb;
   --input: #ebebeb;
-  --ring: #e5097f;
+  --ring: #ed6f7e;
 
-  /* Sephora signature magenta */
-  --sephora-pink: #e5097f;
-  --sephora-pink-soft: #ffe6f2;
+  /* Sephora coral palette (from brand banner) + signature magenta */
+  --sephora-coral: #ed6f7e;
+  --sephora-coral-light: #f29aa3;
+  --sephora-coral-deep: #d94f63;
+  --sephora-pink: #ed6f7e;
+  --sephora-pink-soft: #fde6ea;
+  --sephora-gradient: linear-gradient(90deg, #ed6f7e 0%, #f08a98 50%, #ed6f7e 100%);
   --token: #000000;
   --token-foreground: #ffffff;
 
   --shadow-card:
-    0 40px 80px -30px rgba(0, 0, 0, 0.55),
-    0 20px 40px -20px rgba(229, 9, 127, 0.18);
+    0 40px 80px -30px rgba(0, 0, 0, 0.6),
+    0 20px 40px -20px rgba(237, 111, 126, 0.28);
 }
 
 .dark {
