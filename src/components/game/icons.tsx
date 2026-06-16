@@ -9,7 +9,7 @@ export function MascaraIcon({ className = "" }: { className?: string }) {
       </defs>
       {/* cap */}
       <rect x="22" y="4" width="20" height="26" rx="3" fill="#000" />
-      <rect x="22" y="4" width="20" height="3" rx="1.5" fill="#e5097f" />
+      <rect x="22" y="4" width="20" height="3" rx="1.5" fill="#ed6f7e" />
       {/* tube */}
       <rect x="17" y="30" width="30" height="60" rx="7" fill="url(#tubeGrad)" />
       <rect x="20" y="34" width="24" height="52" rx="4" fill="#0a0a0a" />
@@ -28,7 +28,7 @@ export function MascaraIcon({ className = "" }: { className?: string }) {
         x="32"
         y="69"
         textAnchor="middle"
-        fill="#e5097f"
+        fill="#ed6f7e"
         fontSize="5.5"
         fontFamily="Archivo Black, Helvetica, sans-serif"
         letterSpacing="0.5"
