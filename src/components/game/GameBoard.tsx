@@ -219,8 +219,18 @@ export function GameBoard() {
           <Settings className="h-4 w-4" />
         </Link>
 
+        {/* ticket overlay on win */}
+        {phase === "win" && ticket && (
+          <Ticket
+            data={ticket}
+            config={config}
+            onClose={() => setTicket(null)}
+            onReplay={start}
+          />
+        )}
+
         {/* overlay */}
-        {phase !== "playing" && (
+        {phase !== "playing" && !(phase === "win" && ticket) && (
           <div className="absolute inset-0 flex items-center justify-center rounded-[2.5rem] bg-card/95 backdrop-blur-sm">
             <div className="flex flex-col items-center gap-6 px-8 text-center">
               {phase === "idle" && (
@@ -232,14 +242,6 @@ export function GameBoard() {
                     {config.instruction}
                   </p>
                 </>
-              )}
-              {phase === "win" && (
-                <h2 className="text-3xl font-black">
-                  BRAVO,{" "}
-                  <span style={{ color: "var(--sephora-pink)" }}>
-                    C'EST GAGNÉ !
-                  </span>
-                </h2>
               )}
               {phase === "loss" && (
                 <h2 className="text-3xl font-black leading-tight">
