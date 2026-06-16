@@ -83,10 +83,18 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
     -webkit-user-select: none;
     user-select: none;
     overscroll-behavior: none;
+  }
+  .font-display { font-family: var(--font-display); letter-spacing: -0.01em; }
+  .wordmark {
+    font-family: var(--font-display);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
   }
 }
 
