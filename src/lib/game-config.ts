@@ -47,6 +47,7 @@ export type GameSession = {
   attemptsUsed: number;
   durationSeconds: number;
   createdAt: number;
+  ticketCode?: string;
 };
 
 const SESS_KEY = "sephora-game-sessions";
