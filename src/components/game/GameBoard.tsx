@@ -207,7 +207,7 @@ export function GameBoard() {
             const isTarget = s === "revealed-target";
             const isWrong = s === "revealed-empty";
             return (
-              <motion.button
+              <MotionButton
                 key={i}
                 initial={{ opacity: 0, scale: 0.6 }}
                 animate={
@@ -229,17 +229,17 @@ export function GameBoard() {
                 whileTap={
                   phase === "playing" && !isRevealed
                     ? { scale: 0.9 }
-                    : undefined
+                    : { scale: 1 }
                 }
                 whileHover={
                   phase === "playing" && !isRevealed
                     ? { scale: 1.04 }
-                    : undefined
+                    : { scale: 1 }
                 }
                 onClick={() => onTap(i)}
                 disabled={phase !== "playing" || isRevealed}
                 aria-label={`Token ${i + 1}`}
-                className="group relative aspect-square w-full rounded-full"
+                intent="token"
                 style={{ perspective: 800, touchAction: "manipulation" }}
               >
                 <motion.div
