@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { GameConfig } from "@/lib/game-config";
 
 function makeCode() {
