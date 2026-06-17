@@ -91,18 +91,16 @@ export function GameBoard() {
     const next = [...states];
     next[i] = isTarget ? "revealed-target" : "revealed-empty";
     setStates(next);
-    if (isTarget) {
-      const found = targetsFound + 1;
-      setTargetsFound(found);
-      if (found >= config.targetsRequired) {
-        finish("WIN", found, attemptsUsed);
-      }
-    } else {
-      const used = attemptsUsed + 1;
-      setAttemptsUsed(used);
-      if (used >= config.attemptsAllowed) {
-        finish("LOSS", targetsFound, used);
-      }
+
+    const found = isTarget ? targetsFound + 1 : targetsFound;
+    const used = attemptsUsed + 1; // every tap counts as an essai
+    if (isTarget) setTargetsFound(found);
+    setAttemptsUsed(used);
+
+    if (found >= config.targetsRequired) {
+      finish("WIN", found, used);
+    } else if (used >= config.attemptsAllowed) {
+      finish("LOSS", found, used);
     }
   };
 
