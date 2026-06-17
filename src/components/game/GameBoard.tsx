@@ -207,21 +207,21 @@ export function GameBoard() {
             return (
               <MotionButton
                 key={i}
-                initial={{ opacity: 0, scale: 0.6 }}
+                initial={{ opacity: 0, scale: 0.5, y: 6 }}
                 animate={
                   isWrong
-                    ? { opacity: 1, scale: 1, x: [0, -4, 4, -3, 3, 0] }
-                    : { opacity: 1, scale: 1, x: 0 }
+                    ? { opacity: 1, scale: 1, y: 0, x: [0, -5, 5, -3, 3, 0] }
+                    : { opacity: 1, scale: 1, y: 0, x: 0 }
                 }
                 transition={
                   isWrong
-                    ? { x: { duration: 0.28, ease: "easeInOut" } }
+                    ? { x: { duration: 0.36, ease: [0.36, 0.07, 0.19, 0.97] } }
                     : {
-                        delay: Math.min(0.12, 0.04 + i * 0.005),
+                        delay: Math.min(0.22, 0.05 + i * 0.025),
                         type: "spring",
-                        stiffness: 520,
-                        damping: 26,
-                        mass: 0.6,
+                        stiffness: 380,
+                        damping: 22,
+                        mass: 0.7,
                       }
                 }
                 whileTap={
@@ -231,18 +231,24 @@ export function GameBoard() {
                 }
                 whileHover={
                   phase === "playing" && !isRevealed
-                    ? { scale: 1.04 }
+                    ? { scale: 1.04, y: -2 }
                     : { scale: 1 }
                 }
                 onClick={() => onTap(i)}
                 disabled={phase !== "playing" || isRevealed}
                 aria-label={`Token ${i + 1}`}
                 intent="token"
-                style={{ perspective: 800, touchAction: "manipulation" }}
+                style={{ perspective: 1000, touchAction: "manipulation" }}
               >
                 <motion.div
-                  animate={{ rotateY: isRevealed ? 180 : 0 }}
-                  transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+                  animate={{
+                    rotateY: isRevealed ? 180 : 0,
+                    scale: isRevealed ? [1, 0.92, 1] : 1,
+                  }}
+                  transition={{
+                    rotateY: { duration: 0.55, ease: [0.65, 0, 0.35, 1] },
+                    scale: { duration: 0.55, ease: [0.22, 1, 0.36, 1], times: [0, 0.5, 1] },
+                  }}
                   className="absolute inset-0"
                   style={{
                     transformStyle: "preserve-3d",
@@ -265,17 +271,21 @@ export function GameBoard() {
                   <motion.div
                     animate={
                       isTarget
-                        ? { scale: [1, 1.08, 1] }
+                        ? { scale: [1, 1.12, 1] }
                         : { scale: 1 }
                     }
-                    transition={{ duration: 0.32, ease: "easeOut", delay: 0.18 }}
+                    transition={{
+                      duration: 0.45,
+                      ease: [0.22, 1, 0.36, 1],
+                      delay: 0.28,
+                    }}
                     className="absolute inset-0 rounded-full bg-white"
                     style={{
                       backfaceVisibility: "hidden",
                       WebkitBackfaceVisibility: "hidden",
                       transform: "rotateY(180deg)",
                       boxShadow: isTarget
-                        ? "0 0 0 2px var(--sephora-pink), 0 8px 24px -8px rgba(229,9,127,0.6)"
+                        ? "0 0 0 2px var(--sephora-pink), 0 10px 28px -8px rgba(229,9,127,0.65)"
                         : "0 0 0 1px var(--border)",
                     }}
                   >
@@ -289,6 +299,7 @@ export function GameBoard() {
                   </motion.div>
                 </motion.div>
               </MotionButton>
+
             );
           })}
         </div>
