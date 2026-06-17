@@ -397,20 +397,27 @@ export function GameBoard() {
         )}
 
         {/* overlay */}
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {phase !== "playing" && !(phase === "win" && ticket) && (
             <motion.div
               key={phase}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.16 }}
+              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
               className="absolute inset-0 flex items-center justify-center rounded-[2.25rem] bg-card/95 backdrop-blur-sm"
             >
               <motion.div
-                initial={{ y: 8, opacity: 0, scale: 0.98 }}
+                initial={{ y: 18, opacity: 0, scale: 0.94 }}
                 animate={{ y: 0, opacity: 1, scale: 1 }}
-                transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                exit={{ y: -10, opacity: 0, scale: 0.97 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 320,
+                  damping: 26,
+                  mass: 0.8,
+                  delay: 0.05,
+                }}
                 className="flex flex-col items-center gap-7 px-8 text-center"
               >
                 {phase === "idle" && (
@@ -425,14 +432,20 @@ export function GameBoard() {
                   </>
                 )}
                 {phase === "loss" && (
-                  <h2 className="font-display text-[32px] leading-tight">
+                  <motion.h2
+                    initial={{ x: 0 }}
+                    animate={{ x: [0, -8, 8, -5, 5, 0] }}
+                    transition={{ duration: 0.5, ease: [0.36, 0.07, 0.19, 0.97], delay: 0.1 }}
+                    className="font-display text-[32px] leading-tight"
+                  >
                     DOMMAGE,
                     <br />
                     <span style={{ color: "var(--sephora-pink)" }}>
                       RETENTEZ VOTRE CHANCE !
                     </span>
-                  </h2>
+                  </motion.h2>
                 )}
+
                 <MotionButton
                   initial={{ scale: 0.92, opacity: 0, y: 8 }}
                   animate={
