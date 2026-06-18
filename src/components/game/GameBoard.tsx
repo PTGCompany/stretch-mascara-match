@@ -93,14 +93,25 @@ export function GameBoard() {
     setStates(next);
 
     const found = isTarget ? targetsFound + 1 : targetsFound;
-    const used = attemptsUsed + 1; // every tap counts as an essai
+    const used = attemptsUsed + 1; // every tap counts as an essai (try)
     if (isTarget) setTargetsFound(found);
     setAttemptsUsed(used);
 
     if (found >= config.targetsRequired) {
       finish("WIN", found, used);
     } else if (used >= config.attemptsAllowed) {
-      finish("LOSS", found, used);
+      // give the player a beat to see the last reveal before the loss overlay
+      window.setTimeout(() => finish("LOSS", found, used), 700);
+    } else if (!isTarget) {
+      // wrong guess: flip the empty token back so only found mascaras stay shown
+      window.setTimeout(() => {
+        setStates((prev) => {
+          if (prev[i] !== "revealed-empty") return prev;
+          const copy = [...prev];
+          copy[i] = "hidden";
+          return copy;
+        });
+      }, 900);
     }
   };
 
