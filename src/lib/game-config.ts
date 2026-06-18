@@ -4,6 +4,7 @@ export type GameConfig = {
   instruction: string;
   targetProductName: string;
   targetsRequired: number;
+  targetsHidden: number;
   attemptsAllowed: number;
   durationSeconds: number;
   gridCols: number;
@@ -16,6 +17,7 @@ export const DEFAULT_CONFIG: GameConfig = {
   instruction: "RETROUVEZ 2 MASCARAS IT'S A STRETCH EN 3 ESSAIS !",
   targetProductName: "IT'S A STRETCH",
   targetsRequired: 2,
+  targetsHidden: 4,
   attemptsAllowed: 3,
   durationSeconds: 10,
   gridCols: 4,
