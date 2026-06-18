@@ -337,6 +337,7 @@ export function GameBoard() {
                   style={{
                     transformStyle: "preserve-3d",
                     willChange: "transform",
+                    pointerEvents: "none",
                   }}
                 >
                   {/* back (token face) */}
