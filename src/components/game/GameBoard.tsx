@@ -502,7 +502,7 @@ export function GameBoard() {
                     mass: 0.8,
                     delay: 0.05,
                   }}
-                  className="flex flex-col items-center gap-7 px-8 text-center"
+                  className="flex flex-col items-center gap-5 px-8 text-center"
                 >
                   {phase === "idle" && (
                     <h2 className="font-display text-[30px] leading-tight sm:text-[36px]">
