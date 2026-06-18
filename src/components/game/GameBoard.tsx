@@ -127,47 +127,35 @@ export function GameBoard() {
     }, 1600);
   };
 
-  const onTap = useCallback(
-    (i: number) => {
-      if (phase !== "setPlaying" || lockRef.current) return;
-      if (states[i] !== "hidden") return;
+  const onTap = (i: number) => {
+    if (phase !== "setPlaying" || lockRef.current) return;
+    if (states[i] !== "hidden") return;
 
-      const isTarget = tiles[i];
-      const nextStates = [...states];
-      nextStates[i] = isTarget ? "revealed-target" : "revealed-empty";
-      setStates(nextStates);
+    const isTarget = tiles[i];
+    const nextStates = [...states];
+    nextStates[i] = isTarget ? "revealed-target" : "revealed-empty";
+    setStates(nextStates);
 
-      const newFound = isTarget ? setFound + 1 : setFound;
-      const newTries = setTriesUsed + 1;
-      if (isTarget) setSetFound(newFound);
-      setSetTriesUsed(newTries);
+    const newFound = isTarget ? setFound + 1 : setFound;
+    const newTries = setTriesUsed + 1;
+    if (isTarget) setSetFound(newFound);
+    setSetTriesUsed(newTries);
 
-      if (newFound >= config.targetsRequired) {
-        finishSet("win", newFound, newTries);
-      } else if (newTries >= config.attemptsAllowed) {
-        window.setTimeout(() => finishSet("loss", newFound, newTries), 700);
-      } else if (!isTarget) {
-        window.setTimeout(() => {
-          setStates((prev) => {
-            if (prev[i] !== "revealed-empty") return prev;
-            const copy = [...prev];
-            copy[i] = "hidden";
-            return copy;
-          });
-        }, 900);
-      }
-    },
-    [
-      phase,
-      states,
-      tiles,
-      setFound,
-      setTriesUsed,
-      config.targetsRequired,
-      config.attemptsAllowed,
-      finishSet,
-    ]
-  );
+    if (newFound >= config.targetsRequired) {
+      finishSet("win", newFound, newTries);
+    } else if (newTries >= config.attemptsAllowed) {
+      window.setTimeout(() => finishSet("loss", newFound, newTries), 700);
+    } else if (!isTarget) {
+      window.setTimeout(() => {
+        setStates((prev) => {
+          if (prev[i] !== "revealed-empty") return prev;
+          const copy = [...prev];
+          copy[i] = "hidden";
+          return copy;
+        });
+      }, 900);
+    }
+  };
 
   useEffect(() => {
     if (phase !== "setPlaying") return;
