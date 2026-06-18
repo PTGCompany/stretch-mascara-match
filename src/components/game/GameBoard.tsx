@@ -14,7 +14,10 @@ import { Settings } from "lucide-react";
 
 type TileState = "hidden" | "revealed-target" | "revealed-empty";
 
-type Phase = "idle" | "playing" | "win" | "loss";
+type SetResult = "pending" | "win" | "loss" | "timeout";
+type PlayPhase = "idle" | "setPlaying" | "setResult" | "playResult";
+
+const SETS_PER_PLAY = 3;
 
 function buildTiles(total: number, targets: number): boolean[] {
   const arr = Array.from({ length: total }, (_, i) => i < targets);
@@ -26,98 +29,173 @@ function buildTiles(total: number, targets: number): boolean[] {
 }
 
 export function GameBoard() {
-  const [config, setConfig] = useState<GameConfig>(() => loadConfig());
-  const [phase, setPhase] = useState<Phase>("idle");
+  const [config] = useState<GameConfig>(() => loadConfig());
+  const [phase, setPhase] = useState<PlayPhase>("idle");
   const [tiles, setTiles] = useState<boolean[]>([]);
   const [states, setStates] = useState<TileState[]>([]);
-  const [targetsFound, setTargetsFound] = useState(0);
-  const [attemptsUsed, setAttemptsUsed] = useState(0);
+  const [currentSet, setCurrentSet] = useState(1);
+  const [setTriesUsed, setSetTriesUsed] = useState(0);
+  const [setFound, setSetFound] = useState(0);
+  const [setResults, setSetResults] = useState<SetResult[]>([
+    "pending",
+    "pending",
+    "pending",
+  ]);
+  const setResultsRef = useRef<SetResult[]>(["pending", "pending", "pending"]);
   const [timeLeft, setTimeLeft] = useState(config.durationSeconds);
   const [ticket, setTicket] = useState<TicketData | null>(null);
   const startedAt = useRef<number>(0);
   const lockRef = useRef(false);
-
   const total = config.gridCols * config.gridRows;
 
-  const start = useCallback(() => {
+  const startPlay = useCallback(() => {
     const cfg = loadConfig();
-    setConfig(cfg);
     const t = cfg.gridCols * cfg.gridRows;
     setTiles(buildTiles(t, cfg.targetsHidden));
     setStates(Array.from({ length: t }, () => "hidden"));
-    setTargetsFound(0);
-    setAttemptsUsed(0);
+    setCurrentSet(1);
+    setSetTriesUsed(0);
+    setSetFound(0);
+    const freshResults: SetResult[] = ["pending", "pending", "pending"];
+    setSetResults(freshResults);
+    setResultsRef.current = freshResults;
     setTimeLeft(cfg.durationSeconds);
     setTicket(null);
     startedAt.current = Date.now();
     lockRef.current = false;
-    setPhase("playing");
+    setPhase("setPlaying");
   }, []);
 
-  const finish = useCallback(
-    (result: SessionResult, found: number, used: number) => {
-      lockRef.current = true;
-      const t = result === "WIN" ? newTicket() : null;
-      if (t) setTicket(t);
-      setPhase(result === "WIN" ? "win" : "loss");
-      saveSession({
-        id: crypto.randomUUID(),
-        result,
-        targetsFound: found,
-        attemptsUsed: used,
-        durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
-        createdAt: Date.now(),
-        ticketCode: t?.code,
-      });
+  const startSet = useCallback(
+    (setNum: number) => {
+      setCurrentSet(setNum);
+      setSetTriesUsed(0);
+      setSetFound(0);
+      setStates((prev) => prev.map(() => "hidden"));
+      setTimeLeft(config.durationSeconds);
+      lockRef.current = false;
+      setPhase("setPlaying");
     },
-    [],
+    [config.durationSeconds]
   );
 
-  // timer
+  const finishSet = useCallback(
+    (result: SetResult, found: number, used: number) => {
+      if (lockRef.current) return;
+      lockRef.current = true;
+
+      const nextResults = [...setResultsRef.current];
+      nextResults[currentSet - 1] = result;
+      setResultsRef.current = nextResults;
+      setSetResults(nextResults);
+
+      setPhase("setResult");
+
+      window.setTimeout(() => {
+        const resultsNow = setResultsRef.current;
+        if (currentSet < SETS_PER_PLAY) {
+          startSet(currentSet + 1);
+        } else {
+          const playWon = resultsNow.some((r) => r === "win");
+          const totalFound = resultsNow.filter((r) => r === "win").length * config.targetsRequired;
+          const totalUsed = resultsNow.reduce((acc, r, i) => {
+            if (r === "win") return acc + config.targetsRequired;
+            if (r === "loss" || r === "timeout") return acc + config.attemptsAllowed;
+            return acc;
+          }, 0);
+
+          if (playWon) {
+            const t = newTicket();
+            setTicket(t);
+            saveSession({
+              id: crypto.randomUUID(),
+              result: "WIN" as SessionResult,
+              targetsFound: totalFound,
+              attemptsUsed: totalUsed,
+              durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
+              createdAt: Date.now(),
+              ticketCode: t.code,
+            });
+          } else {
+            saveSession({
+              id: crypto.randomUUID(),
+              result: "LOSS" as SessionResult,
+              targetsFound: totalFound,
+              attemptsUsed: totalUsed,
+              durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
+              createdAt: Date.now(),
+            });
+          }
+          setPhase("playResult");
+        }
+      }, 1600);
+    },
+    [currentSet, config.targetsRequired, config.attemptsAllowed, startSet]
+  );
+
+  const onTap = useCallback(
+    (i: number) => {
+      if (phase !== "setPlaying" || lockRef.current) return;
+      if (states[i] !== "hidden") return;
+
+      const isTarget = tiles[i];
+      const nextStates = [...states];
+      nextStates[i] = isTarget ? "revealed-target" : "revealed-empty";
+      setStates(nextStates);
+
+      const newFound = isTarget ? setFound + 1 : setFound;
+      const newTries = setTriesUsed + 1;
+      if (isTarget) setSetFound(newFound);
+      setSetTriesUsed(newTries);
+
+      if (newFound >= config.targetsRequired) {
+        finishSet("win", newFound, newTries);
+      } else if (newTries >= config.attemptsAllowed) {
+        window.setTimeout(() => finishSet("loss", newFound, newTries), 700);
+      } else if (!isTarget) {
+        window.setTimeout(() => {
+          setStates((prev) => {
+            if (prev[i] !== "revealed-empty") return prev;
+            const copy = [...prev];
+            copy[i] = "hidden";
+            return copy;
+          });
+        }, 900);
+      }
+    },
+    [
+      phase,
+      states,
+      tiles,
+      setFound,
+      setTriesUsed,
+      config.targetsRequired,
+      config.attemptsAllowed,
+      finishSet,
+    ]
+  );
+
   useEffect(() => {
-    if (phase !== "playing") return;
+    if (phase !== "setPlaying") return;
     if (timeLeft <= 0) {
-      finish("TIMEOUT", targetsFound, attemptsUsed);
+      finishSet("timeout", setFound, setTriesUsed);
       return;
     }
     const id = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
     return () => clearTimeout(id);
-  }, [phase, timeLeft, finish, targetsFound, attemptsUsed]);
-
-  const onTap = (i: number) => {
-    if (phase !== "playing" || lockRef.current) return;
-    if (states[i] !== "hidden") return;
-    const isTarget = tiles[i];
-    const next = [...states];
-    next[i] = isTarget ? "revealed-target" : "revealed-empty";
-    setStates(next);
-
-    const found = isTarget ? targetsFound + 1 : targetsFound;
-    const used = attemptsUsed + 1; // every tap counts as an essai (try)
-    if (isTarget) setTargetsFound(found);
-    setAttemptsUsed(used);
-
-    if (found >= config.targetsRequired) {
-      finish("WIN", found, used);
-    } else if (used >= config.attemptsAllowed) {
-      // give the player a beat to see the last reveal before the loss overlay
-      window.setTimeout(() => finish("LOSS", found, used), 700);
-    } else if (!isTarget) {
-      // wrong guess: flip the empty token back so only found mascaras stay shown
-      window.setTimeout(() => {
-        setStates((prev) => {
-          if (prev[i] !== "revealed-empty") return prev;
-          const copy = [...prev];
-          copy[i] = "hidden";
-          return copy;
-        });
-      }, 900);
-    }
-  };
+  }, [phase, timeLeft, finishSet, setFound, setTriesUsed]);
 
   const progress = useMemo(
-    () => (phase === "playing" ? (timeLeft / config.durationSeconds) * 100 : 0),
-    [phase, timeLeft, config.durationSeconds],
+    () =>
+      phase === "setPlaying"
+        ? (timeLeft / config.durationSeconds) * 100
+        : 0,
+    [phase, timeLeft, config.durationSeconds]
+  );
+
+  const wonSets = useMemo(
+    () => setResults.filter((r) => r === "win").length,
+    [setResults]
   );
 
   return (
@@ -165,7 +243,7 @@ export function GameBoard() {
         className="relative w-full max-w-[560px] rounded-[2.25rem] bg-card px-6 pb-10 pt-7 text-card-foreground"
         style={{ boxShadow: "var(--shadow-card)" }}
       >
-        {/* header — Sephora wordmark, centered, with hairline rule */}
+        {/* header */}
         <div className="flex flex-col items-center pb-5">
           <HamburgerLogo />
           <div
@@ -236,17 +314,17 @@ export function GameBoard() {
                       }
                 }
                 whileTap={
-                  phase === "playing" && !isRevealed
+                  phase === "setPlaying" && !isRevealed
                     ? { scale: 0.9 }
                     : { scale: 1 }
                 }
                 whileHover={
-                  phase === "playing" && !isRevealed
+                  phase === "setPlaying" && !isRevealed
                     ? { scale: 1.04, y: -2 }
                     : { scale: 1 }
                 }
                 onClick={() => onTap(i)}
-                disabled={phase !== "playing" || isRevealed}
+                disabled={phase !== "setPlaying" || isRevealed}
                 aria-label={`Token ${i + 1}`}
                 intent="token"
                 style={{ perspective: 1000, touchAction: "manipulation" }}
@@ -310,7 +388,6 @@ export function GameBoard() {
                   </motion.div>
                 </motion.div>
               </MotionButton>
-
             );
           })}
         </div>
@@ -322,7 +399,7 @@ export function GameBoard() {
               key={timeLeft + phase}
               initial={{ scale: 1.18, opacity: 0.5 }}
               animate={
-                phase === "playing" && timeLeft <= 5
+                phase === "setPlaying" && timeLeft <= 5
                   ? { scale: [1, 1.1, 1], opacity: 1 }
                   : { scale: 1, opacity: 1 }
               }
@@ -330,7 +407,7 @@ export function GameBoard() {
               className="font-display text-[56px] leading-none tabular-nums"
               style={{
                 color:
-                  phase === "playing" && timeLeft <= 5
+                  phase === "setPlaying" && timeLeft <= 5
                     ? "#ff1f8a"
                     : "var(--sephora-pink)",
               }}
@@ -348,38 +425,70 @@ export function GameBoard() {
             <motion.div
               className="h-full rounded-full"
               animate={{
-                width: `${phase === "playing" ? progress : phase === "idle" ? 100 : 0}%`,
+                width: `${phase === "setPlaying" ? progress : phase === "idle" ? 100 : 0}%`,
               }}
               transition={{ duration: 0.9, ease: "linear" }}
               style={{ backgroundColor: "var(--sephora-pink)" }}
             />
           </div>
-          {phase === "playing" && (
-            <motion.div
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.18 }}
-              className="mt-4 flex items-center justify-center gap-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/60"
-            >
+
+          {/* perfect count at the bottom */}
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.18 }}
+            className="mt-5 flex flex-col items-center gap-3"
+          >
+            {/* main counters */}
+            <div className="flex items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/60">
               <span>
-                Trouvés{" "}
+                Manche{" "}
                 <span style={{ color: "var(--sephora-pink)" }}>
-                  {targetsFound}/{config.targetsRequired}
+                  {currentSet}/{SETS_PER_PLAY}
                 </span>
               </span>
               <span className="h-1 w-1 rounded-full bg-black/20" />
               <span>
-                Essais{" "}
+                Essai{" "}
                 <span style={{ color: "var(--sephora-pink)" }}>
-                  {attemptsUsed}/{config.attemptsAllowed}
+                  {setTriesUsed}/{config.attemptsAllowed}
                 </span>
               </span>
-            </motion.div>
-          )}
+              <span className="h-1 w-1 rounded-full bg-black/20" />
+              <span>
+                Trouvés{" "}
+                <span style={{ color: "var(--sephora-pink)" }}>
+                  {setFound}/{config.targetsRequired}
+                </span>
+              </span>
+            </div>
+
+            {/* set result indicators */}
+            <div className="flex items-center gap-2">
+              {setResults.map((r, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 20, delay: i * 0.08 }}
+                  className={`flex h-6 min-w-[4.5rem] items-center justify-center rounded-full px-2 text-[9px] font-black uppercase tracking-wider ${
+                    r === "win"
+                      ? "bg-emerald-50 text-emerald-600"
+                      : r === "loss" || r === "timeout"
+                      ? "bg-rose-50 text-rose-500"
+                      : "bg-black/5 text-black/30"
+                  }`}
+                >
+                  {r === "win"
+                    ? "Gagné"
+                    : r === "loss" || r === "timeout"
+                    ? "Perdu"
+                    : `Set ${i + 1}`}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
-
-
-
 
         {/* admin link */}
         <motion.div
@@ -398,116 +507,211 @@ export function GameBoard() {
         </motion.div>
 
         {/* ticket overlay on win */}
-        {phase === "win" && ticket && (
+        {phase === "playResult" && ticket && (
           <Ticket
             data={ticket}
             config={config}
             onClose={() => setTicket(null)}
-            onReplay={start}
+            onReplay={startPlay}
           />
         )}
 
         {/* overlay */}
         <AnimatePresence mode="wait">
-          {phase !== "playing" && !(phase === "win" && ticket) && (
-            <motion.div
-              key={phase}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute inset-0 flex items-center justify-center rounded-[2.25rem] bg-card/95 backdrop-blur-sm"
-            >
+          {(phase === "idle" || phase === "setResult" || phase === "playResult") &&
+            !(phase === "playResult" && ticket) && (
               <motion.div
-                initial={{ y: 18, opacity: 0, scale: 0.94 }}
-                animate={{ y: 0, opacity: 1, scale: 1 }}
-                exit={{ y: -10, opacity: 0, scale: 0.97 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 320,
-                  damping: 26,
-                  mass: 0.8,
-                  delay: 0.05,
-                }}
-                className="flex flex-col items-center gap-7 px-8 text-center"
+                key={phase + currentSet}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute inset-0 flex items-center justify-center rounded-[2.25rem] bg-card/95 backdrop-blur-sm"
               >
-                {phase === "idle" && (
-                  <>
-                    <h2 className="font-display text-[34px] leading-none">
-                      PRÊT(E) À{" "}
-                      <span style={{ color: "var(--sephora-pink)" }}>JOUER</span> ?
-                    </h2>
-                    <p className="max-w-[28ch] text-[11px] font-semibold uppercase tracking-[0.2em] text-black/65">
-                      {config.instruction}
-                    </p>
-                  </>
-                )}
-                {phase === "loss" && (
-                  <motion.h2
-                    initial={{ x: 0 }}
-                    animate={{ x: [0, -8, 8, -5, 5, 0] }}
-                    transition={{ duration: 0.5, ease: [0.36, 0.07, 0.19, 0.97], delay: 0.1 }}
-                    className="font-display text-[32px] leading-tight"
-                  >
-                    DOMMAGE,
-                    <br />
-                    <span style={{ color: "var(--sephora-pink)" }}>
-                      RETENTEZ VOTRE CHANCE !
-                    </span>
-                  </motion.h2>
-                )}
-
-                <MotionButton
-                  initial={{ scale: 0.92, opacity: 0, y: 8 }}
-                  animate={
-                    phase === "idle"
-                      ? {
-                          opacity: 1,
-                          y: 0,
-                          scale: 1,
-                          boxShadow: [
-                            "0 12px 30px -10px rgba(237,111,126,0.55)",
-                            "0 22px 50px -10px rgba(237,111,126,0.9)",
-                            "0 12px 30px -10px rgba(237,111,126,0.55)",
-                          ],
-                        }
-                      : { scale: 1, opacity: 1, y: 0 }
-                  }
-                  transition={
-                    phase === "idle"
-                      ? {
-                          boxShadow: {
-                            duration: 2.4,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                          },
-                          default: {
-                            type: "spring",
-                            stiffness: 380,
-                            damping: 24,
-                            mass: 0.7,
-                          },
-                        }
-                      : { type: "spring", stiffness: 380, damping: 24, mass: 0.7 }
-                  }
-                  whileHover={{
-                    scale: 1.06,
-                    y: -2,
-                    transition: { type: "spring", stiffness: 520, damping: 24, mass: 0.6 },
+                <motion.div
+                  initial={{ y: 18, opacity: 0, scale: 0.94 }}
+                  animate={{ y: 0, opacity: 1, scale: 1 }}
+                  exit={{ y: -10, opacity: 0, scale: 0.97 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 320,
+                    damping: 26,
+                    mass: 0.8,
+                    delay: 0.05,
                   }}
-                  whileTap={{
-                    scale: 0.94,
-                    transition: { type: "spring", stiffness: 600, damping: 26 },
-                  }}
-                  onClick={start}
-                  className="wordmark px-12 py-4 text-[13px]"
-                  style={{ backgroundColor: "var(--sephora-pink)" }}
+                  className="flex flex-col items-center gap-7 px-8 text-center"
                 >
-                  {phase === "idle" ? "Commencer" : "Rejouer"}
-                </MotionButton>
+                  {phase === "idle" && (
+                    <>
+                      <h2 className="font-display text-[34px] leading-none">
+                        PRÊT(E) À{" "}
+                        <span style={{ color: "var(--sephora-pink)" }}>
+                          JOUER
+                        </span>{" "}
+                        ?
+                      </h2>
+                      <p className="max-w-[32ch] text-[11px] font-semibold uppercase tracking-[0.2em] text-black/65">
+                        3 manches — 2 essais par manche — retrouvez 2 mascaras IT&apos;S A STRETCH
+                      </p>
+                    </>
+                  )}
+
+                  {phase === "setResult" && (
+                    <>
+                      <motion.div
+                        initial={{ scale: 0.5, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        className="font-display text-[40px] leading-none"
+                      >
+                        {setResults[currentSet - 1] === "win" ? (
+                          <span style={{ color: "var(--sephora-pink)" }}>
+                            MANCHE {currentSet} GAGNÉE
+                          </span>
+                        ) : (
+                          <span className="text-black/80">
+                            MANCHE {currentSet} PERDUE
+                          </span>
+                        )}
+                      </motion.div>
+                      <div className="flex gap-2">
+                        {setResults.map((r, i) => (
+                          <div
+                            key={i}
+                            className={`h-3 w-3 rounded-full ${
+                              r === "win"
+                                ? "bg-emerald-400"
+                                : r === "loss" || r === "timeout"
+                                ? "bg-rose-400"
+                                : "bg-black/10"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      {currentSet < SETS_PER_PLAY && (
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/50">
+                          Manche {currentSet + 1} dans un instant...
+                        </p>
+                      )}
+                    </>
+                  )}
+
+                  {phase === "playResult" && (
+                    <>
+                      <motion.h2
+                        initial={{ x: 0 }}
+                        animate={
+                          wonSets === 0
+                            ? { x: [0, -8, 8, -5, 5, 0] }
+                            : { x: 0 }
+                        }
+                        transition={{
+                          duration: 0.5,
+                          ease: [0.36, 0.07, 0.19, 0.97],
+                          delay: 0.1,
+                        }}
+                        className="font-display text-[32px] leading-tight"
+                      >
+                        {wonSets > 0 ? (
+                          <>
+                            BRAVO,
+                            <br />
+                            <span style={{ color: "var(--sephora-pink)" }}>
+                              {wonSets}/3 MANCHES GAGNÉES
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            DOMMAGE,
+                            <br />
+                            <span style={{ color: "var(--sephora-pink)" }}>
+                              RETENTEZ VOTRE CHANCE !
+                            </span>
+                          </>
+                        )}
+                      </motion.h2>
+
+                      <div className="flex gap-2">
+                        {setResults.map((r, i) => (
+                          <div
+                            key={i}
+                            className={`flex h-7 min-w-[5rem] items-center justify-center rounded-full px-3 text-[9px] font-black uppercase tracking-wider ${
+                              r === "win"
+                                ? "bg-emerald-50 text-emerald-600"
+                                : r === "loss" || r === "timeout"
+                                ? "bg-rose-50 text-rose-500"
+                                : "bg-black/5 text-black/30"
+                            }`}
+                          >
+                            Manche {i + 1}{" "}
+                            {r === "win"
+                              ? "✓"
+                              : r === "loss" || r === "timeout"
+                              ? "✗"
+                              : "—"}
+                          </div>
+                        ))}
+                      </div>
+
+                      {wonSets > 0 && (
+                        <p className="max-w-[30ch] text-[11px] font-semibold uppercase tracking-[0.18em] text-black/65">
+                          Présentez votre ticket en caisse pour récupérer votre mascara
+                        </p>
+                      )}
+                    </>
+                  )}
+
+                  <MotionButton
+                    initial={{ scale: 0.92, opacity: 0, y: 8 }}
+                    animate={
+                      phase === "idle"
+                        ? {
+                            opacity: 1,
+                            y: 0,
+                            scale: 1,
+                            boxShadow: [
+                              "0 12px 30px -10px rgba(237,111,126,0.55)",
+                              "0 22px 50px -10px rgba(237,111,126,0.9)",
+                              "0 12px 30px -10px rgba(237,111,126,0.55)",
+                            ],
+                          }
+                        : { scale: 1, opacity: 1, y: 0 }
+                    }
+                    transition={
+                      phase === "idle"
+                        ? {
+                            boxShadow: {
+                              duration: 2.4,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            },
+                            default: {
+                              type: "spring",
+                              stiffness: 380,
+                              damping: 24,
+                              mass: 0.7,
+                            },
+                          }
+                        : { type: "spring", stiffness: 380, damping: 24, mass: 0.7 }
+                    }
+                    whileHover={{
+                      scale: 1.06,
+                      y: -2,
+                      transition: { type: "spring", stiffness: 520, damping: 24, mass: 0.6 },
+                    }}
+                    whileTap={{
+                      scale: 0.94,
+                      transition: { type: "spring", stiffness: 600, damping: 26 },
+                    }}
+                    onClick={startPlay}
+                    className="wordmark px-12 py-4 text-[13px]"
+                    style={{ backgroundColor: "var(--sephora-pink)" }}
+                  >
+                    {phase === "idle" ? "Commencer" : "Rejouer"}
+                  </MotionButton>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          )}
+            )}
         </AnimatePresence>
       </motion.div>
     </div>
