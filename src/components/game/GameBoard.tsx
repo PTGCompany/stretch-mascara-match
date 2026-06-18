@@ -66,18 +66,15 @@ export function GameBoard() {
     setPhase("setPlaying");
   };
 
-  const startSet = useCallback(
-    (setNum: number) => {
-      setCurrentSet(setNum);
-      setSetTriesUsed(0);
-      setSetFound(0);
-      setStates((prev) => prev.map(() => "hidden"));
-      setTimeLeft(config.durationSeconds);
-      lockRef.current = false;
-      setPhase("setPlaying");
-    },
-    [config.durationSeconds]
-  );
+  const startSet = (setNum: number) => {
+    setCurrentSet(setNum);
+    setSetTriesUsed(0);
+    setSetFound(0);
+    setStates((prev) => prev.map(() => "hidden"));
+    setTimeLeft(config.durationSeconds);
+    lockRef.current = false;
+    setPhase("setPlaying");
+  };
 
   const finishSet = useCallback(
     (result: SetResult, found: number, used: number) => {
