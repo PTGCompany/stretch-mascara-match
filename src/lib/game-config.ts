@@ -18,7 +18,7 @@ export const DEFAULT_CONFIG: GameConfig = {
   targetProductName: "IT'S A STRETCH",
   targetsRequired: 2,
   targetsHidden: 4,
-  attemptsAllowed: 3,
+  attemptsAllowed: 2,
   durationSeconds: 10,
   gridCols: 4,
   gridRows: 5,
