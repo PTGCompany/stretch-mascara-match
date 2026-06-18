@@ -48,7 +48,7 @@ export function GameBoard() {
   const lockRef = useRef(false);
   const total = config.gridCols * config.gridRows;
 
-  const startPlay = useCallback(() => {
+  const startPlay = () => {
     const cfg = loadConfig();
     const t = cfg.gridCols * cfg.gridRows;
     setTiles(buildTiles(t, cfg.targetsHidden));
@@ -64,7 +64,7 @@ export function GameBoard() {
     startedAt.current = Date.now();
     lockRef.current = false;
     setPhase("setPlaying");
-  }, []);
+  };
 
   const startSet = useCallback(
     (setNum: number) => {
