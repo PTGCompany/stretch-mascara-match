@@ -157,20 +157,6 @@ export function GameBoard() {
     }
   };
 
-  // Debug: expose game state to window
-  if (typeof window !== "undefined") {
-    (window as any).__onTap = onTap;
-    (window as any).__phase = phase;
-    (window as any).__states = states;
-    (window as any).__tiles = tiles;
-  }
-
-  // Debug: expose game state to window
-  if (typeof window !== "undefined") {
-    (window as any).__onTap = onTap;
-    (window as any).__phase = phase;
-  }
-
   useEffect(() => {
     if (phase !== "setPlaying") return;
     if (timeLeft <= 0) {
@@ -262,17 +248,14 @@ export function GameBoard() {
           transition={{ delay: 0.05, duration: 0.16, ease: "easeOut" }}
           className="font-display text-center text-[40px] leading-[0.95] sm:text-[52px]"
         >
-          {config.title}
-          <br />
-          <span style={{ color: "var(--sephora-pink)" }}>
-            {config.titleAccent}
-          </span>
+          {config.title}{" "}
+          <span style={{ color: "var(--sephora-pink)" }}>{config.titleAccent}</span>
         </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.16 }}
-          className="mx-auto mt-4 max-w-[30ch] text-center text-[11px] font-semibold uppercase leading-snug tracking-[0.18em] text-black/70"
+          className="mx-auto mt-3 max-w-[34ch] text-center text-[10px] font-semibold uppercase leading-snug tracking-[0.18em] text-black/70"
         >
           {config.instruction}
         </motion.p>
@@ -430,54 +413,41 @@ export function GameBoard() {
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.18 }}
-            className="mt-5 flex flex-col items-center gap-3"
+            className="mt-5 flex items-center justify-center gap-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/60"
           >
-            {/* main counters */}
-            <div className="flex items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/60">
-              <span>
-                Manche{" "}
-                <span style={{ color: "var(--sephora-pink)" }}>
-                  {currentSet}/{SETS_PER_PLAY}
-                </span>
+            <span>
+              Manche{" "}
+              <span style={{ color: "var(--sephora-pink)" }}>
+                {currentSet}/{SETS_PER_PLAY}
               </span>
-              <span className="h-1 w-1 rounded-full bg-black/20" />
-              <span>
-                Essai{" "}
-                <span style={{ color: "var(--sephora-pink)" }}>
-                  {setTriesUsed}/{config.attemptsAllowed}
-                </span>
+            </span>
+            <span className="h-1 w-1 rounded-full bg-black/20" />
+            <span>
+              Essai{" "}
+              <span style={{ color: "var(--sephora-pink)" }}>
+                {setTriesUsed}/{config.attemptsAllowed}
               </span>
-              <span className="h-1 w-1 rounded-full bg-black/20" />
-              <span>
-                Trouvés{" "}
-                <span style={{ color: "var(--sephora-pink)" }}>
-                  {setFound}/{config.targetsRequired}
-                </span>
+            </span>
+            <span className="h-1 w-1 rounded-full bg-black/20" />
+            <span>
+              Trouvés{" "}
+              <span style={{ color: "var(--sephora-pink)" }}>
+                {setFound}/{config.targetsRequired}
               </span>
-            </div>
-
-            {/* set result indicators */}
-            <div className="flex items-center gap-2">
+            </span>
+            <span className="h-3 w-px bg-black/10" />
+            <div className="flex items-center gap-1.5">
               {setResults.map((r, i) => (
-                <motion.div
+                <div
                   key={i}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 20, delay: i * 0.08 }}
-                  className={`flex h-6 min-w-[4.5rem] items-center justify-center rounded-full px-2 text-[9px] font-black uppercase tracking-wider ${
+                  className={`h-2.5 w-2.5 rounded-full ${
                     r === "win"
-                      ? "bg-emerald-50 text-emerald-600"
+                      ? "bg-emerald-400"
                       : r === "loss" || r === "timeout"
-                      ? "bg-rose-50 text-rose-500"
-                      : "bg-black/5 text-black/30"
+                      ? "bg-rose-400"
+                      : "bg-black/10"
                   }`}
-                >
-                  {r === "win"
-                    ? "Gagné"
-                    : r === "loss" || r === "timeout"
-                    ? "Perdu"
-                    : `Set ${i + 1}`}
-                </motion.div>
+                />
               ))}
             </div>
           </motion.div>
@@ -532,61 +502,35 @@ export function GameBoard() {
                     mass: 0.8,
                     delay: 0.05,
                   }}
-                  className="flex flex-col items-center gap-7 px-8 text-center"
+                  className="flex flex-col items-center gap-5 px-8 text-center"
                 >
                   {phase === "idle" && (
-                    <>
-                      <h2 className="font-display text-[34px] leading-none">
-                        PRÊT(E) À{" "}
-                        <span style={{ color: "var(--sephora-pink)" }}>
-                          JOUER
-                        </span>{" "}
-                        ?
-                      </h2>
-                      <p className="max-w-[32ch] text-[11px] font-semibold uppercase tracking-[0.2em] text-black/65">
-                        3 manches — 2 essais par manche — retrouvez 2 mascaras IT&apos;S A STRETCH
-                      </p>
-                    </>
+                    <h2 className="font-display text-[30px] leading-tight sm:text-[36px]">
+                      PRÊT(E) À{" "}
+                      <span style={{ color: "var(--sephora-pink)" }}>JOUER</span>{" "}?
+                      <span className="block mt-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-black/60">
+                        3 manches · 2 essais · 2 mascaras
+                      </span>
+                    </h2>
                   )}
 
                   {phase === "setResult" && (
-                    <>
-                      <motion.div
-                        initial={{ scale: 0.5, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                        className="font-display text-[40px] leading-none"
-                      >
-                        {setResults[currentSet - 1] === "win" ? (
-                          <span style={{ color: "var(--sephora-pink)" }}>
-                            MANCHE {currentSet} GAGNÉE
-                          </span>
-                        ) : (
-                          <span className="text-black/80">
-                            MANCHE {currentSet} PERDUE
-                          </span>
-                        )}
-                      </motion.div>
-                      <div className="flex gap-2">
-                        {setResults.map((r, i) => (
-                          <div
-                            key={i}
-                            className={`h-3 w-3 rounded-full ${
-                              r === "win"
-                                ? "bg-emerald-400"
-                                : r === "loss" || r === "timeout"
-                                ? "bg-rose-400"
-                                : "bg-black/10"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      {currentSet < SETS_PER_PLAY && (
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/50">
-                          Manche {currentSet + 1} dans un instant...
-                        </p>
+                    <motion.div
+                      initial={{ scale: 0.5, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      className="font-display text-[40px] leading-none"
+                    >
+                      {setResults[currentSet - 1] === "win" ? (
+                        <span style={{ color: "var(--sephora-pink)" }}>
+                          MANCHE {currentSet} GAGNÉE
+                        </span>
+                      ) : (
+                        <span className="text-black/80">
+                          MANCHE {currentSet} PERDUE
+                        </span>
                       )}
-                    </>
+                    </motion.div>
                   )}
 
                   {phase === "playResult" && (
@@ -645,12 +589,6 @@ export function GameBoard() {
                           </div>
                         ))}
                       </div>
-
-                      {wonSets > 0 && (
-                        <p className="max-w-[30ch] text-[11px] font-semibold uppercase tracking-[0.18em] text-black/65">
-                          Présentez votre ticket en caisse pour récupérer votre mascara
-                        </p>
-                      )}
                     </>
                   )}
 
