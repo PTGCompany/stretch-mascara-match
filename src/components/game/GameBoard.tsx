@@ -226,19 +226,9 @@ export function GameBoard() {
         style={{ boxShadow: "var(--shadow-card)" }}
       >
         {/* header */}
-        <div className="flex flex-col items-center pb-5">
+        <div className="flex flex-col items-center pb-4">
           <HamburgerLogo />
-          <div
-            className="mt-2 wordmark"
-            style={{
-              fontSize: 9,
-              letterSpacing: "0.42em",
-              color: "var(--sephora-coral-deep)",
-            }}
-          >
-            COLLECTION
-          </div>
-          <div className="mt-4 h-px w-full bg-black/8" />
+          <div className="mt-3 h-px w-full bg-black/8" />
         </div>
 
         {/* title */}
@@ -246,7 +236,7 @@ export function GameBoard() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05, duration: 0.16, ease: "easeOut" }}
-          className="font-display text-center text-[40px] leading-[0.95] sm:text-[52px]"
+          className="font-display text-center text-[42px] leading-[0.92] sm:text-[54px]"
         >
           {config.title}{" "}
           <span style={{ color: "var(--sephora-pink)" }}>{config.titleAccent}</span>
@@ -255,9 +245,9 @@ export function GameBoard() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.16 }}
-          className="mx-auto mt-3 max-w-[34ch] text-center text-[10px] font-semibold uppercase leading-snug tracking-[0.18em] text-black/70"
+          className="mx-auto mt-2 max-w-[28ch] text-center text-[10px] font-semibold uppercase leading-snug tracking-[0.2em] text-black/60"
         >
-          {config.instruction}
+          3 manches · 2 essais · 2 mascaras à trouver
         </motion.p>
 
         {/* grid */}
