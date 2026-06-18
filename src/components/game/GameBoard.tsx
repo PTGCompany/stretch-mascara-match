@@ -157,6 +157,12 @@ export function GameBoard() {
     }
   };
 
+  // Debug: expose game state to window
+  if (typeof window !== "undefined") {
+    (window as any).__onTap = onTap;
+    (window as any).__phase = phase;
+  }
+
   useEffect(() => {
     if (phase !== "setPlaying") return;
     if (timeLeft <= 0) {
