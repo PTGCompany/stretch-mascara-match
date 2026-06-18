@@ -505,18 +505,13 @@ export function GameBoard() {
                   className="flex flex-col items-center gap-7 px-8 text-center"
                 >
                   {phase === "idle" && (
-                    <>
-                      <h2 className="font-display text-[34px] leading-none">
-                        PRÊT(E) À{" "}
-                        <span style={{ color: "var(--sephora-pink)" }}>
-                          JOUER
-                        </span>{" "}
-                        ?
-                      </h2>
-                      <p className="max-w-[32ch] text-[11px] font-semibold uppercase tracking-[0.2em] text-black/65">
-                        3 manches — 2 essais par manche — retrouvez 2 mascaras IT&apos;S A STRETCH
-                      </p>
-                    </>
+                    <h2 className="font-display text-[30px] leading-tight sm:text-[36px]">
+                      PRÊT(E) À{" "}
+                      <span style={{ color: "var(--sephora-pink)" }}>JOUER</span>{" "}?
+                      <span className="block mt-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-black/60">
+                        3 manches · 2 essais · 2 mascaras
+                      </span>
+                    </h2>
                   )}
 
                   {phase === "setResult" && (
