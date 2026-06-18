@@ -309,11 +309,7 @@ export function GameBoard() {
                         mass: 0.7,
                       }
                 }
-                whileTap={
-                  phase === "setPlaying" && !isRevealed
-                    ? { scale: 0.9 }
-                    : { scale: 1 }
-                }
+                whileTap={{ scale: 1 }}
                 whileHover={
                   phase === "setPlaying" && !isRevealed
                     ? { scale: 1.04, y: -2 }
