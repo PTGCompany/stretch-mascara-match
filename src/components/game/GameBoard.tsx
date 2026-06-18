@@ -515,43 +515,22 @@ export function GameBoard() {
                   )}
 
                   {phase === "setResult" && (
-                    <>
-                      <motion.div
-                        initial={{ scale: 0.5, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                        className="font-display text-[40px] leading-none"
-                      >
-                        {setResults[currentSet - 1] === "win" ? (
-                          <span style={{ color: "var(--sephora-pink)" }}>
-                            MANCHE {currentSet} GAGNÉE
-                          </span>
-                        ) : (
-                          <span className="text-black/80">
-                            MANCHE {currentSet} PERDUE
-                          </span>
-                        )}
-                      </motion.div>
-                      <div className="flex gap-2">
-                        {setResults.map((r, i) => (
-                          <div
-                            key={i}
-                            className={`h-3 w-3 rounded-full ${
-                              r === "win"
-                                ? "bg-emerald-400"
-                                : r === "loss" || r === "timeout"
-                                ? "bg-rose-400"
-                                : "bg-black/10"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      {currentSet < SETS_PER_PLAY && (
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/50">
-                          Manche {currentSet + 1} dans un instant...
-                        </p>
+                    <motion.div
+                      initial={{ scale: 0.5, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      className="font-display text-[40px] leading-none"
+                    >
+                      {setResults[currentSet - 1] === "win" ? (
+                        <span style={{ color: "var(--sephora-pink)" }}>
+                          MANCHE {currentSet} GAGNÉE
+                        </span>
+                      ) : (
+                        <span className="text-black/80">
+                          MANCHE {currentSet} PERDUE
+                        </span>
                       )}
-                    </>
+                    </motion.div>
                   )}
 
                   {phase === "playResult" && (
