@@ -248,17 +248,14 @@ export function GameBoard() {
           transition={{ delay: 0.05, duration: 0.16, ease: "easeOut" }}
           className="font-display text-center text-[40px] leading-[0.95] sm:text-[52px]"
         >
-          {config.title}
-          <br />
-          <span style={{ color: "var(--sephora-pink)" }}>
-            {config.titleAccent}
-          </span>
+          {config.title}{" "}
+          <span style={{ color: "var(--sephora-pink)" }}>{config.titleAccent}</span>
         </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.16 }}
-          className="mx-auto mt-4 max-w-[30ch] text-center text-[11px] font-semibold uppercase leading-snug tracking-[0.18em] text-black/70"
+          className="mx-auto mt-3 max-w-[34ch] text-center text-[10px] font-semibold uppercase leading-snug tracking-[0.18em] text-black/70"
         >
           {config.instruction}
         </motion.p>
@@ -416,54 +413,41 @@ export function GameBoard() {
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.18 }}
-            className="mt-5 flex flex-col items-center gap-3"
+            className="mt-5 flex items-center justify-center gap-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/60"
           >
-            {/* main counters */}
-            <div className="flex items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/60">
-              <span>
-                Manche{" "}
-                <span style={{ color: "var(--sephora-pink)" }}>
-                  {currentSet}/{SETS_PER_PLAY}
-                </span>
+            <span>
+              Manche{" "}
+              <span style={{ color: "var(--sephora-pink)" }}>
+                {currentSet}/{SETS_PER_PLAY}
               </span>
-              <span className="h-1 w-1 rounded-full bg-black/20" />
-              <span>
-                Essai{" "}
-                <span style={{ color: "var(--sephora-pink)" }}>
-                  {setTriesUsed}/{config.attemptsAllowed}
-                </span>
+            </span>
+            <span className="h-1 w-1 rounded-full bg-black/20" />
+            <span>
+              Essai{" "}
+              <span style={{ color: "var(--sephora-pink)" }}>
+                {setTriesUsed}/{config.attemptsAllowed}
               </span>
-              <span className="h-1 w-1 rounded-full bg-black/20" />
-              <span>
-                Trouvés{" "}
-                <span style={{ color: "var(--sephora-pink)" }}>
-                  {setFound}/{config.targetsRequired}
-                </span>
+            </span>
+            <span className="h-1 w-1 rounded-full bg-black/20" />
+            <span>
+              Trouvés{" "}
+              <span style={{ color: "var(--sephora-pink)" }}>
+                {setFound}/{config.targetsRequired}
               </span>
-            </div>
-
-            {/* set result indicators */}
-            <div className="flex items-center gap-2">
+            </span>
+            <span className="h-3 w-px bg-black/10" />
+            <div className="flex items-center gap-1.5">
               {setResults.map((r, i) => (
-                <motion.div
+                <div
                   key={i}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 20, delay: i * 0.08 }}
-                  className={`flex h-6 min-w-[4.5rem] items-center justify-center rounded-full px-2 text-[9px] font-black uppercase tracking-wider ${
+                  className={`h-2.5 w-2.5 rounded-full ${
                     r === "win"
-                      ? "bg-emerald-50 text-emerald-600"
+                      ? "bg-emerald-400"
                       : r === "loss" || r === "timeout"
-                      ? "bg-rose-50 text-rose-500"
-                      : "bg-black/5 text-black/30"
+                      ? "bg-rose-400"
+                      : "bg-black/10"
                   }`}
-                >
-                  {r === "win"
-                    ? "Gagné"
-                    : r === "loss" || r === "timeout"
-                    ? "Perdu"
-                    : `Set ${i + 1}`}
-                </motion.div>
+                />
               ))}
             </div>
           </motion.div>
