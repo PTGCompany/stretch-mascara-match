@@ -226,19 +226,9 @@ export function GameBoard() {
         style={{ boxShadow: "var(--shadow-card)" }}
       >
         {/* header */}
-        <div className="flex flex-col items-center pb-5">
+        <div className="flex flex-col items-center pb-4">
           <HamburgerLogo />
-          <div
-            className="mt-2 wordmark"
-            style={{
-              fontSize: 9,
-              letterSpacing: "0.42em",
-              color: "var(--sephora-coral-deep)",
-            }}
-          >
-            COLLECTION
-          </div>
-          <div className="mt-4 h-px w-full bg-black/8" />
+          <div className="mt-3 h-px w-full bg-black/8" />
         </div>
 
         {/* title */}
@@ -246,7 +236,7 @@ export function GameBoard() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05, duration: 0.16, ease: "easeOut" }}
-          className="font-display text-center text-[40px] leading-[0.95] sm:text-[52px]"
+          className="font-display text-center text-[42px] leading-[0.92] sm:text-[54px]"
         >
           {config.title}{" "}
           <span style={{ color: "var(--sephora-pink)" }}>{config.titleAccent}</span>
@@ -255,9 +245,9 @@ export function GameBoard() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.16 }}
-          className="mx-auto mt-3 max-w-[34ch] text-center text-[10px] font-semibold uppercase leading-snug tracking-[0.18em] text-black/70"
+          className="mx-auto mt-2 max-w-[28ch] text-center text-[10px] font-semibold uppercase leading-snug tracking-[0.2em] text-black/60"
         >
-          {config.instruction}
+          3 manches · 2 essais · 2 mascaras à trouver
         </motion.p>
 
         {/* grid */}
@@ -413,38 +403,31 @@ export function GameBoard() {
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.18 }}
-            className="mt-5 flex items-center justify-center gap-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/60"
+            className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-black/60"
           >
-            <span>
-              Manche{" "}
-              <span style={{ color: "var(--sephora-pink)" }}>
-                {currentSet}/{SETS_PER_PLAY}
-              </span>
+            <span className="inline-flex items-center gap-1">
+              Manche <span style={{ color: "var(--sephora-pink)" }}>{currentSet}</span>/{SETS_PER_PLAY}
             </span>
             <span className="h-1 w-1 rounded-full bg-black/20" />
-            <span>
-              Essai{" "}
-              <span style={{ color: "var(--sephora-pink)" }}>
-                {setTriesUsed}/{config.attemptsAllowed}
-              </span>
+            <span className="inline-flex items-center gap-1">
+              Essai <span style={{ color: "var(--sephora-pink)" }}>{setTriesUsed}</span>/{config.attemptsAllowed}
             </span>
             <span className="h-1 w-1 rounded-full bg-black/20" />
-            <span>
-              Trouvés{" "}
-              <span style={{ color: "var(--sephora-pink)" }}>
-                {setFound}/{config.targetsRequired}
-              </span>
+            <span className="inline-flex items-center gap-1">
+              Trouvés <span style={{ color: "var(--sephora-pink)" }}>{setFound}</span>/{config.targetsRequired}
             </span>
-            <span className="h-3 w-px bg-black/10" />
-            <div className="flex items-center gap-1.5">
+            <span className="mx-1 h-3 w-px bg-black/10" />
+            <div className="flex items-center gap-1.5" aria-label="Résultats des manches">
               {setResults.map((r, i) => (
                 <div
                   key={i}
-                  className={`h-2.5 w-2.5 rounded-full ${
+                  className={`h-2.5 w-2.5 rounded-full transition-colors ${
                     r === "win"
                       ? "bg-emerald-400"
                       : r === "loss" || r === "timeout"
                       ? "bg-rose-400"
+                      : i === currentSet - 1 && phase === "setPlaying"
+                      ? "bg-black/30 ring-2 ring-[var(--sephora-pink)]/40"
                       : "bg-black/10"
                   }`}
                 />
@@ -505,13 +488,15 @@ export function GameBoard() {
                   className="flex flex-col items-center gap-5 px-8 text-center"
                 >
                   {phase === "idle" && (
-                    <h2 className="font-display text-[30px] leading-tight sm:text-[36px]">
-                      PRÊT(E) À{" "}
-                      <span style={{ color: "var(--sephora-pink)" }}>JOUER</span>{" "}?
-                      <span className="block mt-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-black/60">
+                    <>
+                      <h2 className="font-display text-[34px] leading-[0.95] sm:text-[40px]">
+                        PRÊT(E) À{" "}
+                        <span style={{ color: "var(--sephora-pink)" }}>JOUER</span>{" "}?
+                      </h2>
+                      <p className="-mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-black/55">
                         3 manches · 2 essais · 2 mascaras
-                      </span>
-                    </h2>
+                      </p>
+                    </>
                   )}
 
                   {phase === "setResult" && (
@@ -519,17 +504,25 @@ export function GameBoard() {
                       initial={{ scale: 0.5, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                      className="font-display text-[40px] leading-none"
+                      className="flex flex-col items-center gap-2"
                     >
-                      {setResults[currentSet - 1] === "win" ? (
-                        <span style={{ color: "var(--sephora-pink)" }}>
-                          MANCHE {currentSet} GAGNÉE
-                        </span>
-                      ) : (
-                        <span className="text-black/80">
-                          MANCHE {currentSet} PERDUE
-                        </span>
-                      )}
+                      <div
+                        className="font-display text-[40px] leading-none"
+                        style={{
+                          color:
+                            setResults[currentSet - 1] === "win"
+                              ? "var(--sephora-pink)"
+                              : "rgba(0,0,0,0.8)",
+                        }}
+                      >
+                        MANCHE {currentSet}{" "}
+                        {setResults[currentSet - 1] === "win" ? "GAGNÉE" : "PERDUE"}
+                      </div>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-black/55">
+                        {currentSet < SETS_PER_PLAY
+                          ? `Manche ${currentSet + 1} dans un instant…`
+                          : "Résultat final…"}
+                      </p>
                     </motion.div>
                   )}
 
@@ -547,20 +540,18 @@ export function GameBoard() {
                           ease: [0.36, 0.07, 0.19, 0.97],
                           delay: 0.1,
                         }}
-                        className="font-display text-[32px] leading-tight"
+                        className="font-display text-[34px] leading-[0.95]"
                       >
                         {wonSets > 0 ? (
                           <>
-                            BRAVO,
-                            <br />
+                            BRAVO,{" "}
                             <span style={{ color: "var(--sephora-pink)" }}>
                               {wonSets}/3 MANCHES GAGNÉES
                             </span>
                           </>
                         ) : (
                           <>
-                            DOMMAGE,
-                            <br />
+                            DOMMAGE,{" "}
                             <span style={{ color: "var(--sephora-pink)" }}>
                               RETENTEZ VOTRE CHANCE !
                             </span>
@@ -572,7 +563,7 @@ export function GameBoard() {
                         {setResults.map((r, i) => (
                           <div
                             key={i}
-                            className={`flex h-7 min-w-[5rem] items-center justify-center rounded-full px-3 text-[9px] font-black uppercase tracking-wider ${
+                            className={`flex h-7 min-w-[4.5rem] items-center justify-center gap-1 rounded-full px-3 text-[9px] font-black uppercase tracking-wider ${
                               r === "win"
                                 ? "bg-emerald-50 text-emerald-600"
                                 : r === "loss" || r === "timeout"
@@ -580,12 +571,8 @@ export function GameBoard() {
                                 : "bg-black/5 text-black/30"
                             }`}
                           >
-                            Manche {i + 1}{" "}
-                            {r === "win"
-                              ? "✓"
-                              : r === "loss" || r === "timeout"
-                              ? "✗"
-                              : "—"}
+                            M{i + 1}{" "}
+                            {r === "win" ? "✓" : r === "loss" || r === "timeout" ? "✗" : "—"}
                           </div>
                         ))}
                       </div>
