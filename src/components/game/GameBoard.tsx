@@ -43,7 +43,7 @@ export function GameBoard() {
     const cfg = loadConfig();
     setConfig(cfg);
     const t = cfg.gridCols * cfg.gridRows;
-    setTiles(buildTiles(t, cfg.targetsRequired));
+    setTiles(buildTiles(t, cfg.targetsHidden));
     setStates(Array.from({ length: t }, () => "hidden"));
     setTargetsFound(0);
     setAttemptsUsed(0);
