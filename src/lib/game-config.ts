@@ -4,6 +4,7 @@ export type GameConfig = {
   instruction: string;
   targetProductName: string;
   targetsRequired: number;
+  targetsHidden: number;
   attemptsAllowed: number;
   durationSeconds: number;
   gridCols: number;
