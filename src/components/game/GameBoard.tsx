@@ -76,59 +76,56 @@ export function GameBoard() {
     setPhase("setPlaying");
   };
 
-  const finishSet = useCallback(
-    (result: SetResult, found: number, used: number) => {
-      if (lockRef.current) return;
-      lockRef.current = true;
+  const finishSet = (result: SetResult, found: number, used: number) => {
+    if (lockRef.current) return;
+    lockRef.current = true;
 
-      const nextResults = [...setResultsRef.current];
-      nextResults[currentSet - 1] = result;
-      setResultsRef.current = nextResults;
-      setSetResults(nextResults);
+    const nextResults = [...setResultsRef.current];
+    nextResults[currentSet - 1] = result;
+    setResultsRef.current = nextResults;
+    setSetResults(nextResults);
 
-      setPhase("setResult");
+    setPhase("setResult");
 
-      window.setTimeout(() => {
-        const resultsNow = setResultsRef.current;
-        if (currentSet < SETS_PER_PLAY) {
-          startSet(currentSet + 1);
+    window.setTimeout(() => {
+      const resultsNow = setResultsRef.current;
+      if (currentSet < SETS_PER_PLAY) {
+        startSet(currentSet + 1);
+      } else {
+        const playWon = resultsNow.some((r) => r === "win");
+        const totalFound = resultsNow.filter((r) => r === "win").length * config.targetsRequired;
+        const totalUsed = resultsNow.reduce((acc, r, i) => {
+          if (r === "win") return acc + config.targetsRequired;
+          if (r === "loss" || r === "timeout") return acc + config.attemptsAllowed;
+          return acc;
+        }, 0);
+
+        if (playWon) {
+          const t = newTicket();
+          setTicket(t);
+          saveSession({
+            id: crypto.randomUUID(),
+            result: "WIN" as SessionResult,
+            targetsFound: totalFound,
+            attemptsUsed: totalUsed,
+            durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
+            createdAt: Date.now(),
+            ticketCode: t.code,
+          });
         } else {
-          const playWon = resultsNow.some((r) => r === "win");
-          const totalFound = resultsNow.filter((r) => r === "win").length * config.targetsRequired;
-          const totalUsed = resultsNow.reduce((acc, r, i) => {
-            if (r === "win") return acc + config.targetsRequired;
-            if (r === "loss" || r === "timeout") return acc + config.attemptsAllowed;
-            return acc;
-          }, 0);
-
-          if (playWon) {
-            const t = newTicket();
-            setTicket(t);
-            saveSession({
-              id: crypto.randomUUID(),
-              result: "WIN" as SessionResult,
-              targetsFound: totalFound,
-              attemptsUsed: totalUsed,
-              durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
-              createdAt: Date.now(),
-              ticketCode: t.code,
-            });
-          } else {
-            saveSession({
-              id: crypto.randomUUID(),
-              result: "LOSS" as SessionResult,
-              targetsFound: totalFound,
-              attemptsUsed: totalUsed,
-              durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
-              createdAt: Date.now(),
-            });
-          }
-          setPhase("playResult");
+          saveSession({
+            id: crypto.randomUUID(),
+            result: "LOSS" as SessionResult,
+            targetsFound: totalFound,
+            attemptsUsed: totalUsed,
+            durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
+            createdAt: Date.now(),
+          });
         }
-      }, 1600);
-    },
-    [currentSet, config.targetsRequired, config.attemptsAllowed, startSet]
-  );
+        setPhase("playResult");
+      }
+    }, 1600);
+  };
 
   const onTap = useCallback(
     (i: number) => {
