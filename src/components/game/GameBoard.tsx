@@ -319,7 +319,10 @@ export function GameBoard() {
                     ? { scale: 1.04, y: -2 }
                     : { scale: 1 }
                 }
-                onClick={() => onTap(i)}
+                onClick={() => {
+                  console.log("TOKEN CLICKED", i, "phase:", phase, "states[i]:", states[i]);
+                  onTap(i);
+                }}
                 disabled={phase !== "setPlaying" || isRevealed}
                 aria-label={`Token ${i + 1}`}
                 intent="token"
