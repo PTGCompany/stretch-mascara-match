@@ -14,7 +14,7 @@ export type GameConfig = {
 export const DEFAULT_CONFIG: GameConfig = {
   title: "MEMORY",
   titleAccent: "GAME",
-  instruction: "RETROUVEZ 2 MASCARAS IT'S A STRETCH EN 3 ESSAIS !",
+  instruction: "3 MANCHES — 2 ESSAIS PAR MANCHE — RETROUVEZ 2 MASCARAS IT'S A STRETCH !",
   targetProductName: "IT'S A STRETCH",
   targetsRequired: 2,
   targetsHidden: 4,
