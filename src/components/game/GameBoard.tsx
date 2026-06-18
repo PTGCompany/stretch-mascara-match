@@ -161,6 +161,14 @@ export function GameBoard() {
   if (typeof window !== "undefined") {
     (window as any).__onTap = onTap;
     (window as any).__phase = phase;
+    (window as any).__states = states;
+    (window as any).__tiles = tiles;
+  }
+
+  // Debug: expose game state to window
+  if (typeof window !== "undefined") {
+    (window as any).__onTap = onTap;
+    (window as any).__phase = phase;
   }
 
   useEffect(() => {
