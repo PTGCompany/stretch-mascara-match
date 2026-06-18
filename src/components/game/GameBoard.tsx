@@ -589,12 +589,6 @@ export function GameBoard() {
                           </div>
                         ))}
                       </div>
-
-                      {wonSets > 0 && (
-                        <p className="max-w-[30ch] text-[11px] font-semibold uppercase tracking-[0.18em] text-black/65">
-                          Présentez votre ticket en caisse pour récupérer votre mascara
-                        </p>
-                      )}
                     </>
                   )}
 
