@@ -403,38 +403,31 @@ export function GameBoard() {
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.18 }}
-            className="mt-5 flex items-center justify-center gap-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/60"
+            className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-black/60"
           >
-            <span>
-              Manche{" "}
-              <span style={{ color: "var(--sephora-pink)" }}>
-                {currentSet}/{SETS_PER_PLAY}
-              </span>
+            <span className="inline-flex items-center gap-1">
+              M<span style={{ color: "var(--sephora-pink)" }}>{currentSet}</span>/{SETS_PER_PLAY}
             </span>
             <span className="h-1 w-1 rounded-full bg-black/20" />
-            <span>
-              Essai{" "}
-              <span style={{ color: "var(--sephora-pink)" }}>
-                {setTriesUsed}/{config.attemptsAllowed}
-              </span>
+            <span className="inline-flex items-center gap-1">
+              Essai <span style={{ color: "var(--sephora-pink)" }}>{setTriesUsed}</span>/{config.attemptsAllowed}
             </span>
             <span className="h-1 w-1 rounded-full bg-black/20" />
-            <span>
-              Trouvés{" "}
-              <span style={{ color: "var(--sephora-pink)" }}>
-                {setFound}/{config.targetsRequired}
-              </span>
+            <span className="inline-flex items-center gap-1">
+              Trouvés <span style={{ color: "var(--sephora-pink)" }}>{setFound}</span>/{config.targetsRequired}
             </span>
-            <span className="h-3 w-px bg-black/10" />
-            <div className="flex items-center gap-1.5">
+            <span className="mx-1 h-3 w-px bg-black/10" />
+            <div className="flex items-center gap-1.5" aria-label="Résultats des manches">
               {setResults.map((r, i) => (
                 <div
                   key={i}
-                  className={`h-2.5 w-2.5 rounded-full ${
+                  className={`h-2.5 w-2.5 rounded-full transition-colors ${
                     r === "win"
                       ? "bg-emerald-400"
                       : r === "loss" || r === "timeout"
                       ? "bg-rose-400"
+                      : i === currentSet - 1 && phase === "setPlaying"
+                      ? "bg-black/30 ring-2 ring-[var(--sephora-pink)]/40"
                       : "bg-black/10"
                   }`}
                 />
