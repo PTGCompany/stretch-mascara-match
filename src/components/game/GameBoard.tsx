@@ -59,6 +59,7 @@ export function GameBoard() {
   const startedAt = useRef<number>(0);
   const lockRef = useRef(false);
   const winDelayRef = useRef(false);
+  const autoHomeTimerRef = useRef<number | null>(null);
   const total = config.gridCols * config.gridRows;
 
   const goHome = () => {
