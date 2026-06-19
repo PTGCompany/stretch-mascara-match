@@ -75,6 +75,10 @@ export function GameBoard() {
   };
 
   const startPlay = () => {
+    if (autoHomeTimerRef.current) {
+      window.clearTimeout(autoHomeTimerRef.current);
+      autoHomeTimerRef.current = null;
+    }
     const cfg = loadConfig();
     const t = cfg.gridCols * cfg.gridRows;
     setTiles(buildTiles(t, cfg.targetsHidden));
