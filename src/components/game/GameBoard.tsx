@@ -56,6 +56,8 @@ export function GameBoard() {
   const setResultsRef = useRef<SetResult[]>(["pending", "pending", "pending"]);
   const [timeLeft, setTimeLeft] = useState(config.durationSeconds);
   const [ticket, setTicket] = useState<TicketData | null>(null);
+  const [showTicket, setShowTicket] = useState(false);
+  const [foundFlash, setFoundFlash] = useState(0);
   const startedAt = useRef<number>(0);
   const lockRef = useRef(false);
   const winDelayRef = useRef(false);
@@ -70,6 +72,8 @@ export function GameBoard() {
     lockRef.current = false;
     winDelayRef.current = false;
     setTicket(null);
+    setShowTicket(false);
+    setFoundFlash(0);
     setPhase("idle");
     setTimeLeft(config.durationSeconds);
   };
@@ -93,6 +97,8 @@ export function GameBoard() {
     setResultsRef.current = freshResults;
     setTimeLeft(cfg.durationSeconds);
     setTicket(null);
+    setShowTicket(false);
+    setFoundFlash(0);
     startedAt.current = Date.now();
     lockRef.current = false;
     winDelayRef.current = false;
@@ -187,7 +193,10 @@ export function GameBoard() {
 
     const newFound = isTarget ? setFound + 1 : setFound;
     const newTries = setTriesUsed + 1;
-    if (isTarget) setSetFound(newFound);
+    if (isTarget) {
+      setSetFound(newFound);
+      setFoundFlash((n) => n + 1);
+    }
     setSetTriesUsed(newTries);
 
     if (newFound >= config.targetsRequired) {
@@ -739,20 +748,70 @@ export function GameBoard() {
         </div>
       </div>
 
-      {/* Ticket overlay — shown immediately upon a manche win, and again at the final result if won */}
-      {((phase === "mancheWin" || phase === "playResult") && ticket) && (
+      {/* MASCARA TROUVÉ flash — clear feedback every time a target tile is revealed */}
+      <AnimatePresence>
+        {foundFlash > 0 && phase === "setPlaying" && (
+          <motion.div
+            key={foundFlash}
+            initial={{ opacity: 0, scale: 0.6, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: -10 }}
+            transition={{ type: "spring", stiffness: 360, damping: 22, mass: 0.7 }}
+            className="pointer-events-none absolute inset-x-0 top-1/2 z-30 flex -translate-y-1/2 justify-center"
+            onAnimationComplete={() => {
+              window.setTimeout(() => setFoundFlash(0), 1100);
+            }}
+          >
+            <div
+              className="flex items-center gap-3 border-2 px-6 py-3 backdrop-blur-md"
+              style={{
+                backgroundColor: "rgba(52,211,153,0.18)",
+                borderColor: "#34d399",
+                boxShadow: "0 0 40px rgba(52,211,153,0.55)",
+              }}
+            >
+              <motion.span
+                initial={{ scale: 0, rotate: -20 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 420, damping: 18 }}
+                className="flex h-8 w-8 items-center justify-center rounded-full"
+                style={{ backgroundColor: "#34d399" }}
+                aria-hidden
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#000" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12l5 5L20 7" />
+                </svg>
+              </motion.span>
+              <span
+                className="font-display text-[28px] uppercase leading-none tracking-tight sm:text-[36px]"
+                style={{ color: "#34d399" }}
+              >
+                Mascara trouvé !
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+
+      {/* Ticket overlay — auto on manche win; on demand at end (via "Voir mon ticket") */}
+      {ticket && (phase === "mancheWin" || (phase === "playResult" && showTicket)) && (
         <Ticket
           data={ticket}
           config={config}
           onClose={goHome}
           onReplay={startPlay}
-          onContinue={phase === "mancheWin" ? continueAfterWin : undefined}
+          onContinue={
+            phase === "mancheWin"
+              ? continueAfterWin
+              : () => setShowTicket(false)
+          }
           continueLabel={
             phase === "mancheWin"
               ? currentSet < SETS_PER_PLAY
                 ? `Manche ${currentSet + 1}`
                 : "Voir le résultat"
-              : undefined
+              : "Retour au résultat"
           }
           title={
             phase === "mancheWin"
@@ -971,6 +1030,21 @@ export function GameBoard() {
                 >
                   {phase === "idle" ? "Commencer" : "Rejouer"}
                 </MotionButton>
+
+                {phase === "playResult" && ticket && (
+                  <MotionButton
+                    initial={{ scale: 0.92, opacity: 0, y: 8 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    transition={{ type: "spring", stiffness: 380, damping: 24, mass: 0.7 }}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.94 }}
+                    onClick={() => setShowTicket(true)}
+                    className="wordmark px-10 py-4 text-[12px]"
+                    style={{ backgroundColor: "#34d399", color: "#000" }}
+                  >
+                    Voir mon ticket
+                  </MotionButton>
+                )}
 
                 {phase === "playResult" && (
                   <MotionButton
