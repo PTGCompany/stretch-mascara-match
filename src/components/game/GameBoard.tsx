@@ -156,8 +156,10 @@ export function GameBoard() {
     setSetTriesUsed(newTries);
 
     if (newFound >= config.targetsRequired) {
+      lockRef.current = true;
       winDelayRef.current = true;
       window.setTimeout(() => {
+        lockRef.current = false;
         winDelayRef.current = false;
         finishSet("win", newFound, newTries);
       }, 2000);
