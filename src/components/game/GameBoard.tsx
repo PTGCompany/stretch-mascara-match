@@ -189,7 +189,10 @@ export function GameBoard() {
 
     const newFound = isTarget ? setFound + 1 : setFound;
     const newTries = setTriesUsed + 1;
-    if (isTarget) setSetFound(newFound);
+    if (isTarget) {
+      setSetFound(newFound);
+      setFoundFlash((n) => n + 1);
+    }
     setSetTriesUsed(newTries);
 
     if (newFound >= config.targetsRequired) {
