@@ -61,6 +61,14 @@ export function GameBoard() {
   const winDelayRef = useRef(false);
   const total = config.gridCols * config.gridRows;
 
+  const goHome = () => {
+    lockRef.current = false;
+    winDelayRef.current = false;
+    setTicket(null);
+    setPhase("idle");
+    setTimeLeft(config.durationSeconds);
+  };
+
   const startPlay = () => {
     const cfg = loadConfig();
     const t = cfg.gridCols * cfg.gridRows;
