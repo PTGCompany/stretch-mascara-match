@@ -14,7 +14,7 @@ import { Settings } from "lucide-react";
 
 type TileState = "hidden" | "revealed-target" | "revealed-empty";
 type SetResult = "pending" | "win" | "loss" | "timeout";
-type PlayPhase = "idle" | "setPlaying" | "setResult" | "playResult";
+type PlayPhase = "idle" | "setPlaying" | "setResult" | "mancheWin" | "playResult";
 
 const SETS_PER_PLAY = 3;
 const PINK = "#ed6f7e";
@@ -111,7 +111,7 @@ export function GameBoard() {
   };
 
   const finishSet = (result: SetResult, found: number, _used: number) => {
-    if (lockRef.current) return;
+    if (lockRef.current && result !== "win") return;
     lockRef.current = true;
 
     const nextResults = [...setResultsRef.current];
@@ -123,47 +123,57 @@ export function GameBoard() {
     setFoundResultsRef.current = nextFounds;
     setSetFoundResults(nextFounds);
 
+    if (result === "win") {
+      // Issue (or reuse) the winning ticket and show the success screen.
+      setTicket((prev) => prev ?? newTicket());
+      setPhase("mancheWin");
+      return;
+    }
+
     setPhase("setResult");
 
     window.setTimeout(() => {
-      const resultsNow = setResultsRef.current;
-      const foundsNow = setFoundResultsRef.current;
       if (currentSet < SETS_PER_PLAY) {
         startSet(currentSet + 1);
       } else {
-        const playWon = resultsNow.some((r) => r === "win");
-        const totalFound = foundsNow.reduce((acc, n) => acc + n, 0);
-        const totalUsed = resultsNow.reduce((acc, r) => {
-          if (r === "win") return acc + config.targetsRequired;
-          if (r === "loss" || r === "timeout") return acc + config.attemptsAllowed;
-          return acc;
-        }, 0);
-
-        if (playWon) {
-          const t = newTicket();
-          setTicket(t);
-          saveSession({
-            id: crypto.randomUUID(),
-            result: "WIN" as SessionResult,
-            targetsFound: totalFound,
-            attemptsUsed: totalUsed,
-            durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
-            createdAt: Date.now(),
-            ticketCode: t.code,
-          });
-        } else {
-          saveSession({
-            id: crypto.randomUUID(),
-            result: "LOSS" as SessionResult,
-            targetsFound: totalFound,
-            attemptsUsed: totalUsed,
-            durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
-            createdAt: Date.now(),
-          });
-        }
+        finalizeAndSave();
         setPhase("playResult");
       }
     }, 1600);
+  };
+
+  const finalizeAndSave = () => {
+    const resultsNow = setResultsRef.current;
+    const foundsNow = setFoundResultsRef.current;
+    const playWon = resultsNow.some((r) => r === "win");
+    const totalFound = foundsNow.reduce((acc, n) => acc + n, 0);
+    const totalUsed = resultsNow.reduce((acc, r) => {
+      if (r === "win") return acc + config.targetsRequired;
+      if (r === "loss" || r === "timeout") return acc + config.attemptsAllowed;
+      return acc;
+    }, 0);
+    saveSession({
+      id: crypto.randomUUID(),
+      result: (playWon ? "WIN" : "LOSS") as SessionResult,
+      targetsFound: totalFound,
+      attemptsUsed: totalUsed,
+      durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
+      createdAt: Date.now(),
+      ticketCode: playWon ? ticket?.code : undefined,
+    });
+  };
+
+  const continueAfterWin = () => {
+    if (autoHomeTimerRef.current) {
+      window.clearTimeout(autoHomeTimerRef.current);
+      autoHomeTimerRef.current = null;
+    }
+    if (currentSet < SETS_PER_PLAY) {
+      startSet(currentSet + 1);
+    } else {
+      finalizeAndSave();
+      setPhase("playResult");
+    }
   };
 
   const onTap = (i: number) => {
@@ -729,13 +739,26 @@ export function GameBoard() {
         </div>
       </div>
 
-      {/* Ticket overlay on win */}
-      {phase === "playResult" && ticket && (
+      {/* Ticket overlay — shown immediately upon a manche win, and again at the final result if won */}
+      {((phase === "mancheWin" || phase === "playResult") && ticket) && (
         <Ticket
           data={ticket}
           config={config}
           onClose={goHome}
           onReplay={startPlay}
+          onContinue={phase === "mancheWin" ? continueAfterWin : undefined}
+          continueLabel={
+            phase === "mancheWin"
+              ? currentSet < SETS_PER_PLAY
+                ? `Manche ${currentSet + 1}`
+                : "Voir le résultat"
+              : undefined
+          }
+          title={
+            phase === "mancheWin"
+              ? `MANCHE ${currentSet} GAGNÉE —`
+              : undefined
+          }
         />
       )}
 
