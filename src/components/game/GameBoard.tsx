@@ -51,6 +51,7 @@ export function GameBoard() {
     "pending",
     "pending",
   ]);
+  const [setFoundResults, setSetFoundResults] = useState<number[]>([0, 0, 0]);
   const setResultsRef = useRef<SetResult[]>(["pending", "pending", "pending"]);
   const [timeLeft, setTimeLeft] = useState(config.durationSeconds);
   const [ticket, setTicket] = useState<TicketData | null>(null);
