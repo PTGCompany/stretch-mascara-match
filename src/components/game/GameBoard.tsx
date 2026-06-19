@@ -63,6 +63,10 @@ export function GameBoard() {
   const total = config.gridCols * config.gridRows;
 
   const goHome = () => {
+    if (autoHomeTimerRef.current) {
+      window.clearTimeout(autoHomeTimerRef.current);
+      autoHomeTimerRef.current = null;
+    }
     lockRef.current = false;
     winDelayRef.current = false;
     setTicket(null);
