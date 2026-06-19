@@ -748,6 +748,52 @@ export function GameBoard() {
         </div>
       </div>
 
+      {/* MASCARA TROUVÉ flash — clear feedback every time a target tile is revealed */}
+      <AnimatePresence>
+        {foundFlash > 0 && phase === "setPlaying" && (
+          <motion.div
+            key={foundFlash}
+            initial={{ opacity: 0, scale: 0.6, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: -10 }}
+            transition={{ type: "spring", stiffness: 360, damping: 22, mass: 0.7 }}
+            className="pointer-events-none absolute inset-x-0 top-1/2 z-30 flex -translate-y-1/2 justify-center"
+            onAnimationComplete={() => {
+              window.setTimeout(() => setFoundFlash(0), 1100);
+            }}
+          >
+            <div
+              className="flex items-center gap-3 border-2 px-6 py-3 backdrop-blur-md"
+              style={{
+                backgroundColor: "rgba(52,211,153,0.18)",
+                borderColor: "#34d399",
+                boxShadow: "0 0 40px rgba(52,211,153,0.55)",
+              }}
+            >
+              <motion.span
+                initial={{ scale: 0, rotate: -20 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 420, damping: 18 }}
+                className="flex h-8 w-8 items-center justify-center rounded-full"
+                style={{ backgroundColor: "#34d399" }}
+                aria-hidden
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#000" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12l5 5L20 7" />
+                </svg>
+              </motion.span>
+              <span
+                className="font-display text-[28px] uppercase leading-none tracking-tight sm:text-[36px]"
+                style={{ color: "#34d399" }}
+              >
+                Mascara trouvé !
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+
       {/* Ticket overlay — auto on manche win; on demand at end (via "Voir mon ticket") */}
       {ticket && (phase === "mancheWin" || (phase === "playResult" && showTicket)) && (
         <Ticket
