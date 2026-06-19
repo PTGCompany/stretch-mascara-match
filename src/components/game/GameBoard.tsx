@@ -142,7 +142,7 @@ export function GameBoard() {
   };
 
   const onTap = (i: number) => {
-    if (phase !== "setPlaying" || lockRef.current) return;
+    if (phase !== "setPlaying" || lockRef.current || winDelayRef.current) return;
     if (states[i] !== "hidden") return;
 
     const isTarget = tiles[i];
@@ -156,7 +156,11 @@ export function GameBoard() {
     setSetTriesUsed(newTries);
 
     if (newFound >= config.targetsRequired) {
-      finishSet("win", newFound, newTries);
+      winDelayRef.current = true;
+      window.setTimeout(() => {
+        winDelayRef.current = false;
+        finishSet("win", newFound, newTries);
+      }, 2000);
     } else if (newTries >= config.attemptsAllowed) {
       window.setTimeout(() => finishSet("loss", newFound, newTries), 700);
     } else if (!isTarget) {
