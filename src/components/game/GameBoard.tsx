@@ -72,6 +72,7 @@ export function GameBoard() {
     const freshResults: SetResult[] = ["pending", "pending", "pending"];
     setSetResults(freshResults);
     setSetFoundResults([0, 0, 0]);
+    setFoundResultsRef.current = [0, 0, 0];
     setResultsRef.current = freshResults;
     setTimeLeft(cfg.durationSeconds);
     setTicket(null);
