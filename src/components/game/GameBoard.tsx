@@ -61,6 +61,14 @@ export function GameBoard() {
   const winDelayRef = useRef(false);
   const total = config.gridCols * config.gridRows;
 
+  const goHome = () => {
+    lockRef.current = false;
+    winDelayRef.current = false;
+    setTicket(null);
+    setPhase("idle");
+    setTimeLeft(config.durationSeconds);
+  };
+
   const startPlay = () => {
     const cfg = loadConfig();
     const t = cfg.gridCols * cfg.gridRows;
@@ -194,6 +202,13 @@ export function GameBoard() {
     const id = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
     return () => clearTimeout(id);
   }, [phase, timeLeft, finishSet, setFound, setTriesUsed]);
+
+  // Auto-return to home after end-of-session result screen
+  useEffect(() => {
+    if (phase !== "playResult" || ticket) return;
+    const id = window.setTimeout(() => goHome(), 12000);
+    return () => window.clearTimeout(id);
+  }, [phase, ticket]);
 
   const progress = useMemo(
     () =>
@@ -551,7 +566,7 @@ export function GameBoard() {
                   className="text-[10px] font-bold uppercase tracking-[0.28em]"
                   style={{ color: PINK }}
                 >
-                  Status / Readout
+                  Statut
                 </span>
                 <Link
                   to="/admin"
@@ -671,7 +686,7 @@ export function GameBoard() {
         <Ticket
           data={ticket}
           config={config}
-          onClose={() => setTicket(null)}
+          onClose={goHome}
           onReplay={startPlay}
         />
       )}
@@ -756,10 +771,10 @@ export function GameBoard() {
                     }}
                   >
                     {setResults[currentSet - 1] === "win"
-                      ? "WIN"
+                      ? "GAGNÉ"
                       : setResults[currentSet - 1] === "timeout"
-                      ? "TIMEOUT"
-                      : "LOSS"}
+                      ? "TEMPS ÉCOULÉ"
+                      : "PERDU"}
                   </div>
                   <div
                     className="font-display text-[24px] uppercase leading-none tabular-nums text-white sm:text-[28px]"
@@ -836,54 +851,77 @@ export function GameBoard() {
                 </>
               )}
 
-              <MotionButton
-                initial={{ scale: 0.92, opacity: 0, y: 8 }}
-                animate={
-                  phase === "idle"
-                    ? {
-                        opacity: 1,
-                        y: 0,
-                        scale: 1,
-                        boxShadow: [
-                          "0 12px 30px -10px rgba(237,111,126,0.55)",
-                          "0 22px 50px -10px rgba(237,111,126,0.9)",
-                          "0 12px 30px -10px rgba(237,111,126,0.55)",
-                        ],
-                      }
-                    : { scale: 1, opacity: 1, y: 0 }
-                }
-                transition={
-                  phase === "idle"
-                    ? {
-                        boxShadow: {
-                          duration: 2.4,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        },
-                        default: {
-                          type: "spring",
-                          stiffness: 380,
-                          damping: 24,
-                          mass: 0.7,
-                        },
-                      }
-                    : { type: "spring", stiffness: 380, damping: 24, mass: 0.7 }
-                }
-                whileHover={{
-                  scale: 1.05,
-                  y: -2,
-                  transition: { type: "spring", stiffness: 520, damping: 24, mass: 0.6 },
-                }}
-                whileTap={{
-                  scale: 0.94,
-                  transition: { type: "spring", stiffness: 600, damping: 26 },
-                }}
-                onClick={startPlay}
-                className="wordmark px-14 py-4 text-[12px]"
-                style={{ backgroundColor: PINK, color: "#000" }}
-              >
-                {phase === "idle" ? "Commencer" : "Rejouer"}
-              </MotionButton>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <MotionButton
+                  initial={{ scale: 0.92, opacity: 0, y: 8 }}
+                  animate={
+                    phase === "idle"
+                      ? {
+                          opacity: 1,
+                          y: 0,
+                          scale: 1,
+                          boxShadow: [
+                            "0 12px 30px -10px rgba(237,111,126,0.55)",
+                            "0 22px 50px -10px rgba(237,111,126,0.9)",
+                            "0 12px 30px -10px rgba(237,111,126,0.55)",
+                          ],
+                        }
+                      : { scale: 1, opacity: 1, y: 0 }
+                  }
+                  transition={
+                    phase === "idle"
+                      ? {
+                          boxShadow: {
+                            duration: 2.4,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          },
+                          default: {
+                            type: "spring",
+                            stiffness: 380,
+                            damping: 24,
+                            mass: 0.7,
+                          },
+                        }
+                      : { type: "spring", stiffness: 380, damping: 24, mass: 0.7 }
+                  }
+                  whileHover={{
+                    scale: 1.05,
+                    y: -2,
+                    transition: { type: "spring", stiffness: 520, damping: 24, mass: 0.6 },
+                  }}
+                  whileTap={{
+                    scale: 0.94,
+                    transition: { type: "spring", stiffness: 600, damping: 26 },
+                  }}
+                  onClick={startPlay}
+                  className="wordmark px-14 py-4 text-[12px]"
+                  style={{ backgroundColor: PINK, color: "#000" }}
+                >
+                  {phase === "idle" ? "Commencer" : "Rejouer"}
+                </MotionButton>
+
+                {phase === "playResult" && (
+                  <MotionButton
+                    initial={{ scale: 0.92, opacity: 0, y: 8 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    transition={{ type: "spring", stiffness: 380, damping: 24, mass: 0.7, delay: 0.05 }}
+                    whileHover={{ scale: 1.04, y: -2 }}
+                    whileTap={{ scale: 0.94 }}
+                    onClick={goHome}
+                    className="wordmark px-10 py-4 text-[12px] border border-white/30 text-white"
+                    style={{ backgroundColor: "transparent" }}
+                  >
+                    Retour à l'accueil
+                  </MotionButton>
+                )}
+              </div>
+
+              {phase === "playResult" && (
+                <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.28em] text-white/40">
+                  Retour automatique à l'accueil dans quelques secondes…
+                </p>
+              )}
             </motion.div>
           </motion.div>
         )}

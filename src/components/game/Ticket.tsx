@@ -164,7 +164,7 @@ export function Ticket({
             className="uppercase tracking-widest"
             onClick={onClose}
           >
-            Fermer
+            Retour à l'accueil
           </MotionButton>
         </motion.div>
       </motion.div>
