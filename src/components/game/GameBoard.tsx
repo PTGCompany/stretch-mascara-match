@@ -748,20 +748,24 @@ export function GameBoard() {
         </div>
       </div>
 
-      {/* Ticket overlay — shown immediately upon a manche win, and again at the final result if won */}
-      {((phase === "mancheWin" || phase === "playResult") && ticket) && (
+      {/* Ticket overlay — auto on manche win; on demand at end (via "Voir mon ticket") */}
+      {ticket && (phase === "mancheWin" || (phase === "playResult" && showTicket)) && (
         <Ticket
           data={ticket}
           config={config}
           onClose={goHome}
           onReplay={startPlay}
-          onContinue={phase === "mancheWin" ? continueAfterWin : undefined}
+          onContinue={
+            phase === "mancheWin"
+              ? continueAfterWin
+              : () => setShowTicket(false)
+          }
           continueLabel={
             phase === "mancheWin"
               ? currentSet < SETS_PER_PLAY
                 ? `Manche ${currentSet + 1}`
                 : "Voir le résultat"
-              : undefined
+              : "Retour au résultat"
           }
           title={
             phase === "mancheWin"
