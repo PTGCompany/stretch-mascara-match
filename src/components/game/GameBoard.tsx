@@ -771,10 +771,10 @@ export function GameBoard() {
                     }}
                   >
                     {setResults[currentSet - 1] === "win"
-                      ? "WIN"
+                      ? "GAGNÉ"
                       : setResults[currentSet - 1] === "timeout"
-                      ? "TIMEOUT"
-                      : "LOSS"}
+                      ? "TEMPS ÉCOULÉ"
+                      : "PERDU"}
                   </div>
                   <div
                     className="font-display text-[24px] uppercase leading-none tabular-nums text-white sm:text-[28px]"
