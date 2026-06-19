@@ -985,6 +985,21 @@ export function GameBoard() {
                   {phase === "idle" ? "Commencer" : "Rejouer"}
                 </MotionButton>
 
+                {phase === "playResult" && ticket && (
+                  <MotionButton
+                    initial={{ scale: 0.92, opacity: 0, y: 8 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    transition={{ type: "spring", stiffness: 380, damping: 24, mass: 0.7 }}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.94 }}
+                    onClick={() => setShowTicket(true)}
+                    className="wordmark px-10 py-4 text-[12px]"
+                    style={{ backgroundColor: "#34d399", color: "#000" }}
+                  >
+                    Voir mon ticket
+                  </MotionButton>
+                )}
+
                 {phase === "playResult" && (
                   <MotionButton
                     initial={{ scale: 0.92, opacity: 0, y: 8 }}
