@@ -480,7 +480,7 @@ export function GameBoard() {
                         <motion.div
                           animate={
                             isTarget
-                              ? { scale: [0.86, 1.14, 1] }
+                              ? { scale: [0.86, 1.14, 1], rotate: [0, -2, 2, 0] }
                               : isWrong
                               ? { scale: [0.9, 1, 0.98] }
                               : { scale: 1 }
@@ -497,7 +497,7 @@ export function GameBoard() {
                             transform: "rotateY(180deg)",
                             backgroundColor: isWrong ? "#f2f2f2" : "#ffffff",
                             boxShadow: isTarget
-                              ? `0 0 0 2px #34d399, 0 14px 32px -8px rgba(52,211,153,0.6)`
+                              ? `0 0 0 3px #34d399, 0 18px 40px -8px rgba(52,211,153,0.7)`
                               : isWrong
                               ? "inset 0 0 0 1px rgba(0,0,0,0.12), 0 6px 18px -10px rgba(0,0,0,0.35)"
                               : "0 0 0 1px rgba(0,0,0,0.1)",
@@ -507,34 +507,55 @@ export function GameBoard() {
                             <motion.span
                               className="pointer-events-none absolute inset-0 rounded-full"
                               initial={{ opacity: 0, scale: 1 }}
-                              animate={{ opacity: [0, 0.5, 0], scale: [1, 1.08, 1.16] }}
-                              transition={{ duration: 2, ease: "easeOut" }}
+                              animate={{ opacity: [0, 0.6, 0], scale: [1, 1.12, 1.22] }}
+                              transition={{ duration: 1.6, ease: "easeOut", repeat: Infinity }}
+                              style={{ boxShadow: `0 0 0 3px #34d399` }}
+                            />
+                          )}
+                          {isTarget && (
+                            <motion.span
+                              className="pointer-events-none absolute inset-0 rounded-full"
+                              initial={{ opacity: 0, scale: 1 }}
+                              animate={{ opacity: [0, 0.35, 0], scale: [1, 1.06, 1.10] }}
+                              transition={{ duration: 1.6, ease: "easeOut", repeat: Infinity, delay: 0.5 }}
                               style={{ boxShadow: `0 0 0 2px #34d399` }}
                             />
                           )}
                           {isTarget && (
-                            <motion.svg
-                              viewBox="0 0 24 24"
-                              className="absolute right-[8%] top-[8%] z-10 h-[24%] w-[24%]"
+                            <motion.div
+                              className="pointer-events-none absolute right-[6%] top-[6%] z-10 flex h-[28%] w-[28%] items-center justify-center rounded-full"
+                              style={{ backgroundColor: "#34d399" }}
                               initial={{ scale: 0, opacity: 0 }}
                               animate={{ scale: 1, opacity: 1 }}
-                              transition={{ delay: 0.2, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                              fill="none"
-                              stroke="#22c55e"
-                              strokeWidth={3}
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
+                              transition={{ delay: 0.2, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                             >
-                              <motion.path
-                                d="M5 13 L9 17 L19 7"
-                                initial={{ pathLength: 0 }}
-                                animate={{ pathLength: 1 }}
-                                transition={{ delay: 0.35, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                              />
-                            </motion.svg>
+                              <motion.svg
+                                viewBox="0 0 24 24"
+                                className="h-[60%] w-[60%]"
+                                fill="none"
+                                stroke="#ffffff"
+                                strokeWidth={3.5}
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <motion.path
+                                  d="M5 13 L9 17 L19 7"
+                                  initial={{ pathLength: 0 }}
+                                  animate={{ pathLength: 1 }}
+                                  transition={{ delay: 0.35, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                                />
+                              </motion.svg>
+                            </motion.div>
                           )}
                           {isTarget ? (
-                            <MascaraIcon className="absolute inset-0 m-auto h-[80%] w-[80%]" />
+                            <motion.div
+                              initial={{ scale: 0.7, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{ delay: 0.45, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                              className="absolute inset-0 m-auto flex items-center justify-center"
+                            >
+                              <MascaraIcon className="h-[80%] w-[80%]" />
+                            </motion.div>
                           ) : (
                             <div className="absolute inset-0 m-auto flex items-center justify-center">
                               <motion.svg
