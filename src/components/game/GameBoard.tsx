@@ -85,7 +85,9 @@ export function GameBoard() {
     }
     const cfg = loadConfig();
     const t = cfg.gridCols * cfg.gridRows;
-    setTiles(buildTiles(t, cfg.targetsHidden));
+    const built = buildTiles(t, cfg.targetsHidden);
+    console.log("[GAME] Tiles distribution:", built, "| Targets:", built.filter(Boolean).length, "| Empties:", built.filter(x => !x).length);
+    setTiles(built);
     setStates(Array.from({ length: t }, () => "hidden"));
     setCurrentSet(1);
     setSetTriesUsed(0);
