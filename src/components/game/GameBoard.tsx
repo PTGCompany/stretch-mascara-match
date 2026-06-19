@@ -739,7 +739,7 @@ export function GameBoard() {
                   initial={{ scale: 0.6, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className="flex flex-col items-center gap-2"
+                  className="flex flex-col items-center gap-3"
                 >
                   <span
                     className="text-[10px] font-bold uppercase tracking-[0.32em]"
@@ -748,15 +748,25 @@ export function GameBoard() {
                     Résultat — Manche {currentSet}
                   </span>
                   <div
-                    className="font-display text-[48px] uppercase leading-none sm:text-[60px]"
+                    className="font-display text-[56px] uppercase leading-none sm:text-[72px]"
                     style={{
                       color:
-                        setResults[currentSet - 1] === "win" ? PINK : "#ffffff",
+                        setResults[currentSet - 1] === "win" ? "#34d399" : "#ffffff",
                     }}
                   >
-                    {setResults[currentSet - 1] === "win" ? "GAGNÉE" : "PERDUE"}
+                    {setResults[currentSet - 1] === "win"
+                      ? "WIN"
+                      : setResults[currentSet - 1] === "timeout"
+                      ? "TIMEOUT"
+                      : "LOSS"}
                   </div>
-                  <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
+                  <div
+                    className="font-display text-[24px] uppercase leading-none tabular-nums text-white sm:text-[28px]"
+                  >
+                    {setFoundResults[currentSet - 1]}/{config.targetsRequired}{" "}
+                    <span className="text-white/60">trouvé{setFoundResults[currentSet - 1] > 1 ? "s" : ""}</span>
+                  </div>
+                  <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
                     {currentSet < SETS_PER_PLAY
                       ? `Manche ${currentSet + 1} dans un instant…`
                       : "Résultat final…"}
