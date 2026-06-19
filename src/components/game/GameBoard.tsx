@@ -451,6 +451,36 @@ export function GameBoard() {
                               : "0 0 0 1px rgba(0,0,0,0.1)",
                           }}
                         >
+                          {isTarget && (
+                            <motion.span
+                              className="pointer-events-none absolute inset-0 rounded-full"
+                              initial={{ opacity: 0, scale: 1 }}
+                              animate={{ opacity: [0, 0.5, 0], scale: [1, 1.08, 1.16] }}
+                              transition={{ duration: 2, ease: "easeOut" }}
+                              style={{ boxShadow: `0 0 0 2px #34d399` }}
+                            />
+                          )}
+                          {isTarget && (
+                            <motion.svg
+                              viewBox="0 0 24 24"
+                              className="absolute right-[8%] top-[8%] z-10 h-[24%] w-[24%]"
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{ delay: 0.2, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                              fill="none"
+                              stroke="#22c55e"
+                              strokeWidth={3}
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <motion.path
+                                d="M5 13 L9 17 L19 7"
+                                initial={{ pathLength: 0 }}
+                                animate={{ pathLength: 1 }}
+                                transition={{ delay: 0.35, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                              />
+                            </motion.svg>
+                          )}
                           {isTarget ? (
                             <MascaraIcon className="absolute inset-0 m-auto h-[80%] w-[80%]" />
                           ) : (
