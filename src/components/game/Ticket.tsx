@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MotionButton, motionSpring } from "@/components/MotionButton";
 import type { GameConfig } from "@/lib/game-config";
