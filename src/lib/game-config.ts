@@ -17,14 +17,14 @@ export const DEFAULT_CONFIG: GameConfig = {
   instruction: "3 MANCHES — 2 ESSAIS PAR MANCHE — RETROUVEZ 2 MASCARAS IT'S A STRETCH !",
   targetProductName: "IT'S A STRETCH",
   targetsRequired: 2,
-  targetsHidden: 4,
+  targetsHidden: 7,
   attemptsAllowed: 2,
   durationSeconds: 10,
-  gridCols: 4,
-  gridRows: 5,
+  gridCols: 3,
+  gridRows: 3,
 };
 
-const KEY = "sephora-game-config";
+const KEY = "sephora-game-config-v2";
 
 export function loadConfig(): GameConfig {
   if (typeof window === "undefined") return DEFAULT_CONFIG;
