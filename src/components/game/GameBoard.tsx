@@ -101,22 +101,21 @@ export function GameBoard() {
     nextResults[currentSet - 1] = result;
     setResultsRef.current = nextResults;
     setSetResults(nextResults);
-    setSetFoundResults((prev) => {
-      const copy = [...prev];
-      copy[currentSet - 1] = found;
-      return copy;
-    });
+    const nextFounds = [...setFoundResultsRef.current];
+    nextFounds[currentSet - 1] = found;
+    setFoundResultsRef.current = nextFounds;
+    setSetFoundResults(nextFounds);
 
     setPhase("setResult");
 
     window.setTimeout(() => {
       const resultsNow = setResultsRef.current;
+      const foundsNow = setFoundResultsRef.current;
       if (currentSet < SETS_PER_PLAY) {
         startSet(currentSet + 1);
       } else {
         const playWon = resultsNow.some((r) => r === "win");
-        const totalFound =
-          resultsNow.filter((r) => r === "win").length * config.targetsRequired;
+        const totalFound = foundsNow.reduce((acc, n) => acc + n, 0);
         const totalUsed = resultsNow.reduce((acc, r) => {
           if (r === "win") return acc + config.targetsRequired;
           if (r === "loss" || r === "timeout") return acc + config.attemptsAllowed;
