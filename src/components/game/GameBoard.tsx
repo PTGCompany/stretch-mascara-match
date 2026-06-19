@@ -74,6 +74,7 @@ export function GameBoard() {
     setTicket(null);
     startedAt.current = Date.now();
     lockRef.current = false;
+    winDelayRef.current = false;
     setPhase("setPlaying");
   };
 
