@@ -56,6 +56,8 @@ export function GameBoard() {
   const setResultsRef = useRef<SetResult[]>(["pending", "pending", "pending"]);
   const [timeLeft, setTimeLeft] = useState(config.durationSeconds);
   const [ticket, setTicket] = useState<TicketData | null>(null);
+  const [showTicket, setShowTicket] = useState(false);
+  const [foundFlash, setFoundFlash] = useState(0);
   const startedAt = useRef<number>(0);
   const lockRef = useRef(false);
   const winDelayRef = useRef(false);
