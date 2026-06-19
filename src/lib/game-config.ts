@@ -24,7 +24,7 @@ export const DEFAULT_CONFIG: GameConfig = {
   gridRows: 3,
 };
 
-const KEY = "sephora-game-config-v2";
+const KEY = "sephora-game-config-v3";
 
 export function loadConfig(): GameConfig {
   if (typeof window === "undefined") return DEFAULT_CONFIG;
