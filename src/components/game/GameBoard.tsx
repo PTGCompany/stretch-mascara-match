@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MotionButton } from "@/components/MotionButton";
-import { HamburgerLogo, MascaraIcon, SephoraToken } from "./icons";
+import { MascaraIcon, SephoraToken } from "./icons";
 import { Ticket, newTicket, type TicketData } from "./Ticket";
 import {
   loadConfig,
@@ -13,11 +13,11 @@ import { Link } from "@tanstack/react-router";
 import { Settings } from "lucide-react";
 
 type TileState = "hidden" | "revealed-target" | "revealed-empty";
-
 type SetResult = "pending" | "win" | "loss" | "timeout";
 type PlayPhase = "idle" | "setPlaying" | "setResult" | "playResult";
 
 const SETS_PER_PLAY = 3;
+const PINK = "#ed6f7e";
 
 function buildTiles(total: number, targets: number): boolean[] {
   const arr = Array.from({ length: total }, (_, i) => i < targets);
@@ -26,6 +26,16 @@ function buildTiles(total: number, targets: number): boolean[] {
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
+}
+
+function fmtTime(s: number) {
+  const m = Math.floor(Math.max(0, s) / 60);
+  const r = Math.max(0, s) % 60;
+  return `${m}:${r.toString().padStart(2, "0")}`;
+}
+
+function pad2(n: number) {
+  return n.toString().padStart(2, "0");
 }
 
 export function GameBoard() {
@@ -76,7 +86,7 @@ export function GameBoard() {
     setPhase("setPlaying");
   };
 
-  const finishSet = (result: SetResult, found: number, used: number) => {
+  const finishSet = (result: SetResult, _found: number, _used: number) => {
     if (lockRef.current) return;
     lockRef.current = true;
 
@@ -93,8 +103,9 @@ export function GameBoard() {
         startSet(currentSet + 1);
       } else {
         const playWon = resultsNow.some((r) => r === "win");
-        const totalFound = resultsNow.filter((r) => r === "win").length * config.targetsRequired;
-        const totalUsed = resultsNow.reduce((acc, r, i) => {
+        const totalFound =
+          resultsNow.filter((r) => r === "win").length * config.targetsRequired;
+        const totalUsed = resultsNow.reduce((acc, r) => {
           if (r === "win") return acc + config.targetsRequired;
           if (r === "loss" || r === "timeout") return acc + config.attemptsAllowed;
           return acc;
@@ -171,6 +182,8 @@ export function GameBoard() {
     () =>
       phase === "setPlaying"
         ? (timeLeft / config.durationSeconds) * 100
+        : phase === "idle"
+        ? 100
         : 0,
     [phase, timeLeft, config.durationSeconds]
   );
@@ -180,458 +193,579 @@ export function GameBoard() {
     [setResults]
   );
 
+  const timeUrgent = phase === "setPlaying" && timeLeft <= 5;
+  const overlayOpen =
+    (phase === "idle" || phase === "setResult" || phase === "playResult") &&
+    !(phase === "playResult" && ticket);
+
   return (
-    <div className="relative flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden bg-background px-4 py-6">
-      {/* ambient coral glow */}
+    <div className="relative flex min-h-dvh w-full flex-col overflow-hidden bg-black text-white">
+      {/* TOP MARQUEE */}
       <div
-        aria-hidden
-        className="pointer-events-none absolute -top-40 left-1/2 h-[620px] w-[620px] -translate-x-1/2 rounded-full opacity-60 blur-3xl"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(237,111,126,0.55) 0%, rgba(0,0,0,0) 70%)",
-        }}
-      />
-
-      {/* SEPHORA COLLECTION brand banner */}
-      <motion.div
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-        className="relative z-10 mb-5 flex w-full max-w-[560px] items-center justify-between overflow-hidden rounded-2xl px-6 py-4"
-        style={{
-          background:
-            "linear-gradient(90deg, #ed6f7e 0%, #f08a98 55%, #ec7686 100%)",
-          boxShadow: "0 20px 40px -20px rgba(237,111,126,0.55)",
-        }}
+        className="relative z-20 flex h-10 items-center overflow-hidden border-b"
+        style={{ borderColor: "rgba(237,111,126,0.3)" }}
       >
-        <span
-          className="wordmark text-white"
-          style={{ fontSize: 15, letterSpacing: "0.42em" }}
-        >
-          SEPHORA COLLECTION
-        </span>
-        <span
-          className="wordmark hidden text-white/80 sm:inline"
-          style={{ fontSize: 10, letterSpacing: "0.3em" }}
-        >
-          MEMORY GAME
-        </span>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 24, scale: 0.985 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-        className="relative w-full max-w-[560px] rounded-[2.25rem] bg-card px-6 pb-10 pt-7 text-card-foreground"
-        style={{ boxShadow: "var(--shadow-card)" }}
-      >
-        {/* header */}
-        <div className="flex flex-col items-center pb-4">
-          <HamburgerLogo />
-          <div className="mt-3 h-px w-full bg-black/8" />
-        </div>
-
-        {/* title */}
-        <motion.h1
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05, duration: 0.16, ease: "easeOut" }}
-          className="font-display text-center text-[42px] leading-[0.92] sm:text-[54px]"
-        >
-          {config.title}{" "}
-          <span style={{ color: "var(--sephora-pink)" }}>{config.titleAccent}</span>
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1, duration: 0.16 }}
-          className="mx-auto mt-2 max-w-[28ch] text-center text-[10px] font-semibold uppercase leading-snug tracking-[0.2em] text-black/60"
-        >
-          3 manches · 2 essais · 2 mascaras à trouver
-        </motion.p>
-
-        {/* grid */}
         <div
-          className="mx-auto mt-7 grid gap-3"
-          style={{
-            gridTemplateColumns: `repeat(${config.gridCols}, minmax(0, 1fr))`,
-          }}
+          className="flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
+          style={{ animation: "betc-marquee 28s linear infinite" }}
         >
-          {Array.from({ length: total }).map((_, i) => {
-            const s = states[i] ?? "hidden";
-            const isRevealed = s !== "hidden";
-            const isTarget = s === "revealed-target";
-            const isWrong = s === "revealed-empty";
-            return (
-              <MotionButton
-                key={i}
-                initial={{ opacity: 0, scale: 0.5, y: 6 }}
-                animate={
-                  isWrong
-                    ? { opacity: 1, scale: 1, y: 0, x: [0, -5, 5, -3, 3, 0] }
-                    : { opacity: 1, scale: 1, y: 0, x: 0 }
-                }
-                transition={
-                  isWrong
-                    ? { x: { duration: 0.36, ease: [0.36, 0.07, 0.19, 0.97] } }
-                    : {
-                        delay: Math.min(0.22, 0.05 + i * 0.025),
-                        type: "spring",
-                        stiffness: 380,
-                        damping: 22,
-                        mass: 0.7,
-                      }
-                }
-                whileTap={{ scale: 1 }}
-                whileHover={
-                  phase === "setPlaying" && !isRevealed
-                    ? { scale: 1.04, y: -2 }
-                    : { scale: 1 }
-                }
-                onClick={() => onTap(i)}
-                disabled={phase !== "setPlaying" || isRevealed}
-                aria-label={`Token ${i + 1}`}
-                intent="token"
-                style={{ perspective: 1000, touchAction: "manipulation" }}
-              >
-                <motion.div
-                  animate={{
-                    rotateY: isRevealed ? 180 : 0,
-                    scale: isRevealed ? [1, 0.92, 1] : 1,
-                  }}
-                  transition={{
-                    rotateY: { duration: 0.55, ease: [0.65, 0, 0.35, 1] },
-                    scale: { duration: 0.55, ease: [0.22, 1, 0.36, 1], times: [0, 0.5, 1] },
-                  }}
-                  className="absolute inset-0"
-                  style={{
-                    transformStyle: "preserve-3d",
-                    willChange: "transform",
-                    pointerEvents: "none",
-                  }}
-                >
-                  {/* back (token face) */}
-                  <div
-                    className="absolute inset-0 rounded-full bg-token"
-                    style={{
-                      backfaceVisibility: "hidden",
-                      WebkitBackfaceVisibility: "hidden",
-                      boxShadow:
-                        "inset 0 0 0 1px rgba(255,255,255,0.06), 0 6px 14px -6px rgba(0,0,0,0.45)",
-                    }}
-                  >
-                    <SephoraToken />
-                  </div>
-                  {/* front (revealed) */}
-                  <motion.div
-                    animate={
-                      isTarget
-                        ? { scale: [1, 1.12, 1] }
-                        : { scale: 1 }
-                    }
-                    transition={{
-                      duration: 0.45,
-                      ease: [0.22, 1, 0.36, 1],
-                      delay: 0.28,
-                    }}
-                    className="absolute inset-0 rounded-full bg-white"
-                    style={{
-                      backfaceVisibility: "hidden",
-                      WebkitBackfaceVisibility: "hidden",
-                      transform: "rotateY(180deg)",
-                      boxShadow: isTarget
-                        ? "0 0 0 2px var(--sephora-pink), 0 10px 28px -8px rgba(229,9,127,0.65)"
-                        : "0 0 0 1px var(--border)",
-                    }}
-                  >
-                    {isTarget ? (
-                      <MascaraIcon className="absolute inset-0 m-auto h-[80%] w-[80%]" />
-                    ) : (
-                      <div className="absolute inset-0 m-auto flex items-center justify-center">
-                        <div className="h-1.5 w-1.5 rounded-full bg-black/15" />
-                      </div>
-                    )}
-                  </motion.div>
-                </motion.div>
-              </MotionButton>
-            );
-          })}
-        </div>
-
-        {/* timer + progress */}
-        <div className="mt-8">
-          <div className="flex items-baseline justify-center gap-1">
-            <motion.div
-              key={timeLeft + phase}
-              initial={{ scale: 1.18, opacity: 0.5 }}
-              animate={
-                phase === "setPlaying" && timeLeft <= 5
-                  ? { scale: [1, 1.1, 1], opacity: 1 }
-                  : { scale: 1, opacity: 1 }
-              }
-              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              className="font-display text-[56px] leading-none tabular-nums"
-              style={{
-                color:
-                  phase === "setPlaying" && timeLeft <= 5
-                    ? "#ff1f8a"
-                    : "var(--sephora-pink)",
-              }}
-            >
-              {phase === "idle" ? config.durationSeconds : timeLeft}
-            </motion.div>
+          {Array.from({ length: 10 }).map((_, i) => (
             <span
-              className="font-display text-2xl"
-              style={{ color: "var(--sephora-pink)" }}
+              key={i}
+              className="flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.32em]"
             >
-              s
+              <span style={{ color: PINK }}>Sephora Collection</span>
+              <span aria-hidden className="opacity-40">
+                ✦
+              </span>
+              <span className="text-white">Memory Game</span>
+              <span aria-hidden className="opacity-40">
+                ✦
+              </span>
             </span>
-          </div>
-          <div className="mt-3 h-[6px] w-full overflow-hidden rounded-full bg-black/5">
-            <motion.div
-              className="h-full rounded-full"
-              animate={{
-                width: `${phase === "setPlaying" ? progress : phase === "idle" ? 100 : 0}%`,
-              }}
-              transition={{ duration: 0.9, ease: "linear" }}
-              style={{ backgroundColor: "var(--sephora-pink)" }}
-            />
-          </div>
-
-          {/* perfect count at the bottom */}
-          <motion.div
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.18 }}
-            className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-black/60"
-          >
-            <span className="inline-flex items-center gap-1">
-              Manche <span style={{ color: "var(--sephora-pink)" }}>{currentSet}</span>/{SETS_PER_PLAY}
-            </span>
-            <span className="h-1 w-1 rounded-full bg-black/20" />
-            <span className="inline-flex items-center gap-1">
-              Essai <span style={{ color: "var(--sephora-pink)" }}>{setTriesUsed}</span>/{config.attemptsAllowed}
-            </span>
-            <span className="h-1 w-1 rounded-full bg-black/20" />
-            <span className="inline-flex items-center gap-1">
-              Trouvés <span style={{ color: "var(--sephora-pink)" }}>{setFound}</span>/{config.targetsRequired}
-            </span>
-            <span className="mx-1 h-3 w-px bg-black/10" />
-            <div className="flex items-center gap-1.5" aria-label="Résultats des manches">
-              {setResults.map((r, i) => (
-                <div
-                  key={i}
-                  className={`h-2.5 w-2.5 rounded-full transition-colors ${
-                    r === "win"
-                      ? "bg-emerald-400"
-                      : r === "loss" || r === "timeout"
-                      ? "bg-rose-400"
-                      : i === currentSet - 1 && phase === "setPlaying"
-                      ? "bg-black/30 ring-2 ring-[var(--sephora-pink)]/40"
-                      : "bg-black/10"
-                  }`}
-                />
-              ))}
-            </div>
-          </motion.div>
+          ))}
         </div>
+      </div>
 
-        {/* admin link */}
-        <motion.div
-          className="absolute right-4 top-4"
-          whileHover={{ scale: 1.15, rotate: 35 }}
-          whileTap={{ scale: 0.9, rotate: -10 }}
-          transition={{ type: "spring", stiffness: 420, damping: 18 }}
-        >
-          <Link
-            to="/admin"
-            className="block text-muted-foreground/60 transition-colors hover:text-foreground"
-            aria-label="Admin"
-          >
-            <Settings className="h-4 w-4" />
-          </Link>
-        </motion.div>
-
-        {/* ticket overlay on win */}
-        {phase === "playResult" && ticket && (
-          <Ticket
-            data={ticket}
-            config={config}
-            onClose={() => setTicket(null)}
-            onReplay={startPlay}
-          />
-        )}
-
-        {/* overlay */}
-        <AnimatePresence mode="wait">
-          {(phase === "idle" || phase === "setResult" || phase === "playResult") &&
-            !(phase === "playResult" && ticket) && (
-              <motion.div
-                key={phase + currentSet}
+      {/* MAIN */}
+      <main className="relative z-10 flex flex-1 items-stretch justify-center px-5 py-6 sm:px-8 sm:py-10">
+        <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1.2fr)_minmax(0,0.85fr)] lg:gap-10">
+          {/* LEFT — title + timer */}
+          <section className="flex min-w-0 flex-col gap-8">
+            <div className="flex flex-col">
+              <motion.span
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                className="wordmark text-[13px] text-white/70"
+              >
+                SEPHORA COLLECTION
+              </motion.span>
+              <motion.h1
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+                className="font-display mt-3 text-[64px] uppercase leading-[0.85] tracking-tight sm:text-[88px] lg:text-[104px]"
+              >
+                {config.title}
+                <br />
+                <span style={{ color: PINK }}>{config.titleAccent}</span>
+              </motion.h1>
+              <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute inset-0 flex items-center justify-center rounded-[2.25rem] bg-card/95 backdrop-blur-sm"
+                transition={{ delay: 0.18, duration: 0.3 }}
+                className="mt-5 max-w-[34ch] text-[10px] font-bold uppercase leading-relaxed tracking-[0.28em] text-white/55"
               >
-                <motion.div
-                  initial={{ y: 18, opacity: 0, scale: 0.94 }}
-                  animate={{ y: 0, opacity: 1, scale: 1 }}
-                  exit={{ y: -10, opacity: 0, scale: 0.97 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 320,
-                    damping: 26,
-                    mass: 0.8,
-                    delay: 0.05,
-                  }}
-                  className="flex flex-col items-center gap-5 px-8 text-center"
+                3 manches — {config.attemptsAllowed} essais — {config.targetsRequired} mascaras à trouver
+              </motion.p>
+            </div>
+
+            {/* Timer */}
+            <div className="w-full max-w-md">
+              <div className="flex items-end justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-white/55">
+                  Temps restant
+                </span>
+                <motion.span
+                  key={timeLeft + phase}
+                  initial={{ scale: 1.12, opacity: 0.6 }}
+                  animate={
+                    timeUrgent
+                      ? { scale: [1, 1.06, 1], opacity: 1 }
+                      : { scale: 1, opacity: 1 }
+                  }
+                  transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                  className="font-display text-[56px] leading-none tabular-nums tracking-tight sm:text-[68px]"
+                  style={{ color: timeUrgent ? "#ff1f8a" : PINK }}
                 >
-                  {phase === "idle" && (
-                    <>
-                      <h2 className="font-display text-[34px] leading-[0.95] sm:text-[40px]">
-                        PRÊT(E) À{" "}
-                        <span style={{ color: "var(--sephora-pink)" }}>JOUER</span>{" "}?
-                      </h2>
-                      <p className="-mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-black/55">
-                        3 manches · 2 essais · 2 mascaras
-                      </p>
-                    </>
-                  )}
+                  {phase === "idle"
+                    ? fmtTime(config.durationSeconds)
+                    : fmtTime(timeLeft)}
+                </motion.span>
+              </div>
+              <div className="mt-3 h-[3px] w-full overflow-hidden bg-white/10">
+                <motion.div
+                  className="h-full"
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.9, ease: "linear" }}
+                  style={{ backgroundColor: PINK }}
+                />
+              </div>
+            </div>
+          </section>
 
-                  {phase === "setResult" && (
-                    <motion.div
-                      initial={{ scale: 0.5, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                      className="flex flex-col items-center gap-2"
-                    >
-                      <div
-                        className="font-display text-[40px] leading-none"
-                        style={{
-                          color:
-                            setResults[currentSet - 1] === "win"
-                              ? "var(--sephora-pink)"
-                              : "rgba(0,0,0,0.8)",
-                        }}
-                      >
-                        MANCHE {currentSet}{" "}
-                        {setResults[currentSet - 1] === "win" ? "GAGNÉE" : "PERDUE"}
-                      </div>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-black/55">
-                        {currentSet < SETS_PER_PLAY
-                          ? `Manche ${currentSet + 1} dans un instant…`
-                          : "Résultat final…"}
-                      </p>
-                    </motion.div>
-                  )}
+          {/* CENTER — grid */}
+          <section className="flex min-w-0 items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              className="relative w-full max-w-[460px] border border-white/15 bg-white/[0.04] p-5 backdrop-blur-sm sm:p-7"
+            >
+              {/* corner ticks */}
+              <span className="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t" style={{ borderColor: PINK }} />
+              <span className="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t" style={{ borderColor: PINK }} />
+              <span className="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l" style={{ borderColor: PINK }} />
+              <span className="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r" style={{ borderColor: PINK }} />
 
-                  {phase === "playResult" && (
-                    <>
-                      <motion.h2
-                        initial={{ x: 0 }}
-                        animate={
-                          wonSets === 0
-                            ? { x: [0, -8, 8, -5, 5, 0] }
-                            : { x: 0 }
-                        }
-                        transition={{
-                          duration: 0.5,
-                          ease: [0.36, 0.07, 0.19, 0.97],
-                          delay: 0.1,
-                        }}
-                        className="font-display text-[34px] leading-[0.95]"
-                      >
-                        {wonSets > 0 ? (
-                          <>
-                            BRAVO,{" "}
-                            <span style={{ color: "var(--sephora-pink)" }}>
-                              {wonSets}/3 MANCHES GAGNÉES
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            DOMMAGE,{" "}
-                            <span style={{ color: "var(--sephora-pink)" }}>
-                              RETENTEZ VOTRE CHANCE !
-                            </span>
-                          </>
-                        )}
-                      </motion.h2>
-
-                      <div className="flex gap-2">
-                        {setResults.map((r, i) => (
-                          <div
-                            key={i}
-                            className={`flex h-7 min-w-[4.5rem] items-center justify-center gap-1 rounded-full px-3 text-[9px] font-black uppercase tracking-wider ${
-                              r === "win"
-                                ? "bg-emerald-50 text-emerald-600"
-                                : r === "loss" || r === "timeout"
-                                ? "bg-rose-50 text-rose-500"
-                                : "bg-black/5 text-black/30"
-                            }`}
-                          >
-                            M{i + 1}{" "}
-                            {r === "win" ? "✓" : r === "loss" || r === "timeout" ? "✗" : "—"}
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-
-                  <MotionButton
-                    initial={{ scale: 0.92, opacity: 0, y: 8 }}
-                    animate={
-                      phase === "idle"
-                        ? {
-                            opacity: 1,
-                            y: 0,
-                            scale: 1,
-                            boxShadow: [
-                              "0 12px 30px -10px rgba(237,111,126,0.55)",
-                              "0 22px 50px -10px rgba(237,111,126,0.9)",
-                              "0 12px 30px -10px rgba(237,111,126,0.55)",
-                            ],
-                          }
-                        : { scale: 1, opacity: 1, y: 0 }
-                    }
-                    transition={
-                      phase === "idle"
-                        ? {
-                            boxShadow: {
-                              duration: 2.4,
-                              repeat: Infinity,
-                              ease: "easeInOut",
-                            },
-                            default: {
+              <div
+                className="grid gap-3 sm:gap-4"
+                style={{
+                  gridTemplateColumns: `repeat(${config.gridCols}, minmax(0, 1fr))`,
+                }}
+              >
+                {Array.from({ length: total }).map((_, i) => {
+                  const s = states[i] ?? "hidden";
+                  const isRevealed = s !== "hidden";
+                  const isTarget = s === "revealed-target";
+                  const isWrong = s === "revealed-empty";
+                  return (
+                    <MotionButton
+                      key={i}
+                      initial={{ opacity: 0, scale: 0.5, y: 6 }}
+                      animate={
+                        isWrong
+                          ? { opacity: 1, scale: 1, y: 0, x: [0, -5, 5, -3, 3, 0] }
+                          : { opacity: 1, scale: 1, y: 0, x: 0 }
+                      }
+                      transition={
+                        isWrong
+                          ? { x: { duration: 0.36, ease: [0.36, 0.07, 0.19, 0.97] } }
+                          : {
+                              delay: Math.min(0.22, 0.04 + i * 0.022),
                               type: "spring",
                               stiffness: 380,
-                              damping: 24,
+                              damping: 22,
                               mass: 0.7,
-                            },
-                          }
-                        : { type: "spring", stiffness: 380, damping: 24, mass: 0.7 }
-                    }
-                    whileHover={{
-                      scale: 1.06,
-                      y: -2,
-                      transition: { type: "spring", stiffness: 520, damping: 24, mass: 0.6 },
-                    }}
-                    whileTap={{
-                      scale: 0.94,
-                      transition: { type: "spring", stiffness: 600, damping: 26 },
-                    }}
-                    onClick={startPlay}
-                    className="wordmark px-12 py-4 text-[13px]"
-                    style={{ backgroundColor: "var(--sephora-pink)" }}
+                            }
+                      }
+                      whileTap={{ scale: 1 }}
+                      whileHover={
+                        phase === "setPlaying" && !isRevealed
+                          ? { scale: 1.05, y: -2 }
+                          : { scale: 1 }
+                      }
+                      onClick={() => onTap(i)}
+                      disabled={phase !== "setPlaying" || isRevealed}
+                      aria-label={`Token ${i + 1}`}
+                      intent="token"
+                      style={{ perspective: 1000, touchAction: "manipulation" }}
+                    >
+                      <motion.div
+                        animate={{
+                          rotateY: isRevealed ? 180 : 0,
+                          scale: isRevealed ? [1, 0.92, 1] : 1,
+                        }}
+                        transition={{
+                          rotateY: { duration: 0.55, ease: [0.65, 0, 0.35, 1] },
+                          scale: {
+                            duration: 0.55,
+                            ease: [0.22, 1, 0.36, 1],
+                            times: [0, 0.5, 1],
+                          },
+                        }}
+                        className="absolute inset-0"
+                        style={{
+                          transformStyle: "preserve-3d",
+                          willChange: "transform",
+                          pointerEvents: "none",
+                        }}
+                      >
+                        {/* back — coral token (brand) */}
+                        <div
+                          className="absolute inset-0 rounded-full"
+                          style={{
+                            backfaceVisibility: "hidden",
+                            WebkitBackfaceVisibility: "hidden",
+                            backgroundColor: PINK,
+                            boxShadow:
+                              "inset 0 0 0 1px rgba(255,255,255,0.18), 0 10px 24px -10px rgba(237,111,126,0.65)",
+                          }}
+                        >
+                          <SephoraToken />
+                        </div>
+                        {/* front — revealed */}
+                        <motion.div
+                          animate={isTarget ? { scale: [1, 1.12, 1] } : { scale: 1 }}
+                          transition={{
+                            duration: 0.45,
+                            ease: [0.22, 1, 0.36, 1],
+                            delay: 0.28,
+                          }}
+                          className="absolute inset-0 rounded-full bg-white"
+                          style={{
+                            backfaceVisibility: "hidden",
+                            WebkitBackfaceVisibility: "hidden",
+                            transform: "rotateY(180deg)",
+                            boxShadow: isTarget
+                              ? `0 0 0 2px ${PINK}, 0 10px 28px -8px rgba(237,111,126,0.7)`
+                              : "0 0 0 1px rgba(0,0,0,0.1)",
+                          }}
+                        >
+                          {isTarget ? (
+                            <MascaraIcon className="absolute inset-0 m-auto h-[80%] w-[80%]" />
+                          ) : (
+                            <div className="absolute inset-0 m-auto flex items-center justify-center">
+                              <div className="h-1.5 w-1.5 rounded-full bg-black/15" />
+                            </div>
+                          )}
+                        </motion.div>
+                      </motion.div>
+                    </MotionButton>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </section>
+
+          {/* RIGHT — status sidebar */}
+          <aside className="flex min-w-0 flex-col gap-6">
+            <div className="border-t border-white/20 pt-4">
+              <div className="flex items-center justify-between">
+                <span
+                  className="text-[10px] font-bold uppercase tracking-[0.28em]"
+                  style={{ color: PINK }}
+                >
+                  Status / Readout
+                </span>
+                <Link
+                  to="/admin"
+                  className="text-white/40 transition-colors hover:text-white"
+                  aria-label="Admin"
+                >
+                  <Settings className="h-4 w-4" />
+                </Link>
+              </div>
+
+              <div className="mt-5 divide-y divide-white/10">
+                <div className="flex items-center justify-between py-4">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
+                    Manche
+                  </span>
+                  <span className="font-display text-[28px] leading-none tabular-nums">
+                    {pad2(currentSet)}
+                    <span className="text-white/30">/{pad2(SETS_PER_PLAY)}</span>
+                  </span>
+                </div>
+                <div className="flex items-center justify-between py-4">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
+                    Essai
+                  </span>
+                  <span className="font-display text-[28px] leading-none tabular-nums">
+                    {pad2(setTriesUsed)}
+                    <span className="text-white/30">/{pad2(config.attemptsAllowed)}</span>
+                  </span>
+                </div>
+                <div className="flex items-center justify-between py-4">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
+                    Trouvés
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {Array.from({ length: config.targetsRequired }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-3 w-3 rounded-full"
+                        style={{
+                          backgroundColor:
+                            i < setFound ? PINK : "rgba(255,255,255,0.18)",
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-white/20 pt-4">
+              <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
+                Manches
+              </span>
+              <div className="mt-4 flex gap-2">
+                {setResults.map((r, i) => {
+                  const isCurrent = i === currentSet - 1 && phase === "setPlaying";
+                  return (
+                    <div
+                      key={i}
+                      className="flex flex-1 flex-col items-center gap-2 border border-white/15 px-2 py-3"
+                      style={
+                        isCurrent
+                          ? { borderColor: PINK, backgroundColor: "rgba(237,111,126,0.08)" }
+                          : undefined
+                      }
+                    >
+                      <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-white/50">
+                        M{i + 1}
+                      </span>
+                      <div
+                        className="h-2.5 w-2.5 rounded-full"
+                        style={{
+                          backgroundColor:
+                            r === "win"
+                              ? "#34d399"
+                              : r === "loss" || r === "timeout"
+                              ? "#fb7185"
+                              : isCurrent
+                              ? PINK
+                              : "rgba(255,255,255,0.18)",
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </aside>
+        </div>
+      </main>
+
+      {/* BOTTOM MARQUEE */}
+      <div
+        className="relative z-20 flex h-10 items-center overflow-hidden border-t"
+        style={{ borderColor: "rgba(237,111,126,0.3)" }}
+      >
+        <div
+          className="flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
+          style={{ animation: "betc-marquee-reverse 32s linear infinite" }}
+        >
+          {Array.from({ length: 10 }).map((_, i) => (
+            <span
+              key={i}
+              className="flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.32em] text-white/45"
+            >
+              <span>Trouvez les mascaras</span>
+              <span aria-hidden>—</span>
+              <span style={{ color: PINK, opacity: 0.7 }}>It's a Stretch</span>
+              <span aria-hidden>—</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Ticket overlay on win */}
+      {phase === "playResult" && ticket && (
+        <Ticket
+          data={ticket}
+          config={config}
+          onClose={() => setTicket(null)}
+          onReplay={startPlay}
+        />
+      )}
+
+      {/* Full-screen modal overlay */}
+      <AnimatePresence mode="wait">
+        {overlayOpen && (
+          <motion.div
+            key={phase + currentSet}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0 z-30 flex items-center justify-center bg-black/85 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ y: 18, opacity: 0, scale: 0.96 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: -10, opacity: 0, scale: 0.97 }}
+              transition={{
+                type: "spring",
+                stiffness: 320,
+                damping: 26,
+                mass: 0.8,
+                delay: 0.05,
+              }}
+              className="relative mx-6 flex w-full max-w-xl flex-col items-center gap-6 border border-white/15 bg-black px-8 py-10 text-center sm:px-12"
+            >
+              <span
+                className="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t"
+                style={{ borderColor: PINK }}
+              />
+              <span
+                className="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t"
+                style={{ borderColor: PINK }}
+              />
+              <span
+                className="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l"
+                style={{ borderColor: PINK }}
+              />
+              <span
+                className="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r"
+                style={{ borderColor: PINK }}
+              />
+
+              {phase === "idle" && (
+                <>
+                  <span
+                    className="text-[10px] font-bold uppercase tracking-[0.32em]"
+                    style={{ color: PINK }}
                   >
-                    {phase === "idle" ? "Commencer" : "Rejouer"}
-                  </MotionButton>
+                    Sephora Collection · Memory Game
+                  </span>
+                  <h2 className="font-display text-[44px] uppercase leading-[0.9] text-white sm:text-[60px]">
+                    PRÊT(E) À{" "}
+                    <span style={{ color: PINK }}>JOUER</span> ?
+                  </h2>
+                  <p className="-mt-2 text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
+                    3 manches — {config.attemptsAllowed} essais — {config.targetsRequired} mascaras
+                  </p>
+                </>
+              )}
+
+              {phase === "setResult" && (
+                <motion.div
+                  initial={{ scale: 0.6, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  className="flex flex-col items-center gap-2"
+                >
+                  <span
+                    className="text-[10px] font-bold uppercase tracking-[0.32em]"
+                    style={{ color: PINK }}
+                  >
+                    Résultat — Manche {currentSet}
+                  </span>
+                  <div
+                    className="font-display text-[48px] uppercase leading-none sm:text-[60px]"
+                    style={{
+                      color:
+                        setResults[currentSet - 1] === "win" ? PINK : "#ffffff",
+                    }}
+                  >
+                    {setResults[currentSet - 1] === "win" ? "GAGNÉE" : "PERDUE"}
+                  </div>
+                  <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
+                    {currentSet < SETS_PER_PLAY
+                      ? `Manche ${currentSet + 1} dans un instant…`
+                      : "Résultat final…"}
+                  </p>
                 </motion.div>
-              </motion.div>
-            )}
-        </AnimatePresence>
-      </motion.div>
+              )}
+
+              {phase === "playResult" && (
+                <>
+                  <motion.h2
+                    initial={{ x: 0 }}
+                    animate={
+                      wonSets === 0 ? { x: [0, -8, 8, -5, 5, 0] } : { x: 0 }
+                    }
+                    transition={{
+                      duration: 0.5,
+                      ease: [0.36, 0.07, 0.19, 0.97],
+                      delay: 0.1,
+                    }}
+                    className="font-display text-[36px] uppercase leading-[0.95] text-white sm:text-[44px]"
+                  >
+                    {wonSets > 0 ? (
+                      <>
+                        BRAVO,
+                        <br />
+                        <span style={{ color: PINK }}>
+                          {wonSets}/3 MANCHES GAGNÉES
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        DOMMAGE,
+                        <br />
+                        <span style={{ color: PINK }}>
+                          RETENTEZ VOTRE CHANCE !
+                        </span>
+                      </>
+                    )}
+                  </motion.h2>
+
+                  <div className="flex gap-2">
+                    {setResults.map((r, i) => (
+                      <div
+                        key={i}
+                        className="flex h-8 min-w-[5rem] items-center justify-center gap-1 border px-3 text-[9px] font-black uppercase tracking-[0.2em]"
+                        style={{
+                          borderColor:
+                            r === "win"
+                              ? "#34d399"
+                              : r === "loss" || r === "timeout"
+                              ? "#fb7185"
+                              : "rgba(255,255,255,0.15)",
+                          color:
+                            r === "win"
+                              ? "#34d399"
+                              : r === "loss" || r === "timeout"
+                              ? "#fb7185"
+                              : "rgba(255,255,255,0.4)",
+                        }}
+                      >
+                        M{i + 1}{" "}
+                        {r === "win" ? "✓" : r === "loss" || r === "timeout" ? "✗" : "—"}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              <MotionButton
+                initial={{ scale: 0.92, opacity: 0, y: 8 }}
+                animate={
+                  phase === "idle"
+                    ? {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        boxShadow: [
+                          "0 12px 30px -10px rgba(237,111,126,0.55)",
+                          "0 22px 50px -10px rgba(237,111,126,0.9)",
+                          "0 12px 30px -10px rgba(237,111,126,0.55)",
+                        ],
+                      }
+                    : { scale: 1, opacity: 1, y: 0 }
+                }
+                transition={
+                  phase === "idle"
+                    ? {
+                        boxShadow: {
+                          duration: 2.4,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        },
+                        default: {
+                          type: "spring",
+                          stiffness: 380,
+                          damping: 24,
+                          mass: 0.7,
+                        },
+                      }
+                    : { type: "spring", stiffness: 380, damping: 24, mass: 0.7 }
+                }
+                whileHover={{
+                  scale: 1.05,
+                  y: -2,
+                  transition: { type: "spring", stiffness: 520, damping: 24, mass: 0.6 },
+                }}
+                whileTap={{
+                  scale: 0.94,
+                  transition: { type: "spring", stiffness: 600, damping: 26 },
+                }}
+                onClick={startPlay}
+                className="wordmark px-14 py-4 text-[12px]"
+                style={{ backgroundColor: PINK, color: "#000" }}
+              >
+                {phase === "idle" ? "Commencer" : "Rejouer"}
+              </MotionButton>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* keyframes */}
+      <style>{`
+        @keyframes betc-marquee {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+        @keyframes betc-marquee-reverse {
+          from { transform: translateX(-50%); }
+          to { transform: translateX(0); }
+        }
+      `}</style>
     </div>
   );
 }
