@@ -72,6 +72,8 @@ export function GameBoard() {
     lockRef.current = false;
     winDelayRef.current = false;
     setTicket(null);
+    setShowTicket(false);
+    setFoundFlash(0);
     setPhase("idle");
     setTimeLeft(config.durationSeconds);
   };
