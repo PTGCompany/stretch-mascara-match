@@ -203,6 +203,13 @@ export function GameBoard() {
     return () => clearTimeout(id);
   }, [phase, timeLeft, finishSet, setFound, setTriesUsed]);
 
+  // Auto-return to home after end-of-session result screen
+  useEffect(() => {
+    if (phase !== "playResult" || ticket) return;
+    const id = window.setTimeout(() => goHome(), 12000);
+    return () => window.clearTimeout(id);
+  }, [phase, ticket]);
+
   const progress = useMemo(
     () =>
       phase === "setPlaying"
