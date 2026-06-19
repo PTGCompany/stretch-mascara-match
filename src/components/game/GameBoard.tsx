@@ -97,6 +97,8 @@ export function GameBoard() {
     setResultsRef.current = freshResults;
     setTimeLeft(cfg.durationSeconds);
     setTicket(null);
+    setShowTicket(false);
+    setFoundFlash(0);
     startedAt.current = Date.now();
     lockRef.current = false;
     winDelayRef.current = false;
