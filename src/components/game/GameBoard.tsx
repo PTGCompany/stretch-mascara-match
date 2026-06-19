@@ -85,6 +85,7 @@ export function GameBoard() {
     setStates((prev) => prev.map(() => "hidden"));
     setTimeLeft(config.durationSeconds);
     lockRef.current = false;
+    winDelayRef.current = false;
     setPhase("setPlaying");
   };
 
