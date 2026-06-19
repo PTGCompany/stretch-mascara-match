@@ -320,49 +320,62 @@ export function GameBoard() {
                   const isRevealed = s !== "hidden";
                   const isTarget = s === "revealed-target";
                   const isWrong = s === "revealed-empty";
+                  const interactive = phase === "setPlaying" && !isRevealed;
+                  const dimmed = !interactive && !isRevealed;
                   return (
                     <MotionButton
                       key={i}
-                      initial={{ opacity: 0, scale: 0.5, y: 6 }}
-                      animate={
-                        isWrong
-                          ? { opacity: 1, scale: 1, y: 0, x: [0, -5, 5, -3, 3, 0] }
-                          : { opacity: 1, scale: 1, y: 0, x: 0 }
-                      }
-                      transition={
-                        isWrong
-                          ? { x: { duration: 0.36, ease: [0.36, 0.07, 0.19, 0.97] } }
-                          : {
-                              delay: Math.min(0.22, 0.04 + i * 0.022),
-                              type: "spring",
-                              stiffness: 380,
-                              damping: 22,
-                              mass: 0.7,
-                            }
-                      }
-                      whileTap={{ scale: 1 }}
+                      initial={{ opacity: 0, scale: 0.6, y: 8 }}
+                      animate={{
+                        opacity: dimmed ? 0.32 : 1,
+                        scale: 1,
+                        y: 0,
+                        x: isWrong ? [0, -4, 4, -2, 2, 0] : 0,
+                        filter: dimmed ? "grayscale(0.7)" : "grayscale(0)",
+                      }}
+                      transition={{
+                        opacity: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+                        filter: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+                        scale: {
+                          delay: Math.min(0.22, 0.04 + i * 0.022),
+                          type: "spring",
+                          stiffness: 380,
+                          damping: 22,
+                          mass: 0.7,
+                        },
+                        y: {
+                          delay: Math.min(0.22, 0.04 + i * 0.022),
+                          type: "spring",
+                          stiffness: 380,
+                          damping: 22,
+                        },
+                        x: isWrong
+                          ? { duration: 0.4, ease: [0.36, 0.07, 0.19, 0.97] }
+                          : { duration: 0 },
+                      }}
+                      whileTap={interactive ? { scale: 0.92 } : { scale: 1 }}
                       whileHover={
-                        phase === "setPlaying" && !isRevealed
-                          ? { scale: 1.05, y: -2 }
-                          : { scale: 1 }
+                        interactive ? { scale: 1.06, y: -3 } : { scale: 1 }
                       }
                       onClick={() => onTap(i)}
-                      disabled={phase !== "setPlaying" || isRevealed}
+                      disabled={!interactive}
                       aria-label={`Token ${i + 1}`}
+                      aria-disabled={!interactive}
                       intent="token"
-                      style={{ perspective: 1000, touchAction: "manipulation" }}
+                      className={
+                        interactive ? "cursor-pointer" : "cursor-not-allowed"
+                      }
+                      style={{
+                        perspective: 1200,
+                        touchAction: "manipulation",
+                      }}
                     >
                       <motion.div
-                        animate={{
-                          rotateY: isRevealed ? 180 : 0,
-                          scale: isRevealed ? [1, 0.92, 1] : 1,
-                        }}
+                        animate={{ rotateY: isRevealed ? 180 : 0 }}
                         transition={{
-                          rotateY: { duration: 0.55, ease: [0.65, 0, 0.35, 1] },
-                          scale: {
-                            duration: 0.55,
-                            ease: [0.22, 1, 0.36, 1],
-                            times: [0, 0.5, 1],
+                          rotateY: {
+                            duration: 0.7,
+                            ease: [0.83, 0, 0.17, 1],
                           },
                         }}
                         className="absolute inset-0"
@@ -379,27 +392,55 @@ export function GameBoard() {
                             backfaceVisibility: "hidden",
                             WebkitBackfaceVisibility: "hidden",
                             backgroundColor: PINK,
-                            boxShadow:
-                              "inset 0 0 0 1px rgba(255,255,255,0.18), 0 10px 24px -10px rgba(237,111,126,0.65)",
+                            boxShadow: interactive
+                              ? "inset 0 0 0 1px rgba(255,255,255,0.22), 0 12px 28px -10px rgba(237,111,126,0.7)"
+                              : "inset 0 0 0 1px rgba(255,255,255,0.1), 0 4px 14px -8px rgba(237,111,126,0.3)",
+                            transition: "box-shadow 0.4s cubic-bezier(0.22,1,0.36,1)",
                           }}
                         >
                           <SephoraToken />
+                          {interactive && (
+                            <motion.span
+                              className="pointer-events-none absolute inset-0 rounded-full"
+                              initial={{ opacity: 0, scale: 1 }}
+                              animate={{
+                                opacity: [0, 0.4, 0],
+                                scale: [1, 1.08, 1.14],
+                              }}
+                              transition={{
+                                duration: 2.4,
+                                ease: "easeOut",
+                                repeat: Infinity,
+                                delay: (i % 6) * 0.18,
+                              }}
+                              style={{ boxShadow: `0 0 0 1px ${PINK}` }}
+                            />
+                          )}
                         </div>
                         {/* front — revealed */}
                         <motion.div
-                          animate={isTarget ? { scale: [1, 1.12, 1] } : { scale: 1 }}
+                          animate={
+                            isTarget
+                              ? { scale: [0.86, 1.14, 1] }
+                              : isWrong
+                              ? { scale: [0.9, 1, 0.98] }
+                              : { scale: 1 }
+                          }
                           transition={{
-                            duration: 0.45,
+                            duration: 0.55,
                             ease: [0.22, 1, 0.36, 1],
-                            delay: 0.28,
+                            delay: 0.34,
                           }}
-                          className="absolute inset-0 rounded-full bg-white"
+                          className="absolute inset-0 rounded-full"
                           style={{
                             backfaceVisibility: "hidden",
                             WebkitBackfaceVisibility: "hidden",
                             transform: "rotateY(180deg)",
+                            backgroundColor: isWrong ? "#f2f2f2" : "#ffffff",
                             boxShadow: isTarget
-                              ? `0 0 0 2px ${PINK}, 0 10px 28px -8px rgba(237,111,126,0.7)`
+                              ? `0 0 0 2px ${PINK}, 0 14px 32px -8px rgba(237,111,126,0.75)`
+                              : isWrong
+                              ? "inset 0 0 0 1px rgba(0,0,0,0.12), 0 6px 18px -10px rgba(0,0,0,0.35)"
                               : "0 0 0 1px rgba(0,0,0,0.1)",
                           }}
                         >
@@ -407,7 +448,43 @@ export function GameBoard() {
                             <MascaraIcon className="absolute inset-0 m-auto h-[80%] w-[80%]" />
                           ) : (
                             <div className="absolute inset-0 m-auto flex items-center justify-center">
-                              <div className="h-1.5 w-1.5 rounded-full bg-black/15" />
+                              <motion.svg
+                                viewBox="0 0 24 24"
+                                className="h-[36%] w-[36%]"
+                                fill="none"
+                                stroke="#111"
+                                strokeWidth={2.4}
+                                strokeLinecap="round"
+                              >
+                                <motion.path
+                                  d="M5 5 L19 19"
+                                  initial={{ pathLength: 0, opacity: 0 }}
+                                  animate={
+                                    isWrong
+                                      ? { pathLength: 1, opacity: 1 }
+                                      : { pathLength: 0, opacity: 0 }
+                                  }
+                                  transition={{
+                                    duration: 0.32,
+                                    ease: [0.65, 0, 0.35, 1],
+                                    delay: 0.38,
+                                  }}
+                                />
+                                <motion.path
+                                  d="M19 5 L5 19"
+                                  initial={{ pathLength: 0, opacity: 0 }}
+                                  animate={
+                                    isWrong
+                                      ? { pathLength: 1, opacity: 1 }
+                                      : { pathLength: 0, opacity: 0 }
+                                  }
+                                  transition={{
+                                    duration: 0.32,
+                                    ease: [0.65, 0, 0.35, 1],
+                                    delay: 0.5,
+                                  }}
+                                />
+                              </motion.svg>
                             </div>
                           )}
                         </motion.div>
