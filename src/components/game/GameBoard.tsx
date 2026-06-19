@@ -566,7 +566,7 @@ export function GameBoard() {
                   className="text-[10px] font-bold uppercase tracking-[0.28em]"
                   style={{ color: PINK }}
                 >
-                  Status / Readout
+                  Statut
                 </span>
                 <Link
                   to="/admin"
