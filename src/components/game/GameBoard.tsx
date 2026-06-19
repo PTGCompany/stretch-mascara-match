@@ -686,7 +686,7 @@ export function GameBoard() {
         <Ticket
           data={ticket}
           config={config}
-          onClose={() => setTicket(null)}
+          onClose={goHome}
           onReplay={startPlay}
         />
       )}
