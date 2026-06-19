@@ -14,7 +14,7 @@ import { Settings } from "lucide-react";
 
 type TileState = "hidden" | "revealed-target" | "revealed-empty";
 type SetResult = "pending" | "win" | "loss" | "timeout";
-type PlayPhase = "idle" | "setPlaying" | "setResult" | "playResult";
+type PlayPhase = "idle" | "setPlaying" | "setResult" | "mancheWin" | "playResult";
 
 const SETS_PER_PLAY = 3;
 const PINK = "#ed6f7e";
