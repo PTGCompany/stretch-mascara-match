@@ -59,9 +59,14 @@ export function GameBoard() {
   const startedAt = useRef<number>(0);
   const lockRef = useRef(false);
   const winDelayRef = useRef(false);
+  const autoHomeTimerRef = useRef<number | null>(null);
   const total = config.gridCols * config.gridRows;
 
   const goHome = () => {
+    if (autoHomeTimerRef.current) {
+      window.clearTimeout(autoHomeTimerRef.current);
+      autoHomeTimerRef.current = null;
+    }
     lockRef.current = false;
     winDelayRef.current = false;
     setTicket(null);
@@ -70,6 +75,10 @@ export function GameBoard() {
   };
 
   const startPlay = () => {
+    if (autoHomeTimerRef.current) {
+      window.clearTimeout(autoHomeTimerRef.current);
+      autoHomeTimerRef.current = null;
+    }
     const cfg = loadConfig();
     const t = cfg.gridCols * cfg.gridRows;
     setTiles(buildTiles(t, cfg.targetsHidden));
@@ -203,11 +212,29 @@ export function GameBoard() {
     return () => clearTimeout(id);
   }, [phase, timeLeft, finishSet, setFound, setTriesUsed]);
 
-  // Auto-return to home after end-of-session result screen
+  // Auto-return to home after end-of-session result screen (only when no ticket overlay)
   useEffect(() => {
     if (phase !== "playResult" || ticket) return;
-    const id = window.setTimeout(() => goHome(), 12000);
-    return () => window.clearTimeout(id);
+    autoHomeTimerRef.current = window.setTimeout(() => goHome(), 12000);
+    return () => {
+      if (autoHomeTimerRef.current) {
+        window.clearTimeout(autoHomeTimerRef.current);
+        autoHomeTimerRef.current = null;
+      }
+    };
+  }, [phase, ticket]);
+
+  // Cancel auto-home timer on any user interaction (touch/click) while result overlay is open
+  useEffect(() => {
+    if (phase !== "playResult" || ticket) return;
+    const cancelAutoHome = () => {
+      if (autoHomeTimerRef.current) {
+        window.clearTimeout(autoHomeTimerRef.current);
+        autoHomeTimerRef.current = null;
+      }
+    };
+    document.addEventListener("pointerdown", cancelAutoHome);
+    return () => document.removeEventListener("pointerdown", cancelAutoHome);
   }, [phase, ticket]);
 
   const progress = useMemo(
