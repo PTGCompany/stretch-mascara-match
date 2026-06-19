@@ -56,6 +56,7 @@ export function GameBoard() {
   const [ticket, setTicket] = useState<TicketData | null>(null);
   const startedAt = useRef<number>(0);
   const lockRef = useRef(false);
+  const winDelayRef = useRef(false);
   const total = config.gridCols * config.gridRows;
 
   const startPlay = () => {
