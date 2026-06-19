@@ -91,7 +91,7 @@ export function GameBoard() {
     setPhase("setPlaying");
   };
 
-  const finishSet = (result: SetResult, _found: number, _used: number) => {
+  const finishSet = (result: SetResult, found: number, _used: number) => {
     if (lockRef.current) return;
     lockRef.current = true;
 
@@ -99,6 +99,11 @@ export function GameBoard() {
     nextResults[currentSet - 1] = result;
     setResultsRef.current = nextResults;
     setSetResults(nextResults);
+    setSetFoundResults((prev) => {
+      const copy = [...prev];
+      copy[currentSet - 1] = found;
+      return copy;
+    });
 
     setPhase("setResult");
 
