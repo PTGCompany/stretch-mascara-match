@@ -238,48 +238,29 @@ export function Ticket({
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.22, delay: 0.24, ease: [0.22, 1, 0.36, 1] }}
-            className="flex w-full flex-wrap gap-2 print:hidden"
+            className="flex w-full flex-col items-center gap-3 print:hidden"
           >
             <MotionButton
               intent="primary"
               size="full"
-              className="flex-1 font-black uppercase tracking-widest"
+              className="w-full font-black uppercase tracking-widest"
               style={{
                 backgroundColor: "var(--sephora-pink)",
                 color: "#000",
                 boxShadow: "0 10px 24px -10px rgba(237,111,126,0.7)",
               }}
-              onClick={() => downloadTicketPng(data, config, issued)}
-            >
-              Télécharger
-            </MotionButton>
-            <MotionButton
-              intent="secondary"
-              size="full"
-              className="flex-1 font-black uppercase tracking-widest"
               onClick={() => window.print()}
             >
               Imprimer
             </MotionButton>
-          </motion.div>
-
-          <div className="flex w-full flex-wrap items-center justify-center gap-3 print:hidden">
-            {onContinue ? (
+            {onContinue && (
               <MotionButton
-                intent="primary"
-                className="font-black uppercase tracking-widest"
-                style={{ backgroundColor: "#fff", color: "#000" }}
+                intent="secondary"
+                size="full"
+                className="w-full font-black uppercase tracking-widest"
                 onClick={onContinue}
               >
                 {continueLabel ?? "Continuer"}
-              </MotionButton>
-            ) : (
-              <MotionButton
-                intent="secondary"
-                className="font-black uppercase tracking-widest"
-                onClick={onReplay}
-              >
-                Rejouer
               </MotionButton>
             )}
             <MotionButton
@@ -290,9 +271,10 @@ export function Ticket({
             >
               Retour à l'accueil
             </MotionButton>
-          </div>
+          </motion.div>
         </motion.div>
       </motion.div>
     </AnimatePresence>
   );
 }
+
