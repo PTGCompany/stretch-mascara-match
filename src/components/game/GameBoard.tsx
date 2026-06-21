@@ -456,8 +456,8 @@ export function GameBoard() {
                         animate={{ rotateY: isRevealed ? 180 : 0 }}
                         transition={{
                           rotateY: {
-                            duration: 0.7,
-                            ease: [0.83, 0, 0.17, 1],
+                            duration: 0.18,
+                            ease: [0.22, 1, 0.36, 1],
                           },
                         }}
                         className="absolute inset-0"
