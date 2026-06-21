@@ -547,14 +547,9 @@ export function GameBoard() {
                           {/* clean reveal — mascara only, no badge overlay */}
 
                           {isTarget ? (
-                            <motion.div
-                              initial={{ scale: 0.7, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              transition={{ delay: 0.45, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                              className="absolute inset-0 m-auto flex items-center justify-center"
-                            >
+                            <div className="absolute inset-0 m-auto flex items-center justify-center">
                               <MascaraIcon className="h-[80%] w-[80%]" />
-                            </motion.div>
+                            </div>
                           ) : (
                             <div className="absolute inset-0 m-auto flex items-center justify-center">
                               <motion.svg
