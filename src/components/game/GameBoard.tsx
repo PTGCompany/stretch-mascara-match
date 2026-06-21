@@ -540,32 +540,8 @@ export function GameBoard() {
                               style={{ boxShadow: `0 0 0 2px #34d399` }}
                             />
                           )}
-                          {isTarget && (
-                            <motion.div
-                              className="pointer-events-none absolute right-[6%] top-[6%] z-10 flex h-[28%] w-[28%] items-center justify-center rounded-full"
-                              style={{ backgroundColor: "#34d399" }}
-                              initial={{ scale: 0, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              transition={{ delay: 0.2, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                            >
-                              <motion.svg
-                                viewBox="0 0 24 24"
-                                className="h-[60%] w-[60%]"
-                                fill="none"
-                                stroke="#ffffff"
-                                strokeWidth={3.5}
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                <motion.path
-                                  d="M5 13 L9 17 L19 7"
-                                  initial={{ pathLength: 0 }}
-                                  animate={{ pathLength: 1 }}
-                                  transition={{ delay: 0.35, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                                />
-                              </motion.svg>
-                            </motion.div>
-                          )}
+                          {/* clean reveal — mascara only, no badge overlay */}
+
                           {isTarget ? (
                             <motion.div
                               initial={{ scale: 0.7, opacity: 0 }}
@@ -757,7 +733,7 @@ export function GameBoard() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: -10 }}
             transition={{ type: "spring", stiffness: 360, damping: 22, mass: 0.7 }}
-            className="pointer-events-none absolute inset-x-0 top-1/2 z-30 flex -translate-y-1/2 justify-center"
+            className="pointer-events-none absolute inset-x-0 top-14 z-30 flex justify-center px-4"
             onAnimationComplete={() => {
               window.setTimeout(() => setFoundFlash(0), 1100);
             }}
