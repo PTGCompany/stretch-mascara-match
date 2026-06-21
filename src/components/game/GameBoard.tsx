@@ -509,9 +509,9 @@ export function GameBoard() {
                               : { scale: 1 }
                           }
                           transition={{
-                            duration: 0.55,
+                            duration: 0.45,
                             ease: [0.22, 1, 0.36, 1],
-                            delay: 0.34,
+                            delay: 0.18,
                           }}
                           className="absolute inset-0 rounded-full"
                           style={{
