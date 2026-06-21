@@ -531,7 +531,7 @@ export function GameBoard() {
                               className="pointer-events-none absolute inset-0 rounded-full"
                               initial={{ opacity: 0, scale: 1 }}
                               animate={{ opacity: [0, 0.6, 0], scale: [1, 1.12, 1.22] }}
-                              transition={{ duration: 1.6, ease: "easeOut", repeat: Infinity }}
+                              transition={{ duration: 1.6, ease: "easeOut", repeat: Infinity, delay: 0.18 }}
                               style={{ boxShadow: `0 0 0 3px #34d399` }}
                             />
                           )}
@@ -540,7 +540,7 @@ export function GameBoard() {
                               className="pointer-events-none absolute inset-0 rounded-full"
                               initial={{ opacity: 0, scale: 1 }}
                               animate={{ opacity: [0, 0.35, 0], scale: [1, 1.06, 1.10] }}
-                              transition={{ duration: 1.6, ease: "easeOut", repeat: Infinity, delay: 0.5 }}
+                              transition={{ duration: 1.6, ease: "easeOut", repeat: Infinity, delay: 0.5 + 0.18 }}
                               style={{ boxShadow: `0 0 0 2px #34d399` }}
                             />
                           )}
