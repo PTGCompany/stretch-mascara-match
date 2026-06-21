@@ -18,6 +18,7 @@ type PlayPhase = "idle" | "setPlaying" | "setResult" | "mancheWin" | "playResult
 
 const SETS_PER_PLAY = 3;
 const PINK = "#ed6f7e";
+const REVEAL_DURATION_MS = 180; // fast reveal so the mascara appears instantly
 
 function buildTiles(total: number, targets: number): boolean[] {
   const arr = Array.from({ length: total }, (_, i) => i < targets);
@@ -195,7 +196,10 @@ export function GameBoard() {
     const newTries = setTriesUsed + 1;
     if (isTarget) {
       setSetFound(newFound);
-      setFoundFlash((n) => n + 1);
+      // flash starts only after the tile reveal completes
+      window.setTimeout(() => {
+        setFoundFlash((n) => n + 1);
+      }, REVEAL_DURATION_MS);
     }
     setSetTriesUsed(newTries);
 
@@ -452,8 +456,8 @@ export function GameBoard() {
                         animate={{ rotateY: isRevealed ? 180 : 0 }}
                         transition={{
                           rotateY: {
-                            duration: 0.7,
-                            ease: [0.83, 0, 0.17, 1],
+                            duration: 0.18,
+                            ease: [0.22, 1, 0.36, 1],
                           },
                         }}
                         className="absolute inset-0"
@@ -505,9 +509,9 @@ export function GameBoard() {
                               : { scale: 1 }
                           }
                           transition={{
-                            duration: 0.55,
+                            duration: 0.45,
                             ease: [0.22, 1, 0.36, 1],
-                            delay: 0.34,
+                            delay: 0.18,
                           }}
                           className="absolute inset-0 rounded-full"
                           style={{
@@ -527,7 +531,7 @@ export function GameBoard() {
                               className="pointer-events-none absolute inset-0 rounded-full"
                               initial={{ opacity: 0, scale: 1 }}
                               animate={{ opacity: [0, 0.6, 0], scale: [1, 1.12, 1.22] }}
-                              transition={{ duration: 1.6, ease: "easeOut", repeat: Infinity }}
+                              transition={{ duration: 1.6, ease: "easeOut", repeat: Infinity, delay: 0.18 }}
                               style={{ boxShadow: `0 0 0 3px #34d399` }}
                             />
                           )}
@@ -536,21 +540,16 @@ export function GameBoard() {
                               className="pointer-events-none absolute inset-0 rounded-full"
                               initial={{ opacity: 0, scale: 1 }}
                               animate={{ opacity: [0, 0.35, 0], scale: [1, 1.06, 1.10] }}
-                              transition={{ duration: 1.6, ease: "easeOut", repeat: Infinity, delay: 0.5 }}
+                              transition={{ duration: 1.6, ease: "easeOut", repeat: Infinity, delay: 0.5 + 0.18 }}
                               style={{ boxShadow: `0 0 0 2px #34d399` }}
                             />
                           )}
                           {/* clean reveal — mascara only, no badge overlay */}
 
                           {isTarget ? (
-                            <motion.div
-                              initial={{ scale: 0.7, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              transition={{ delay: 0.45, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                              className="absolute inset-0 m-auto flex items-center justify-center"
-                            >
+                            <div className="absolute inset-0 m-auto flex items-center justify-center">
                               <MascaraIcon className="h-[80%] w-[80%]" />
-                            </motion.div>
+                            </div>
                           ) : (
                             <div className="absolute inset-0 m-auto flex items-center justify-center">
                               <motion.svg
@@ -572,7 +571,7 @@ export function GameBoard() {
                                   transition={{
                                     duration: 0.32,
                                     ease: [0.65, 0, 0.35, 1],
-                                    delay: 0.38,
+                                    delay: 0.18,
                                   }}
                                 />
                                 <motion.path
@@ -586,7 +585,7 @@ export function GameBoard() {
                                   transition={{
                                     duration: 0.32,
                                     ease: [0.65, 0, 0.35, 1],
-                                    delay: 0.5,
+                                    delay: 0.3,
                                   }}
                                 />
                               </motion.svg>
