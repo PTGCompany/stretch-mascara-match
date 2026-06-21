@@ -196,7 +196,10 @@ export function GameBoard() {
     const newTries = setTriesUsed + 1;
     if (isTarget) {
       setSetFound(newFound);
-      setFoundFlash((n) => n + 1);
+      // flash starts only after the tile reveal completes
+      window.setTimeout(() => {
+        setFoundFlash((n) => n + 1);
+      }, REVEAL_DURATION_MS);
     }
     setSetTriesUsed(newTries);
 
