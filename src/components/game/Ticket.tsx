@@ -148,7 +148,7 @@ export function Ticket({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute inset-0 z-40 flex items-center justify-center overflow-y-auto bg-black/90 p-6 backdrop-blur-md"
+        className="absolute inset-0 z-40 flex items-center justify-center overflow-y-auto bg-black/65 p-6 backdrop-blur-md"
       >
         <motion.span
           aria-hidden
