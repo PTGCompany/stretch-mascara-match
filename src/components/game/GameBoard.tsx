@@ -571,7 +571,7 @@ export function GameBoard() {
                                   transition={{
                                     duration: 0.32,
                                     ease: [0.65, 0, 0.35, 1],
-                                    delay: 0.38,
+                                    delay: 0.18,
                                   }}
                                 />
                                 <motion.path
@@ -585,7 +585,7 @@ export function GameBoard() {
                                   transition={{
                                     duration: 0.32,
                                     ease: [0.65, 0, 0.35, 1],
-                                    delay: 0.5,
+                                    delay: 0.3,
                                   }}
                                 />
                               </motion.svg>
