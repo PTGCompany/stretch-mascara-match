@@ -18,6 +18,7 @@ type PlayPhase = "idle" | "setPlaying" | "setResult" | "mancheWin" | "playResult
 
 const SETS_PER_PLAY = 3;
 const PINK = "#ed6f7e";
+const REVEAL_DURATION_MS = 180; // fast reveal so the mascara appears instantly
 
 function buildTiles(total: number, targets: number): boolean[] {
   const arr = Array.from({ length: total }, (_, i) => i < targets);
