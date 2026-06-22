@@ -467,16 +467,16 @@ export function GameBoard() {
                           pointerEvents: "none",
                         }}
                       >
-                        {/* back — coral token (brand) */}
+                        {/* back — brand-aligned monochrome token (black with stripes) */}
                         <div
                           className="absolute inset-0 rounded-full"
                           style={{
                             backfaceVisibility: "hidden",
                             WebkitBackfaceVisibility: "hidden",
-                            backgroundColor: PINK,
+                            backgroundColor: "#000000",
                             boxShadow: interactive
-                              ? "inset 0 0 0 1px rgba(255,255,255,0.22), 0 12px 28px -10px rgba(237,111,126,0.7)"
-                              : "inset 0 0 0 1px rgba(255,255,255,0.1), 0 4px 14px -8px rgba(237,111,126,0.3)",
+                              ? "inset 0 0 0 1px rgba(255,255,255,0.55), 0 12px 28px -10px rgba(255,255,255,0.25)"
+                              : "inset 0 0 0 1px rgba(255,255,255,0.18), 0 4px 14px -8px rgba(0,0,0,0.6)",
                             transition: "box-shadow 0.4s cubic-bezier(0.22,1,0.36,1)",
                           }}
                         >
@@ -486,7 +486,7 @@ export function GameBoard() {
                               className="pointer-events-none absolute inset-0 rounded-full"
                               initial={{ opacity: 0, scale: 1 }}
                               animate={{
-                                opacity: [0, 0.4, 0],
+                                opacity: [0, 0.5, 0],
                                 scale: [1, 1.08, 1.14],
                               }}
                               transition={{
@@ -495,7 +495,7 @@ export function GameBoard() {
                                 repeat: Infinity,
                                 delay: (i % 6) * 0.18,
                               }}
-                              style={{ boxShadow: `0 0 0 1px ${PINK}` }}
+                              style={{ boxShadow: `0 0 0 1px #ffffff` }}
                             />
                           )}
                         </div>
