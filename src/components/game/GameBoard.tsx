@@ -713,7 +713,21 @@ export function GameBoard() {
       {/* BOTTOM MARQUEE — repeating brand stripes (≥4) per guidelines */}
       <div className="relative z-20 flex h-10 items-center overflow-hidden border-t border-white/20">
         <div
-          className="flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.18]"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(-115deg, #ffffff 0 1px, transparent 1px 14px)",
+            backgroundSize: "200% 100%",
+            animation: "betc-stripes-drift-reverse 18s linear infinite",
+            maskImage:
+              "linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%)",
+          }}
+        />
+        <div
+          className="relative flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
           style={{ animation: "betc-marquee-reverse 32s linear infinite" }}
         >
           {Array.from({ length: 10 }).map((_, i) => (
@@ -729,6 +743,7 @@ export function GameBoard() {
           ))}
         </div>
       </div>
+
 
       {/* MASCARA TROUVÉ flash — clear feedback every time a target tile is revealed */}
       <AnimatePresence>
