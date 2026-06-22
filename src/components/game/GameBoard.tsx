@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MotionButton } from "@/components/MotionButton";
-import { MascaraIcon, SephoraToken } from "./icons";
+import { MascaraIcon, SephoraToken, SephoraCollectionLogo, StripesMark } from "./icons";
 import { Ticket, newTicket, type TicketData } from "./Ticket";
 import {
   loadConfig,
@@ -17,7 +17,7 @@ type SetResult = "pending" | "win" | "loss" | "timeout";
 type PlayPhase = "idle" | "setPlaying" | "setResult" | "mancheWin" | "playResult";
 
 const SETS_PER_PLAY = 3;
-const PINK = "#ed6f7e";
+const PINK = "#ffffff"; // brand-aligned accent (Sephora Collection is strictly monochrome)
 const REVEAL_DURATION_MS = 180; // fast reveal so the mascara appears instantly
 
 function buildTiles(total: number, targets: number): boolean[] {
