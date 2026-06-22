@@ -353,7 +353,7 @@ export function GameBoard() {
                   }
                   transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
                   className="font-display text-[56px] leading-none tabular-nums tracking-tight sm:text-[68px]"
-                  style={{ color: timeUrgent ? "#ff1f8a" : PINK }}
+                  style={{ color: "#ffffff", opacity: timeUrgent ? 1 : 0.95 }}
                 >
                   {phase === "idle"
                     ? fmtTime(config.durationSeconds)
