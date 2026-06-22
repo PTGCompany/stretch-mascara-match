@@ -830,6 +830,16 @@ export function GameBoard() {
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
             className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-8 bg-black/85 backdrop-blur-md"
           >
+            {phase === "idle" && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="flex items-center justify-center"
+              >
+                <CircularSephoraMark size={160} color="#ffffff" durationSec={MARQUEE.logoSpinSec} />
+              </motion.div>
+            )}
             <motion.div
               initial={{ y: 18, opacity: 0, scale: 0.96 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
