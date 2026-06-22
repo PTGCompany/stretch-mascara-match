@@ -147,23 +147,36 @@ export function Ticket({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute inset-0 z-40 flex items-center justify-center overflow-y-auto bg-black/35 p-6"
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        className="absolute inset-0 z-40 flex items-center justify-center overflow-hidden bg-black/55 p-6 backdrop-blur-[2px]"
       >
-        <motion.span
+        {/* animated stripe motif backdrop (subtle, brand-aligned) */}
+        <div
           aria-hidden
-          initial={{ scale: 0, opacity: 0.6 }}
-          animate={{ scale: [0, 1.6, 2.2], opacity: [0.7, 0.25, 0] }}
-          transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-          className="pointer-events-none absolute h-[320px] w-[320px] rounded-full"
-          style={{ boxShadow: "0 0 0 6px #34d399", filter: "blur(2px)" }}
+          className="pointer-events-none absolute inset-0 opacity-[0.08]"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(115deg, #ffffff 0 1px, transparent 1px 16px)",
+          }}
+        />
+        {/* one-off stripe sweep on open */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 left-0 w-[60%]"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(115deg, #ffffff 0 2px, transparent 2px 22px)",
+            animation: "betc-stripes-sweep 1.4s cubic-bezier(0.22,1,0.36,1) forwards",
+            mixBlendMode: "overlay",
+          }}
         />
         <motion.div
           initial={{ y: 14, opacity: 0, scale: 0.97 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
-          transition={{ ...spring, delay: 0.04 }}
+          transition={{ ...spring, delay: 0.06 }}
           className="relative z-10 flex w-full max-w-sm flex-col items-center gap-5 text-center"
         >
+
           <motion.span
             initial={{ scale: 0, rotate: -20 }}
             animate={{ scale: 1, rotate: 0 }}

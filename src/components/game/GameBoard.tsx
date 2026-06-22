@@ -286,8 +286,23 @@ export function GameBoard() {
       <div
         className="relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20"
       >
+        {/* animated stripe motif backdrop */}
         <div
-          className="flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.18]"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(115deg, #ffffff 0 1px, transparent 1px 14px)",
+            backgroundSize: "200% 100%",
+            animation: "betc-stripes-drift 14s linear infinite",
+            maskImage:
+              "linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%)",
+          }}
+        />
+        <div
+          className="relative flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
           style={{ animation: "betc-marquee 28s linear infinite" }}
         >
           {Array.from({ length: 10 }).map((_, i) => (
@@ -303,6 +318,7 @@ export function GameBoard() {
           ))}
         </div>
       </div>
+
 
       {/* MAIN */}
       <main className="relative z-10 flex flex-1 items-stretch justify-center px-5 py-6 sm:px-8 sm:py-10">
@@ -697,7 +713,21 @@ export function GameBoard() {
       {/* BOTTOM MARQUEE — repeating brand stripes (≥4) per guidelines */}
       <div className="relative z-20 flex h-10 items-center overflow-hidden border-t border-white/20">
         <div
-          className="flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.18]"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(-115deg, #ffffff 0 1px, transparent 1px 14px)",
+            backgroundSize: "200% 100%",
+            animation: "betc-stripes-drift-reverse 18s linear infinite",
+            maskImage:
+              "linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%)",
+          }}
+        />
+        <div
+          className="relative flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
           style={{ animation: "betc-marquee-reverse 32s linear infinite" }}
         >
           {Array.from({ length: 10 }).map((_, i) => (
@@ -713,6 +743,7 @@ export function GameBoard() {
           ))}
         </div>
       </div>
+
 
       {/* MASCARA TROUVÉ flash — clear feedback every time a target tile is revealed */}
       <AnimatePresence>
@@ -1048,7 +1079,21 @@ export function GameBoard() {
           from { transform: translateX(-50%); }
           to { transform: translateX(0); }
         }
+        @keyframes betc-stripes-drift {
+          from { background-position: 0% 0; }
+          to { background-position: 200% 0; }
+        }
+        @keyframes betc-stripes-drift-reverse {
+          from { background-position: 200% 0; }
+          to { background-position: 0% 0; }
+        }
+        @keyframes betc-stripes-sweep {
+          0% { transform: translateX(-110%); opacity: 0; }
+          25% { opacity: 0.55; }
+          100% { transform: translateX(110%); opacity: 0; }
+        }
       `}</style>
+
     </div>
   );
 }
