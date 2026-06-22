@@ -127,7 +127,7 @@ export function CircularSephoraMark({
   return (
     <div
       className={`relative inline-block select-none ${className}`}
-      style={{ width: size, height: size }}
+      style={{ width: size, height: size, borderRadius: "50%", overflow: "hidden" }}
       aria-label="Sephora"
     >
       <img
