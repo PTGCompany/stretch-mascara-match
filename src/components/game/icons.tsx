@@ -108,3 +108,77 @@ export function SephoraToken() {
     </div>
   );
 }
+
+/**
+ * Circular SEPHORA medallion — wordmark wraps a circle twice (outer + inner arc),
+ * slowly rotating clockwise. Pure monochrome, brand-aligned.
+ */
+export function CircularSephoraMark({
+  size = 220,
+  color = "#ffffff",
+  durationSec = 26,
+  className = "",
+}: {
+  size?: number;
+  color?: string;
+  durationSec?: number;
+  className?: string;
+}) {
+  const word = "SEPHORA   •   SEPHORA   •   ";
+  return (
+    <div
+      className={`relative inline-block select-none ${className}`}
+      style={{ width: size, height: size }}
+      aria-label="Sephora"
+    >
+      <svg
+        viewBox="0 0 200 200"
+        width={size}
+        height={size}
+        style={{
+          display: "block",
+          animation: `betc-spin ${durationSec}s linear infinite`,
+          transformOrigin: "50% 50%",
+        }}
+      >
+        <defs>
+          <path
+            id="betc-ring-outer"
+            d="M 100,100 m -82,0 a 82,82 0 1,1 164,0 a 82,82 0 1,1 -164,0"
+          />
+          <path
+            id="betc-ring-inner"
+            d="M 100,100 m -60,0 a 60,60 0 1,1 120,0 a 60,60 0 1,1 -120,0"
+          />
+        </defs>
+        <g
+          fill={color}
+          style={{
+            fontFamily:
+              '"Jost", "Futura", "Helvetica Neue", system-ui, sans-serif',
+            fontWeight: 700,
+            letterSpacing: "0.34em",
+            textTransform: "uppercase",
+          }}
+        >
+          <text fontSize="20">
+            <textPath href="#betc-ring-outer" startOffset="0">
+              {word + word}
+            </textPath>
+          </text>
+          <text fontSize="16">
+            <textPath href="#betc-ring-inner" startOffset="50%">
+              {word + word}
+            </textPath>
+          </text>
+        </g>
+      </svg>
+      <style>{`
+        @keyframes betc-spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  );
+}
