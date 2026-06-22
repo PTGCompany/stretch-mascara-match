@@ -11,6 +11,7 @@ import {
 } from "@/lib/game-config";
 import { Link } from "@tanstack/react-router";
 import { Settings } from "lucide-react";
+import { EASE, DURATION, SPRING, LOOP, MARQUEE, TRANSITION } from "@/lib/motion";
 
 type TileState = "hidden" | "revealed-target" | "revealed-empty";
 type SetResult = "pending" | "win" | "loss" | "timeout";
