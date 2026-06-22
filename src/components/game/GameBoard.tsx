@@ -867,9 +867,10 @@ export function GameBoard() {
                   >
                     Sephora Collection · Memory Game
                   </span>
-                  <h2 className="font-display text-[44px] uppercase leading-[0.9] text-white sm:text-[60px]">
-                    PRÊT(E)&nbsp;à <span style={{ color: PINK }}>jouer</span>&nbsp;?
+                  <h2 className="font-display whitespace-nowrap text-[36px] uppercase leading-[0.9] text-white sm:text-[52px]">
+                    Prêt(e)&nbsp;à&nbsp;<span style={{ color: PINK }}>jouer</span>&nbsp;?
                   </h2>
+
                   <p className="-mt-2 text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
                     3 manches — {config.attemptsAllowed}&nbsp;essais — {config.targetsRequired}&nbsp;mascaras
                   </p>
