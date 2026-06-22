@@ -1,4 +1,5 @@
 import mascaraAsset from "@/assets/sephora-mascara.png.asset.json";
+import sephoraCircularAsset from "@/assets/sephora-circular.png.asset.json";
 
 export function MascaraIcon({ className = "" }: { className?: string }) {
   return (
@@ -115,7 +116,6 @@ export function SephoraToken() {
  */
 export function CircularSephoraMark({
   size = 220,
-  color = "#ffffff",
   durationSec = 28,
   className = "",
 }: {
@@ -130,44 +130,22 @@ export function CircularSephoraMark({
       style={{ width: size, height: size }}
       aria-label="Sephora"
     >
-      <svg
-        viewBox="0 0 200 200"
+      <img
+        src={sephoraCircularAsset.url}
+        alt="Sephora"
         width={size}
         height={size}
+        draggable={false}
         style={{
           display: "block",
+          width: size,
+          height: size,
+          objectFit: "contain",
           animation: `betc-spin ${durationSec}s linear infinite`,
           transformOrigin: "50% 50%",
+          pointerEvents: "none",
         }}
-      >
-        <defs>
-          {/* Baseline path — letters sit centered on this circle */}
-          <path
-            id="betc-sephora-baseline"
-            d="M 100,100 m -68,0 a 68,68 0 1,1 136,0 a 68,68 0 1,1 -136,0"
-          />
-        </defs>
-        <text
-          fill={color}
-          fontSize="24"
-          style={{
-            fontFamily:
-              '"Jost", "Futura", "Helvetica Neue", system-ui, sans-serif',
-            fontWeight: 600,
-            letterSpacing: "0.28em",
-            textTransform: "uppercase",
-          }}
-        >
-          <textPath
-            href="#betc-sephora-baseline"
-            startOffset="0"
-            textLength="820"
-            lengthAdjust="spacing"
-          >
-            SEPHORA SEPHORA
-          </textPath>
-        </text>
-      </svg>
+      />
       <style>{`
         @keyframes betc-spin {
           from { transform: rotate(0deg); }
