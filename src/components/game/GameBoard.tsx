@@ -339,8 +339,7 @@ export function GameBoard() {
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
                 className="font-display mt-5 text-[64px] uppercase leading-[0.85] tracking-tight sm:text-[88px] lg:text-[104px] text-white"
               >
-                {config.title}
-                <br />
+                {config.title}{" "}
                 <span className="text-white/85">{config.titleAccent}</span>
               </motion.h1>
               <motion.p
@@ -349,9 +348,10 @@ export function GameBoard() {
                 transition={{ delay: 0.18, duration: 0.3 }}
                 className="mt-5 max-w-[34ch] text-[10px] font-bold uppercase leading-relaxed tracking-[0.28em] text-white/55"
               >
-                3 manches — {config.attemptsAllowed} essais — {config.targetsRequired} mascaras à trouver
+                3 manches — {config.attemptsAllowed}&nbsp;essais — {config.targetsRequired}&nbsp;mascaras à&nbsp;trouver
               </motion.p>
             </div>
+
 
             {/* Timer */}
             <div className="w-full max-w-md">
