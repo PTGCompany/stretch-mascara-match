@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MotionButton } from "@/components/MotionButton";
-import { MascaraIcon, SephoraToken, SephoraCollectionLogo, StripesMark } from "./icons";
+import { MascaraIcon, SephoraToken, SephoraCollectionLogo, StripesMark, CircularSephoraMark } from "./icons";
 import { Ticket, newTicket, type TicketData } from "./Ticket";
 import {
   loadConfig,
