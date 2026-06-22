@@ -197,6 +197,7 @@ export function GameBoard() {
     const isTarget = tiles[i];
     const nextStates = [...states];
     nextStates[i] = isTarget ? "revealed-target" : "revealed-empty";
+    if (isTarget) lockedTargetsRef.current.add(i);
     setStates(nextStates);
 
     const newFound = isTarget ? setFound + 1 : setFound;
@@ -227,11 +228,12 @@ export function GameBoard() {
       );
     } else if (!isTarget) {
       // Empty tiles flip back so the grid stays playable.
-      // Target tiles (mascara) NEVER flip back — they remain revealed for the rest of the set
-      // so the player understands they've discovered a mascara.
+      // Target tiles (mascara) are locked via lockedTargetsRef and NEVER flip back —
+      // they remain revealed for the rest of the set.
       window.setTimeout(() => {
         setStates((prev) => {
           if (prev[i] !== "revealed-empty") return prev;
+          if (lockedTargetsRef.current.has(i)) return prev;
           const copy = [...prev];
           copy[i] = "hidden";
           return copy;
