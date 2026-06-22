@@ -34,8 +34,8 @@
   --color-sephora-pink-soft: var(--sephora-pink-soft);
   --color-token: var(--token);
   --color-token-foreground: var(--token-foreground);
-  --font-display: "Archivo Black", "Helvetica Neue", system-ui, sans-serif;
-  --font-sans: "Archivo", "Helvetica Neue", system-ui, sans-serif;
+  --font-display: "Jost", "Futura", "Helvetica Neue", system-ui, sans-serif;
+  --font-sans: "Jost", "Futura", "Helvetica Neue", system-ui, sans-serif;
 }
 
 :root {
@@ -53,27 +53,27 @@
   --secondary-foreground: #000000;
   --muted: #f1f1f1;
   --muted-foreground: #6b6b6b;
-  --accent: #fde6ea;
+  --accent: #f4f4f4;
   --accent-foreground: #000000;
-  --destructive: #d11149;
+  --destructive: #000000;
   --destructive-foreground: #ffffff;
   --border: #ebebeb;
   --input: #ebebeb;
-  --ring: #ed6f7e;
+  --ring: #000000;
 
-  /* Sephora coral palette (from brand banner) + signature magenta */
-  --sephora-coral: #ed6f7e;
-  --sephora-coral-light: #f29aa3;
-  --sephora-coral-deep: #d94f63;
-  --sephora-pink: #ed6f7e;
-  --sephora-pink-soft: #fde6ea;
-  --sephora-gradient: linear-gradient(90deg, #ed6f7e 0%, #f08a98 50%, #ed6f7e 100%);
+  /* Sephora Collection — strictly monochrome per brand guidelines */
+  --sephora-coral: #ffffff;
+  --sephora-coral-light: #ffffff;
+  --sephora-coral-deep: #f4f4f4;
+  --sephora-pink: #ffffff;
+  --sephora-pink-soft: #f4f4f4;
+  --sephora-gradient: linear-gradient(90deg, #ffffff 0%, #ffffff 100%);
   --token: #000000;
   --token-foreground: #ffffff;
 
   --shadow-card:
     0 40px 80px -30px rgba(0, 0, 0, 0.6),
-    0 20px 40px -20px rgba(237, 111, 126, 0.28);
+    0 20px 40px -20px rgba(0, 0, 0, 0.28);
 }
 
 .dark {

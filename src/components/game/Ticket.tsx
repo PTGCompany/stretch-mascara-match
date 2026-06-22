@@ -183,9 +183,7 @@ export function Ticket({
             className="font-display text-3xl uppercase leading-tight text-white"
           >
             {title ?? "BRAVO,"}{" "}
-            <span style={{ color: "var(--sephora-pink)" }}>
-              VOICI VOTRE TICKET !
-            </span>
+            <span className="text-white">VOICI VOTRE TICKET !</span>
           </motion.h2>
 
           <motion.div
@@ -193,28 +191,26 @@ export function Ticket({
             initial={{ opacity: 0, y: 10, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ ...spring, delay: 0.12 }}
-            className="w-full rounded-2xl border-2 border-dashed bg-white p-5 text-left text-black"
-            style={{ borderColor: "var(--sephora-pink)" }}
+            className="w-full rounded-none border-2 border-dashed border-black bg-white p-5 text-left text-black"
           >
             <div className="flex items-center justify-between">
-              <div className="text-[10px] font-black tracking-[0.3em]">SEPHORA</div>
+              <div className="text-[10px] font-black tracking-[0.3em]">≡ SEPHORA</div>
               <div className="text-[10px] font-bold tracking-widest text-neutral-500">COLLECTION</div>
             </div>
-            <div className="my-3 h-px bg-neutral-200" />
+            <div className="my-3 h-px bg-black" />
             <div className="text-[10px] uppercase tracking-widest text-neutral-500">
               Ticket gagnant
             </div>
             <div className="mt-1 text-lg font-black uppercase leading-tight">
               {config.targetProductName}
             </div>
-            <div className="mt-4 rounded-lg bg-neutral-50 p-3 text-center">
+            <div className="mt-4 rounded-none border border-black bg-white p-3 text-center">
               <div className="text-[10px] uppercase tracking-widest text-neutral-500">Code</div>
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ ...spring, delay: 0.22 }}
-                className="font-mono text-3xl font-black tracking-[0.2em]"
-                style={{ color: "var(--sephora-pink)" }}
+                className="font-mono text-3xl font-black tracking-[0.2em] text-black"
               >
                 {data.code}
               </motion.div>
@@ -243,11 +239,11 @@ export function Ticket({
             <MotionButton
               intent="primary"
               size="full"
-              className="w-full font-black uppercase tracking-widest"
+              className="w-full font-bold uppercase tracking-widest"
               style={{
-                backgroundColor: "var(--sephora-pink)",
+                backgroundColor: "#ffffff",
                 color: "#000",
-                boxShadow: "0 10px 24px -10px rgba(237,111,126,0.7)",
+                boxShadow: "0 10px 24px -10px rgba(255,255,255,0.4)",
               }}
               onClick={() => window.print()}
             >

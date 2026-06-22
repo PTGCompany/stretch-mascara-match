@@ -12,27 +12,96 @@ export function MascaraIcon({ className = "" }: { className?: string }) {
   );
 }
 
-export function HamburgerLogo() {
+/**
+ * Brand stripes mark (the "≡" symbol that sits to the left of SEPHORA).
+ * Per Sephora Collection brand guidelines, always uses ≥ 3 even-weight bars.
+ */
+export function StripesMark({
+  className = "",
+  color = "currentColor",
+  style,
+}: {
+  className?: string;
+  color?: string;
+  style?: React.CSSProperties;
+}) {
   return (
-    <div className="flex items-baseline gap-2 select-none">
-      <span className="wordmark text-[22px] leading-none text-black">
-        SEPHORA
-      </span>
+    <svg
+      viewBox="0 0 24 18"
+      aria-hidden
+      className={className}
+      style={{ display: "block", ...style }}
+    >
+      <rect x="0" y="0" width="24" height="3" fill={color} />
+      <rect x="0" y="7.5" width="24" height="3" fill={color} />
+      <rect x="0" y="15" width="24" height="3" fill={color} />
+    </svg>
+  );
+}
+
+/**
+ * Sephora Collection logo — the brand-preferred 2-line lockup on dark backgrounds.
+ */
+export function SephoraCollectionLogo({
+  className = "",
+  color = "currentColor",
+  size = 22,
+}: {
+  className?: string;
+  color?: string;
+  size?: number;
+}) {
+  return (
+    <div className={`flex items-center gap-3 select-none ${className}`} style={{ color }}>
+      <StripesMark className="shrink-0" color={color} style={{ width: size * 0.95, height: size * 0.7 }} />
+      <div className="flex flex-col leading-none">
+        <span
+          className="wordmark"
+          style={{ fontSize: size, lineHeight: 1, letterSpacing: "0.18em" }}
+        >
+          SEPHORA
+        </span>
+        <span
+          className="wordmark"
+          style={{ fontSize: size * 0.5, lineHeight: 1, marginTop: size * 0.18, letterSpacing: "0.32em" }}
+        >
+          COLLECTION
+        </span>
+      </div>
     </div>
   );
 }
 
+export function HamburgerLogo() {
+  return <SephoraCollectionLogo color="#000" size={20} />;
+}
+
+/**
+ * Back-of-tile token. Pure monochrome per brand guidelines: black field, stripes motif,
+ * and the SEPHORA / COLLECTION wordmark stacked.
+ */
 export function SephoraToken() {
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center leading-none">
+    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden leading-none">
+      {/* signature stripes (≥4) bleeding across the token */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(0deg, rgba(255,255,255,0.08) 0 6px, transparent 6px 14px)",
+        }}
+      />
+      <StripesMark className="relative mb-1.5 h-[10px] w-[22px]" color="#ffffff" />
       <span
-        className="wordmark text-[9px] text-white"
-        style={{ letterSpacing: "0.28em" }}
+        className="wordmark relative text-[10px] text-white"
+        style={{ letterSpacing: "0.22em" }}
       >
         SEPHORA
       </span>
       <span
-        className="mt-[2px] text-[6px] font-semibold tracking-[0.4em] text-white/70"
+        className="relative mt-[2px] text-[6px] font-semibold text-white/80"
+        style={{ letterSpacing: "0.36em" }}
       >
         COLLECTION
       </span>

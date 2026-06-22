@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MotionButton } from "@/components/MotionButton";
-import { MascaraIcon, SephoraToken } from "./icons";
+import { MascaraIcon, SephoraToken, SephoraCollectionLogo, StripesMark } from "./icons";
 import { Ticket, newTicket, type TicketData } from "./Ticket";
 import {
   loadConfig,
@@ -17,7 +17,7 @@ type SetResult = "pending" | "win" | "loss" | "timeout";
 type PlayPhase = "idle" | "setPlaying" | "setResult" | "mancheWin" | "playResult";
 
 const SETS_PER_PLAY = 3;
-const PINK = "#ed6f7e";
+const PINK = "#ffffff"; // brand-aligned accent (Sephora Collection is strictly monochrome)
 const REVEAL_DURATION_MS = 180; // fast reveal so the mascara appears instantly
 
 function buildTiles(total: number, targets: number): boolean[] {
@@ -284,8 +284,7 @@ export function GameBoard() {
     <div className="relative flex min-h-dvh w-full flex-col overflow-hidden bg-black text-white">
       {/* TOP MARQUEE */}
       <div
-        className="relative z-20 flex h-10 items-center overflow-hidden border-b"
-        style={{ borderColor: "rgba(237,111,126,0.3)" }}
+        className="relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20"
       >
         <div
           className="flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
@@ -294,16 +293,12 @@ export function GameBoard() {
           {Array.from({ length: 10 }).map((_, i) => (
             <span
               key={i}
-              className="flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.32em]"
+              className="flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.32em] text-white"
             >
-              <span style={{ color: PINK }}>Sephora Collection</span>
-              <span aria-hidden className="opacity-40">
-                ✦
-              </span>
-              <span className="text-white">Memory Game</span>
-              <span aria-hidden className="opacity-40">
-                ✦
-              </span>
+              <span>Sephora Collection</span>
+              <StripesMark className="h-2.5 w-4 opacity-70" color="#ffffff" />
+              <span className="text-white/70">Memory Game</span>
+              <StripesMark className="h-2.5 w-4 opacity-70" color="#ffffff" />
             </span>
           ))}
         </div>
@@ -315,23 +310,22 @@ export function GameBoard() {
           {/* LEFT — title + timer */}
           <section className="flex min-w-0 flex-col gap-8">
             <div className="flex flex-col">
-              <motion.span
+              <motion.div
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="wordmark text-[13px] text-white/70"
               >
-                SEPHORA COLLECTION
-              </motion.span>
+                <SephoraCollectionLogo color="#ffffff" size={18} />
+              </motion.div>
               <motion.h1
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
-                className="font-display mt-3 text-[64px] uppercase leading-[0.85] tracking-tight sm:text-[88px] lg:text-[104px]"
+                className="font-display mt-5 text-[64px] uppercase leading-[0.85] tracking-tight sm:text-[88px] lg:text-[104px] text-white"
               >
                 {config.title}
                 <br />
-                <span style={{ color: PINK }}>{config.titleAccent}</span>
+                <span className="text-white/85">{config.titleAccent}</span>
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0 }}
@@ -359,7 +353,7 @@ export function GameBoard() {
                   }
                   transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
                   className="font-display text-[56px] leading-none tabular-nums tracking-tight sm:text-[68px]"
-                  style={{ color: timeUrgent ? "#ff1f8a" : PINK }}
+                  style={{ color: "#ffffff", opacity: timeUrgent ? 1 : 0.95 }}
                 >
                   {phase === "idle"
                     ? fmtTime(config.durationSeconds)
@@ -467,16 +461,16 @@ export function GameBoard() {
                           pointerEvents: "none",
                         }}
                       >
-                        {/* back — coral token (brand) */}
+                        {/* back — brand-aligned monochrome token (black with stripes) */}
                         <div
                           className="absolute inset-0 rounded-full"
                           style={{
                             backfaceVisibility: "hidden",
                             WebkitBackfaceVisibility: "hidden",
-                            backgroundColor: PINK,
+                            backgroundColor: "#000000",
                             boxShadow: interactive
-                              ? "inset 0 0 0 1px rgba(255,255,255,0.22), 0 12px 28px -10px rgba(237,111,126,0.7)"
-                              : "inset 0 0 0 1px rgba(255,255,255,0.1), 0 4px 14px -8px rgba(237,111,126,0.3)",
+                              ? "inset 0 0 0 1px rgba(255,255,255,0.55), 0 12px 28px -10px rgba(255,255,255,0.25)"
+                              : "inset 0 0 0 1px rgba(255,255,255,0.18), 0 4px 14px -8px rgba(0,0,0,0.6)",
                             transition: "box-shadow 0.4s cubic-bezier(0.22,1,0.36,1)",
                           }}
                         >
@@ -486,7 +480,7 @@ export function GameBoard() {
                               className="pointer-events-none absolute inset-0 rounded-full"
                               initial={{ opacity: 0, scale: 1 }}
                               animate={{
-                                opacity: [0, 0.4, 0],
+                                opacity: [0, 0.5, 0],
                                 scale: [1, 1.08, 1.14],
                               }}
                               transition={{
@@ -495,7 +489,7 @@ export function GameBoard() {
                                 repeat: Infinity,
                                 delay: (i % 6) * 0.18,
                               }}
-                              style={{ boxShadow: `0 0 0 1px ${PINK}` }}
+                              style={{ boxShadow: `0 0 0 1px #ffffff` }}
                             />
                           )}
                         </div>
@@ -700,11 +694,8 @@ export function GameBoard() {
         </div>
       </main>
 
-      {/* BOTTOM MARQUEE */}
-      <div
-        className="relative z-20 flex h-10 items-center overflow-hidden border-t"
-        style={{ borderColor: "rgba(237,111,126,0.3)" }}
-      >
+      {/* BOTTOM MARQUEE — repeating brand stripes (≥4) per guidelines */}
+      <div className="relative z-20 flex h-10 items-center overflow-hidden border-t border-white/20">
         <div
           className="flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
           style={{ animation: "betc-marquee-reverse 32s linear infinite" }}
@@ -712,12 +703,12 @@ export function GameBoard() {
           {Array.from({ length: 10 }).map((_, i) => (
             <span
               key={i}
-              className="flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.32em] text-white/45"
+              className="flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.32em] text-white/70"
             >
               <span>Trouvez les mascaras</span>
-              <span aria-hidden>—</span>
-              <span style={{ color: PINK, opacity: 0.7 }}>It's a Stretch</span>
-              <span aria-hidden>—</span>
+              <StripesMark className="h-2.5 w-4 opacity-60" color="#ffffff" />
+              <span className="text-white">It's a Stretch</span>
+              <StripesMark className="h-2.5 w-4 opacity-60" color="#ffffff" />
             </span>
           ))}
         </div>
