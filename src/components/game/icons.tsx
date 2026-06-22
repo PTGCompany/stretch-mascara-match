@@ -141,27 +141,45 @@ export function CircularSephoraMark({
         }}
       >
         <defs>
-          {/* Single ring path — letters sit on the outside, tangent to the circle */}
+          {/* Baseline path for the text — sits between the two visible rings */}
           <path
-            id="betc-sephora-ring"
-            d="M 100,100 m -76,0 a 76,76 0 1,1 152,0 a 76,76 0 1,1 -152,0"
+            id="betc-sephora-baseline"
+            d="M 100,100 m -70,0 a 70,70 0 1,1 140,0 a 70,70 0 1,1 -140,0"
           />
         </defs>
+        {/* Outer ring */}
+        <circle
+          cx="100"
+          cy="100"
+          r="92"
+          fill="none"
+          stroke={color}
+          strokeWidth="1.25"
+        />
+        {/* Inner ring */}
+        <circle
+          cx="100"
+          cy="100"
+          r="58"
+          fill="none"
+          stroke={color}
+          strokeWidth="1.25"
+        />
         <text
           fill={color}
-          fontSize="26"
+          fontSize="22"
           style={{
             fontFamily:
               '"Jost", "Futura", "Helvetica Neue", system-ui, sans-serif',
-            fontWeight: 500,
-            letterSpacing: "0.42em",
+            fontWeight: 600,
+            letterSpacing: "0.32em",
             textTransform: "uppercase",
           }}
         >
           <textPath
-            href="#betc-sephora-ring"
+            href="#betc-sephora-baseline"
             startOffset="0"
-            textLength="930"
+            textLength="820"
             lengthAdjust="spacing"
           >
             SEPHORA SEPHORA
