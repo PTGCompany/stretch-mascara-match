@@ -92,6 +92,7 @@ export function GameBoard() {
     const cfg = loadConfig();
     const t = cfg.gridCols * cfg.gridRows;
     setTiles(buildTiles(t, cfg.targetsHidden));
+    lockedTargetsRef.current = new Set();
     setStates(Array.from({ length: t }, () => "hidden"));
     setCurrentSet(1);
     setSetTriesUsed(0);
