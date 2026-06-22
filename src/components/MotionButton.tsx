@@ -2,29 +2,14 @@ import { motion, type HTMLMotionProps } from "framer-motion";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import * as React from "react";
+import { SPRING, EASE } from "@/lib/motion";
 
-// ── Shared motion presets ──────────────────────────────────────────
-export const motionSpring = {
-  type: "spring" as const,
-  stiffness: 420,
-  damping: 26,
-  mass: 0.7,
-};
+// ── Shared motion presets (re-exported from the global motion preset) ──
+export const motionSpring = SPRING.default;
+export const motionSpringHover = SPRING.hover;
+export const motionSpringTap = SPRING.tap;
+export const motionEase = EASE;
 
-export const motionSpringHover = {
-  type: "spring" as const,
-  stiffness: 520,
-  damping: 26,
-  mass: 0.6,
-};
-
-export const motionSpringTap = {
-  type: "spring" as const,
-  stiffness: 600,
-  damping: 26,
-};
-
-export const motionEase = [0.22, 1, 0.36, 1] as const;
 
 // ── CVA variants ───────────────────────────────────────────────────
 const motionButtonVariants = cva(
