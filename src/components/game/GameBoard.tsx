@@ -115,6 +115,7 @@ export function GameBoard() {
     setCurrentSet(setNum);
     setSetTriesUsed(0);
     setSetFound(0);
+    lockedTargetsRef.current = new Set();
     setStates((prev) => prev.map(() => "hidden"));
     setTimeLeft(config.durationSeconds);
     lockRef.current = false;
