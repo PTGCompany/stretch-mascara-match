@@ -694,11 +694,8 @@ export function GameBoard() {
         </div>
       </main>
 
-      {/* BOTTOM MARQUEE */}
-      <div
-        className="relative z-20 flex h-10 items-center overflow-hidden border-t"
-        style={{ borderColor: "rgba(237,111,126,0.3)" }}
-      >
+      {/* BOTTOM MARQUEE — repeating brand stripes (≥4) per guidelines */}
+      <div className="relative z-20 flex h-10 items-center overflow-hidden border-t border-white/20">
         <div
           className="flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
           style={{ animation: "betc-marquee-reverse 32s linear infinite" }}
@@ -706,12 +703,12 @@ export function GameBoard() {
           {Array.from({ length: 10 }).map((_, i) => (
             <span
               key={i}
-              className="flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.32em] text-white/45"
+              className="flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.32em] text-white/70"
             >
               <span>Trouvez les mascaras</span>
-              <span aria-hidden>—</span>
-              <span style={{ color: PINK, opacity: 0.7 }}>It's a Stretch</span>
-              <span aria-hidden>—</span>
+              <StripesMark className="h-2.5 w-4 opacity-60" color="#ffffff" />
+              <span className="text-white">It's a Stretch</span>
+              <StripesMark className="h-2.5 w-4 opacity-60" color="#ffffff" />
             </span>
           ))}
         </div>
