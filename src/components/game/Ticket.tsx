@@ -195,8 +195,8 @@ export function Ticket({
             transition={{ duration: 0.22, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="font-display text-3xl uppercase leading-tight text-white"
           >
-            {title ?? "BRAVO,"}{" "}
-            <span className="text-white">VOICI VOTRE TICKET !</span>
+            {title ?? "BRAVO,"} <span className="text-white">voici votre&nbsp;ticket&nbsp;!</span>
+
           </motion.h2>
 
           <motion.div
