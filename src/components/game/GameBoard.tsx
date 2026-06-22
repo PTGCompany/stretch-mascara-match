@@ -339,8 +339,7 @@ export function GameBoard() {
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
                 className="font-display mt-5 text-[64px] uppercase leading-[0.85] tracking-tight sm:text-[88px] lg:text-[104px] text-white"
               >
-                {config.title}
-                <br />
+                {config.title}{" "}
                 <span className="text-white/85">{config.titleAccent}</span>
               </motion.h1>
               <motion.p
@@ -349,9 +348,10 @@ export function GameBoard() {
                 transition={{ delay: 0.18, duration: 0.3 }}
                 className="mt-5 max-w-[34ch] text-[10px] font-bold uppercase leading-relaxed tracking-[0.28em] text-white/55"
               >
-                3 manches — {config.attemptsAllowed} essais — {config.targetsRequired} mascaras à trouver
+                3 manches — {config.attemptsAllowed}&nbsp;essais — {config.targetsRequired}&nbsp;mascaras à&nbsp;trouver
               </motion.p>
             </div>
+
 
             {/* Timer */}
             <div className="w-full max-w-md">
@@ -868,12 +868,12 @@ export function GameBoard() {
                     Sephora Collection · Memory Game
                   </span>
                   <h2 className="font-display text-[44px] uppercase leading-[0.9] text-white sm:text-[60px]">
-                    PRÊT(E) À{" "}
-                    <span style={{ color: PINK }}>JOUER</span> ?
+                    PRÊT(E)&nbsp;à <span style={{ color: PINK }}>jouer</span>&nbsp;?
                   </h2>
                   <p className="-mt-2 text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
-                    3 manches — {config.attemptsAllowed} essais — {config.targetsRequired} mascaras
+                    3 manches — {config.attemptsAllowed}&nbsp;essais — {config.targetsRequired}&nbsp;mascaras
                   </p>
+
                 </>
               )}
 
@@ -933,21 +933,20 @@ export function GameBoard() {
                   >
                     {wonSets > 0 ? (
                       <>
-                        BRAVO,
-                        <br />
+                        BRAVO,{" "}
                         <span style={{ color: PINK }}>
-                          {wonSets}/3 MANCHES GAGNÉES
+                          {wonSets}/3&nbsp;manches&nbsp;gagnées
                         </span>
                       </>
                     ) : (
                       <>
-                        DOMMAGE,
-                        <br />
+                        DOMMAGE,{" "}
                         <span style={{ color: PINK }}>
-                          RETENTEZ VOTRE CHANCE !
+                          retentez votre&nbsp;chance&nbsp;!
                         </span>
                       </>
                     )}
+
                   </motion.h2>
 
                   <div className="flex gap-2">
