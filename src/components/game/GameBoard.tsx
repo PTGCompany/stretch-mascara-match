@@ -933,21 +933,20 @@ export function GameBoard() {
                   >
                     {wonSets > 0 ? (
                       <>
-                        BRAVO,
-                        <br />
+                        BRAVO,{" "}
                         <span style={{ color: PINK }}>
-                          {wonSets}/3 MANCHES GAGNÉES
+                          {wonSets}/3&nbsp;manches&nbsp;gagnées
                         </span>
                       </>
                     ) : (
                       <>
-                        DOMMAGE,
-                        <br />
+                        DOMMAGE,{" "}
                         <span style={{ color: PINK }}>
-                          RETENTEZ VOTRE CHANCE !
+                          retentez votre&nbsp;chance&nbsp;!
                         </span>
                       </>
                     )}
+
                   </motion.h2>
 
                   <div className="flex gap-2">
