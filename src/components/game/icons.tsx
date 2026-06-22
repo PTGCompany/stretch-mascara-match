@@ -141,38 +141,20 @@ export function CircularSephoraMark({
         }}
       >
         <defs>
-          {/* Baseline path for the text — sits between the two visible rings */}
+          {/* Baseline path — letters sit centered on this circle */}
           <path
             id="betc-sephora-baseline"
-            d="M 100,100 m -70,0 a 70,70 0 1,1 140,0 a 70,70 0 1,1 -140,0"
+            d="M 100,100 m -68,0 a 68,68 0 1,1 136,0 a 68,68 0 1,1 -136,0"
           />
         </defs>
-        {/* Outer ring */}
-        <circle
-          cx="100"
-          cy="100"
-          r="92"
-          fill="none"
-          stroke={color}
-          strokeWidth="1.25"
-        />
-        {/* Inner ring */}
-        <circle
-          cx="100"
-          cy="100"
-          r="58"
-          fill="none"
-          stroke={color}
-          strokeWidth="1.25"
-        />
         <text
           fill={color}
-          fontSize="22"
+          fontSize="24"
           style={{
             fontFamily:
               '"Jost", "Futura", "Helvetica Neue", system-ui, sans-serif',
             fontWeight: 600,
-            letterSpacing: "0.32em",
+            letterSpacing: "0.28em",
             textTransform: "uppercase",
           }}
         >
