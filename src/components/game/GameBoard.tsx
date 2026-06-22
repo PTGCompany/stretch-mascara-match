@@ -1079,7 +1079,21 @@ export function GameBoard() {
           from { transform: translateX(-50%); }
           to { transform: translateX(0); }
         }
+        @keyframes betc-stripes-drift {
+          from { background-position: 0% 0; }
+          to { background-position: 200% 0; }
+        }
+        @keyframes betc-stripes-drift-reverse {
+          from { background-position: 200% 0; }
+          to { background-position: 0% 0; }
+        }
+        @keyframes betc-stripes-sweep {
+          0% { transform: translateX(-110%); opacity: 0; }
+          25% { opacity: 0.55; }
+          100% { transform: translateX(110%); opacity: 0; }
+        }
       `}</style>
+
     </div>
   );
 }
