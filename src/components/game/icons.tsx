@@ -110,13 +110,13 @@ export function SephoraToken() {
 }
 
 /**
- * Circular SEPHORA medallion — wordmark wraps a circle twice (outer + inner arc),
- * slowly rotating clockwise. Pure monochrome, brand-aligned.
+ * Circular SEPHORA medallion — single ring with the word "SEPHORA" repeated twice
+ * around the circle, slowly rotating clockwise. Matches the brand emblem.
  */
 export function CircularSephoraMark({
   size = 220,
   color = "#ffffff",
-  durationSec = 26,
+  durationSec = 28,
   className = "",
 }: {
   size?: number;
@@ -124,7 +124,6 @@ export function CircularSephoraMark({
   durationSec?: number;
   className?: string;
 }) {
-  const word = "SEPHORA   •   SEPHORA   •   ";
   return (
     <div
       className={`relative inline-block select-none ${className}`}
@@ -142,36 +141,32 @@ export function CircularSephoraMark({
         }}
       >
         <defs>
+          {/* Single ring path — letters sit on the outside, tangent to the circle */}
           <path
-            id="betc-ring-outer"
-            d="M 100,100 m -82,0 a 82,82 0 1,1 164,0 a 82,82 0 1,1 -164,0"
-          />
-          <path
-            id="betc-ring-inner"
-            d="M 100,100 m -60,0 a 60,60 0 1,1 120,0 a 60,60 0 1,1 -120,0"
+            id="betc-sephora-ring"
+            d="M 100,100 m -76,0 a 76,76 0 1,1 152,0 a 76,76 0 1,1 -152,0"
           />
         </defs>
-        <g
+        <text
           fill={color}
+          fontSize="26"
           style={{
             fontFamily:
               '"Jost", "Futura", "Helvetica Neue", system-ui, sans-serif',
-            fontWeight: 700,
-            letterSpacing: "0.34em",
+            fontWeight: 500,
+            letterSpacing: "0.42em",
             textTransform: "uppercase",
           }}
         >
-          <text fontSize="20">
-            <textPath href="#betc-ring-outer" startOffset="0">
-              {word + word}
-            </textPath>
-          </text>
-          <text fontSize="16">
-            <textPath href="#betc-ring-inner" startOffset="50%">
-              {word + word}
-            </textPath>
-          </text>
-        </g>
+          <textPath
+            href="#betc-sephora-ring"
+            startOffset="0"
+            textLength="930"
+            lengthAdjust="spacing"
+          >
+            SEPHORA SEPHORA
+          </textPath>
+        </text>
       </svg>
       <style>{`
         @keyframes betc-spin {
