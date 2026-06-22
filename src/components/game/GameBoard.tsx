@@ -861,6 +861,14 @@ export function GameBoard() {
 
               {phase === "idle" && (
                 <>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    className="flex items-center justify-center"
+                  >
+                    <CircularSephoraMark size={200} color="#ffffff" durationSec={28} />
+                  </motion.div>
                   <span
                     className="text-[10px] font-bold uppercase tracking-[0.32em]"
                     style={{ color: PINK }}
@@ -870,13 +878,12 @@ export function GameBoard() {
                   <h2 className="font-display whitespace-nowrap text-[36px] uppercase leading-[0.9] text-white sm:text-[52px]">
                     Prêt(e)&nbsp;à&nbsp;<span style={{ color: PINK }}>jouer</span>&nbsp;?
                   </h2>
-
                   <p className="-mt-2 text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
                     3 manches — {config.attemptsAllowed}&nbsp;essais — {config.targetsRequired}&nbsp;mascaras
                   </p>
-
                 </>
               )}
+
 
               {phase === "setResult" && (
                 <motion.div
