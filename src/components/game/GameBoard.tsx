@@ -828,7 +828,7 @@ export function GameBoard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-0 z-30 flex items-center justify-center bg-black/85 backdrop-blur-md"
+            className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-8 bg-black/85 backdrop-blur-md"
           >
             <motion.div
               initial={{ y: 18, opacity: 0, scale: 0.96 }}
