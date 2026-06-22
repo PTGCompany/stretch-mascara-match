@@ -295,7 +295,7 @@ export function GameBoard() {
             backgroundImage:
               "repeating-linear-gradient(115deg, #ffffff 0 1px, transparent 1px 14px)",
             backgroundSize: "200% 100%",
-            animation: "betc-stripes-drift 14s linear infinite",
+            animation: `betc-stripes-drift ${MARQUEE.stripeDriftSec}s linear infinite`,
             maskImage:
               "linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%)",
             WebkitMaskImage:
@@ -304,7 +304,7 @@ export function GameBoard() {
         />
         <div
           className="relative flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
-          style={{ animation: "betc-marquee 28s linear infinite" }}
+          style={{ animation: `betc-marquee ${MARQUEE.topSec}s linear infinite` }}
         >
           {Array.from({ length: 10 }).map((_, i) => (
             <span
@@ -720,7 +720,7 @@ export function GameBoard() {
             backgroundImage:
               "repeating-linear-gradient(-115deg, #ffffff 0 1px, transparent 1px 14px)",
             backgroundSize: "200% 100%",
-            animation: "betc-stripes-drift-reverse 18s linear infinite",
+            animation: `betc-stripes-drift-reverse ${MARQUEE.stripeDriftReverseSec}s linear infinite`,
             maskImage:
               "linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%)",
             WebkitMaskImage:
@@ -729,7 +729,7 @@ export function GameBoard() {
         />
         <div
           className="relative flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
-          style={{ animation: "betc-marquee-reverse 32s linear infinite" }}
+          style={{ animation: `betc-marquee-reverse ${MARQUEE.bottomSec}s linear infinite` }}
         >
           {Array.from({ length: 10 }).map((_, i) => (
             <span
@@ -868,7 +868,7 @@ export function GameBoard() {
                     transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                     className="flex items-center justify-center"
                   >
-                    <CircularSephoraMark size={200} color="#ffffff" durationSec={28} />
+                    <CircularSephoraMark size={200} color="#ffffff" durationSec={MARQUEE.logoSpinSec} />
                   </motion.div>
                   <span
                     className="text-[10px] font-bold uppercase tracking-[0.32em]"
