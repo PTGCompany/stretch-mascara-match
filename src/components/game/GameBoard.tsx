@@ -284,8 +284,7 @@ export function GameBoard() {
     <div className="relative flex min-h-dvh w-full flex-col overflow-hidden bg-black text-white">
       {/* TOP MARQUEE */}
       <div
-        className="relative z-20 flex h-10 items-center overflow-hidden border-b"
-        style={{ borderColor: "rgba(237,111,126,0.3)" }}
+        className="relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20"
       >
         <div
           className="flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
@@ -294,16 +293,12 @@ export function GameBoard() {
           {Array.from({ length: 10 }).map((_, i) => (
             <span
               key={i}
-              className="flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.32em]"
+              className="flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.32em] text-white"
             >
-              <span style={{ color: PINK }}>Sephora Collection</span>
-              <span aria-hidden className="opacity-40">
-                ✦
-              </span>
-              <span className="text-white">Memory Game</span>
-              <span aria-hidden className="opacity-40">
-                ✦
-              </span>
+              <span>Sephora Collection</span>
+              <StripesMark className="h-2.5 w-4 opacity-70" color="#ffffff" />
+              <span className="text-white/70">Memory Game</span>
+              <StripesMark className="h-2.5 w-4 opacity-70" color="#ffffff" />
             </span>
           ))}
         </div>
