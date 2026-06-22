@@ -64,6 +64,10 @@ export function GameBoard() {
   const lockRef = useRef(false);
   const winDelayRef = useRef(false);
   const autoHomeTimerRef = useRef<number | null>(null);
+  // Indices of mascara tiles discovered in the CURRENT set. Once added, they
+  // remain visibly revealed for the rest of this set — no transition,
+  // animation, or overlay can flip them back. Cleared only on startSet.
+  const lockedTargetsRef = useRef<Set<number>>(new Set());
   const total = config.gridCols * config.gridRows;
 
   const goHome = () => {
