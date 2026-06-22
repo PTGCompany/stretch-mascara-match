@@ -64,6 +64,10 @@ export function GameBoard() {
   const lockRef = useRef(false);
   const winDelayRef = useRef(false);
   const autoHomeTimerRef = useRef<number | null>(null);
+  // Indices of mascara tiles discovered in the CURRENT set. Once added, they
+  // remain visibly revealed for the rest of this set — no transition,
+  // animation, or overlay can flip them back. Cleared only on startSet.
+  const lockedTargetsRef = useRef<Set<number>>(new Set());
   const total = config.gridCols * config.gridRows;
 
   const goHome = () => {
@@ -88,6 +92,7 @@ export function GameBoard() {
     const cfg = loadConfig();
     const t = cfg.gridCols * cfg.gridRows;
     setTiles(buildTiles(t, cfg.targetsHidden));
+    lockedTargetsRef.current = new Set();
     setStates(Array.from({ length: t }, () => "hidden"));
     setCurrentSet(1);
     setSetTriesUsed(0);
@@ -111,6 +116,7 @@ export function GameBoard() {
     setCurrentSet(setNum);
     setSetTriesUsed(0);
     setSetFound(0);
+    lockedTargetsRef.current = new Set();
     setStates((prev) => prev.map(() => "hidden"));
     setTimeLeft(config.durationSeconds);
     lockRef.current = false;
@@ -191,6 +197,7 @@ export function GameBoard() {
     const isTarget = tiles[i];
     const nextStates = [...states];
     nextStates[i] = isTarget ? "revealed-target" : "revealed-empty";
+    if (isTarget) lockedTargetsRef.current.add(i);
     setStates(nextStates);
 
     const newFound = isTarget ? setFound + 1 : setFound;
@@ -221,11 +228,12 @@ export function GameBoard() {
       );
     } else if (!isTarget) {
       // Empty tiles flip back so the grid stays playable.
-      // Target tiles (mascara) NEVER flip back — they remain revealed for the rest of the set
-      // so the player understands they've discovered a mascara.
+      // Target tiles (mascara) are locked via lockedTargetsRef and NEVER flip back —
+      // they remain revealed for the rest of the set.
       window.setTimeout(() => {
         setStates((prev) => {
           if (prev[i] !== "revealed-empty") return prev;
+          if (lockedTargetsRef.current.has(i)) return prev;
           const copy = [...prev];
           copy[i] = "hidden";
           return copy;
