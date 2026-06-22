@@ -25,7 +25,7 @@ function NotFoundComponent() {
         <div className="mt-6">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-full bg-[var(--sephora-pink)] px-6 py-2.5 text-sm font-medium text-white"
+            className="inline-flex items-center justify-center rounded-none bg-white px-6 py-2.5 text-sm font-bold uppercase tracking-[0.24em] text-black"
           >
             Go home
           </Link>
@@ -101,7 +101,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800;900&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800;900&display=swap",
       },
     ],
   }),
