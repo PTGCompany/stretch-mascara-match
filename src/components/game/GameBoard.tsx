@@ -310,23 +310,22 @@ export function GameBoard() {
           {/* LEFT — title + timer */}
           <section className="flex min-w-0 flex-col gap-8">
             <div className="flex flex-col">
-              <motion.span
+              <motion.div
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="wordmark text-[13px] text-white/70"
               >
-                SEPHORA COLLECTION
-              </motion.span>
+                <SephoraCollectionLogo color="#ffffff" size={18} />
+              </motion.div>
               <motion.h1
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
-                className="font-display mt-3 text-[64px] uppercase leading-[0.85] tracking-tight sm:text-[88px] lg:text-[104px]"
+                className="font-display mt-5 text-[64px] uppercase leading-[0.85] tracking-tight sm:text-[88px] lg:text-[104px] text-white"
               >
                 {config.title}
                 <br />
-                <span style={{ color: PINK }}>{config.titleAccent}</span>
+                <span className="text-white/85">{config.titleAccent}</span>
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0 }}
