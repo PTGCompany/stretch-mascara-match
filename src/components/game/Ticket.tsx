@@ -239,11 +239,11 @@ export function Ticket({
             <MotionButton
               intent="primary"
               size="full"
-              className="w-full font-black uppercase tracking-widest"
+              className="w-full font-bold uppercase tracking-widest"
               style={{
-                backgroundColor: "var(--sephora-pink)",
+                backgroundColor: "#ffffff",
                 color: "#000",
-                boxShadow: "0 10px 24px -10px rgba(237,111,126,0.7)",
+                boxShadow: "0 10px 24px -10px rgba(255,255,255,0.4)",
               }}
               onClick={() => window.print()}
             >
