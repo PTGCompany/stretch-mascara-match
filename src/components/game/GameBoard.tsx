@@ -207,14 +207,22 @@ export function GameBoard() {
     if (newFound >= config.targetsRequired) {
       lockRef.current = true;
       winDelayRef.current = true;
+      // Hold longer so the player clearly sees the mascara they just revealed.
       window.setTimeout(() => {
         lockRef.current = false;
         winDelayRef.current = false;
         finishSet("win", newFound, newTries);
-      }, 2000);
+      }, 2800);
     } else if (newTries >= config.attemptsAllowed) {
-      window.setTimeout(() => finishSet("loss", newFound, newTries), 700);
+      // Give the player a beat to register the final mascara reveal before ending the set.
+      window.setTimeout(
+        () => finishSet("loss", newFound, newTries),
+        isTarget ? 2800 : 700,
+      );
     } else if (!isTarget) {
+      // Empty tiles flip back so the grid stays playable.
+      // Target tiles (mascara) NEVER flip back — they remain revealed for the rest of the set
+      // so the player understands they've discovered a mascara.
       window.setTimeout(() => {
         setStates((prev) => {
           if (prev[i] !== "revealed-empty") return prev;
