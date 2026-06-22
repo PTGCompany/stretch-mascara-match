@@ -19,16 +19,18 @@ export function MascaraIcon({ className = "" }: { className?: string }) {
 export function StripesMark({
   className = "",
   color = "currentColor",
+  style,
 }: {
   className?: string;
   color?: string;
+  style?: React.CSSProperties;
 }) {
   return (
     <svg
       viewBox="0 0 24 18"
       aria-hidden
       className={className}
-      style={{ display: "block" }}
+      style={{ display: "block", ...style }}
     >
       <rect x="0" y="0" width="24" height="3" fill={color} />
       <rect x="0" y="7.5" width="24" height="3" fill={color} />
