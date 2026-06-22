@@ -557,51 +557,12 @@ export function GameBoard() {
                           )}
                           {/* clean reveal — mascara only, no badge overlay */}
 
-                          {isTarget ? (
+                          {isTarget && (
                             <div className="absolute inset-0 m-auto flex items-center justify-center">
                               <MascaraIcon className="h-[80%] w-[80%]" />
                             </div>
-                          ) : (
-                            <div className="absolute inset-0 m-auto flex items-center justify-center">
-                              <motion.svg
-                                viewBox="0 0 24 24"
-                                className="h-[36%] w-[36%]"
-                                fill="none"
-                                stroke="#111"
-                                strokeWidth={2.4}
-                                strokeLinecap="round"
-                              >
-                                <motion.path
-                                  d="M5 5 L19 19"
-                                  initial={{ pathLength: 0, opacity: 0 }}
-                                  animate={
-                                    isWrong
-                                      ? { pathLength: 1, opacity: 1 }
-                                      : { pathLength: 0, opacity: 0 }
-                                  }
-                                  transition={{
-                                    duration: 0.32,
-                                    ease: [0.65, 0, 0.35, 1],
-                                    delay: 0.18,
-                                  }}
-                                />
-                                <motion.path
-                                  d="M19 5 L5 19"
-                                  initial={{ pathLength: 0, opacity: 0 }}
-                                  animate={
-                                    isWrong
-                                      ? { pathLength: 1, opacity: 1 }
-                                      : { pathLength: 0, opacity: 0 }
-                                  }
-                                  transition={{
-                                    duration: 0.32,
-                                    ease: [0.65, 0, 0.35, 1],
-                                    delay: 0.3,
-                                  }}
-                                />
-                              </motion.svg>
-                            </div>
                           )}
+
                         </motion.div>
                       </motion.div>
                     </MotionButton>
