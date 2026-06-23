@@ -148,7 +148,7 @@ export function Ticket({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute inset-0 z-40 flex items-center justify-center overflow-hidden bg-black/55 p-6 backdrop-blur-[2px]"
+        className="absolute inset-0 z-40 flex items-center justify-center overflow-hidden bg-black/25 p-6"
       >
         {/* animated stripe motif backdrop (subtle, brand-aligned) */}
         <div
