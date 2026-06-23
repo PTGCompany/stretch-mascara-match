@@ -141,4 +141,81 @@ test.describe("mascara tile lock", () => {
       .poll(async () => isMascara(page, 0), { timeout: 6000, intervals: [200] })
       .toBe(false);
   });
+
+  test("accidental second tap on a found mascara does not consume an attempt", async ({
+    page,
+  }) => {
+    // All cells are mascaras, but the player needs 2 of them and has 3 tries
+    // → first tap reveals + locks tile 0, the set keeps playing.
+    await seedConfig(page, {
+      targetsRequired: 2,
+      targetsHidden: 4,
+      attemptsAllowed: 3,
+      gridCols: 2,
+      gridRows: 2,
+      durationSeconds: 999,
+    });
+
+    await startPlay(page);
+
+    await tile(page, 0).click();
+    await expect(tile(page, 0).locator(MASCARA_IMG)).toBeVisible();
+
+    // The button must now be disabled / aria-disabled and not consume a tap.
+    await expect(tile(page, 0)).toBeDisabled();
+    await expect(tile(page, 0)).toHaveAttribute("aria-disabled", "true");
+
+    // Essai counter shows "01/03" after the single legitimate reveal.
+    await expect(page.getByText(/^01\s*\/\s*03$/)).toBeVisible();
+
+    // Force a second tap on the locked mascara (bypasses pointer-events guard).
+    await tile(page, 0).click({ force: true }).catch(() => {});
+    await tile(page, 0).click({ force: true }).catch(() => {});
+
+    // Counter must still read 01/03 — the locked tap was a no-op.
+    await expect(page.getByText(/^01\s*\/\s*03$/)).toBeVisible();
+    expect(await isMascara(page, 0)).toBe(true);
+  });
+
+  test("Rejouer starts a fresh game with no locked cards from the previous match", async ({
+    page,
+  }) => {
+    // 1 attempt + 2 required + all mascaras → first click locks tile 0 and
+    // ends the match as a loss across all 3 sets quickly.
+    await seedConfig(page, {
+      targetsRequired: 2,
+      targetsHidden: 4,
+      attemptsAllowed: 1,
+      gridCols: 2,
+      gridRows: 2,
+      durationSeconds: 999,
+    });
+
+    await startPlay(page);
+    await tile(page, 0).click();
+    await expect(tile(page, 0).locator(MASCARA_IMG)).toBeVisible();
+
+    // Wait for the full play to end (3 sets × (~2.8s hold + 1.6s setResult)).
+    const rejouer = page.getByRole("button", { name: /rejouer/i });
+    await expect(rejouer).toBeVisible({ timeout: 20_000 });
+
+    await rejouer.click();
+
+    // After Rejouer, every tile must be hidden — no mascara left over from
+    // the previous match's locked state.
+    await expect
+      .poll(
+        async () => {
+          for (let i = 0; i < 4; i++) {
+            if (await isMascara(page, i)) return false;
+          }
+          return await tile(page, 0).isEnabled();
+        },
+        { timeout: 10_000, intervals: [200] },
+      )
+      .toBe(true);
+
+    // Essai counter resets to 00/01.
+    await expect(page.getByText(/^00\s*\/\s*01$/)).toBeVisible();
+  });
 });
