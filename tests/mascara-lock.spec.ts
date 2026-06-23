@@ -47,14 +47,25 @@ async function isMascara(page: Page, index: number): Promise<boolean> {
 }
 
 async function startPlay(page: Page): Promise<void> {
-  await page.goto("/");
-  // Wait until the app has hydrated and the Commencer button is interactive.
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  // Wait for hydration — the SSR'd button renders before React attaches
+  // handlers, so click too early and nothing happens. networkidle is a
+  // pragmatic proxy for "hydration complete" in this dev setup.
+  await page.waitForLoadState("networkidle");
   const commencer = page.getByRole("button", { name: /commencer/i });
   await expect(commencer).toBeVisible();
-  await expect(commencer).toBeEnabled();
-  // Click and wait until tiles become interactive (phase === "setPlaying").
-  await commencer.click();
-  await expect(tile(page, 0)).toBeEnabled({ timeout: 5000 });
+  // Click and poll: if the first click loses to a still-attaching handler,
+  // retry until the tile becomes enabled (phase === "setPlaying").
+  await expect
+    .poll(
+      async () => {
+        if (await tile(page, 0).isEnabled()) return true;
+        await commencer.click({ trial: false }).catch(() => {});
+        return false;
+      },
+      { timeout: 10_000, intervals: [200, 400, 600] },
+    )
+    .toBe(true);
 }
 
 test.describe("mascara tile lock", () => {
