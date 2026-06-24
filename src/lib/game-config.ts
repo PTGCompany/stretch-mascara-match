@@ -79,7 +79,7 @@ export function validateWinLevels(levels: WinLevel[]): string | null {
     if (i > 0 && lv.min <= levels[i - 1].max)
       return `Niveau ${i + 1} : doit commencer après le précédent.`;
   }
-  if (levels[5].max > 32) return "Niveau 6 : max ≤ 32.";
+  if (levels[5].max > 18) return "Niveau 6 : max ≤ 18.";
   return null;
 }
 
