@@ -399,50 +399,53 @@ export function GameBoard() {
                         >
                           <SephoraToken />
                         </div>
-                        {/* front — product face (rotated 180° so it shows when parent flips) */}
-                        <motion.div
-                          initial={{ rotateY: 180 }}
-                          animate={{
-                            rotateY: 180,
-                            scale: isMatched ? [1, 1.08, 1] : 1,
-                          }}
-                          transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-                          className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden rounded-full p-1 text-center"
+                        {/* front — product face (rotated 180° via plain CSS so motion can't clobber it) */}
+                        <div
+                          className="absolute inset-0"
                           style={{
+                            transform: "rotateY(180deg)",
                             backfaceVisibility: "hidden",
                             WebkitBackfaceVisibility: "hidden",
-                            backgroundColor: "#ffffff",
-                            color: "#000",
-                            boxShadow: isMatched
-                              ? `0 0 0 2px ${PINK}, 0 10px 28px -8px rgba(237,111,126,0.55)`
-                              : "0 0 0 1px rgba(0,0,0,0.1)",
                           }}
                         >
-                          {card && (
-                            <>
-                              <span
-                                aria-hidden
-                                className="text-[18px] leading-none sm:text-[22px]"
-                              >
-                                {card.emoji}
-                              </span>
-                              <span
-                                className="mt-0.5 max-w-full truncate px-1 text-[5px] font-black uppercase leading-tight tracking-[0.06em] sm:text-[6px]"
-                                title={card.productName}
-                              >
-                                {card.productName}
-                              </span>
-                              {card.isHeroProduct && (
+                          <motion.div
+                            animate={isMatched ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+                            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                            className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden rounded-full p-1 text-center"
+                            style={{
+                              backgroundColor: "#ffffff",
+                              color: "#000",
+                              boxShadow: isMatched
+                                ? `0 0 0 2px ${PINK}, 0 10px 28px -8px rgba(237,111,126,0.55)`
+                                : "0 0 0 1px rgba(0,0,0,0.1)",
+                            }}
+                          >
+                            {card && (
+                              <>
                                 <span
-                                  className="mt-px text-[4px] font-bold uppercase tracking-[0.16em]"
-                                  style={{ color: PINK }}
+                                  aria-hidden
+                                  className="text-[18px] leading-none sm:text-[22px]"
                                 >
-                                  ★ HERO
+                                  {card.emoji}
                                 </span>
-                              )}
-                            </>
-                          )}
-                        </motion.div>
+                                <span
+                                  className="mt-0.5 max-w-full truncate px-1 text-[5px] font-black uppercase leading-tight tracking-[0.06em] sm:text-[6px]"
+                                  title={card.productName}
+                                >
+                                  {card.productName}
+                                </span>
+                                {card.isHeroProduct && (
+                                  <span
+                                    className="mt-px text-[4px] font-bold uppercase tracking-[0.16em]"
+                                    style={{ color: PINK }}
+                                  >
+                                    ★ HERO
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </motion.div>
+                        </div>
                       </motion.div>
                     </button>
                   );
