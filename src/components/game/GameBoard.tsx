@@ -401,7 +401,7 @@ export function GameBoard() {
                         </div>
                         {/* front — product face (rotated 180° so it shows when parent flips) */}
                         <motion.div
-                          initial={false}
+                          initial={{ rotateY: 180 }}
                           animate={{
                             rotateY: 180,
                             scale: isMatched ? [1, 1.08, 1] : 1,
