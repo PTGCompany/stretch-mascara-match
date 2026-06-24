@@ -21,12 +21,12 @@ export type GameConfig = {
 };
 
 export const DEFAULT_WIN_LEVELS: WinLevel[] = [
-  { level: 1, min: 1, max: 4, message: "BIEN JOUÉ !" },
-  { level: 2, min: 5, max: 9, message: "JOLI SCORE !" },
-  { level: 3, min: 10, max: 14, message: "TRÈS BONNE MÉMOIRE !" },
-  { level: 4, min: 15, max: 20, message: "EXCELLENT !" },
-  { level: 5, min: 21, max: 27, message: "INCROYABLE !" },
-  { level: 6, min: 28, max: 32, message: "BRAVO, SCORE PARFAIT !" },
+  { level: 1, min: 1, max: 3, message: "BIEN JOUÉ !" },
+  { level: 2, min: 4, max: 6, message: "JOLI SCORE !" },
+  { level: 3, min: 7, max: 9, message: "TRÈS BONNE MÉMOIRE !" },
+  { level: 4, min: 10, max: 13, message: "EXCELLENT !" },
+  { level: 5, min: 14, max: 17, message: "INCROYABLE !" },
+  { level: 6, min: 18, max: 18, message: "BRAVO, SCORE PARFAIT !" },
 ];
 
 export const DEFAULT_CONFIG: GameConfig = {
@@ -36,16 +36,16 @@ export const DEFAULT_CONFIG: GameConfig = {
     "RETROUVEZ UN MAXIMUM DE PAIRES DE PRODUITS AVANT LA FIN DU CHRONO !",
   heroProductName: "IT'S A STRETCH",
   durationSeconds: 60,
-  gridRows: 8,
-  gridCols: 8,
-  totalPairs: 32,
+  gridRows: 6,
+  gridCols: 6,
+  totalPairs: 18,
   flipBackDelayMs: 850,
   trackWrongAttempts: true,
   winLevels: DEFAULT_WIN_LEVELS,
   brandColor: "#ed6f7e",
 };
 
-const KEY = "sephora-game-config-v4";
+const KEY = "sephora-game-config-v5";
 
 export function loadConfig(): GameConfig {
   if (typeof window === "undefined") return DEFAULT_CONFIG;
@@ -79,7 +79,7 @@ export function validateWinLevels(levels: WinLevel[]): string | null {
     if (i > 0 && lv.min <= levels[i - 1].max)
       return `Niveau ${i + 1} : doit commencer après le précédent.`;
   }
-  if (levels[5].max > 32) return "Niveau 6 : max ≤ 32.";
+  if (levels[5].max > 18) return "Niveau 6 : max ≤ 18.";
   return null;
 }
 

@@ -644,7 +644,7 @@ export function GameBoard() {
                     Prêt(e)&nbsp;à&nbsp;<span style={{ color: PINK }}>jouer</span>&nbsp;?
                   </h2>
                   <p className="-mt-2 max-w-[36ch] text-[10px] font-bold uppercase tracking-[0.24em] text-white/55">
-                    Plateau 8×8 — {totalPairs} paires —{" "}
+                    Plateau 6×6 — {totalPairs} paires —{" "}
                     {config.durationSeconds}s — 6 niveaux à débloquer
                   </p>
                 </>
