@@ -399,19 +399,18 @@ export function GameBoard() {
                         >
                           <SephoraToken />
                         </div>
-                        {/* front — product face */}
+                        {/* front — product face (rotated 180° so it shows when parent flips) */}
                         <motion.div
-                          animate={
-                            isMatched
-                              ? { scale: [1, 1.08, 1] }
-                              : { scale: 1 }
-                          }
+                          initial={false}
+                          animate={{
+                            rotateY: 180,
+                            scale: isMatched ? [1, 1.08, 1] : 1,
+                          }}
                           transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
                           className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden rounded-full p-1 text-center"
                           style={{
                             backfaceVisibility: "hidden",
                             WebkitBackfaceVisibility: "hidden",
-                            transform: "rotateY(180deg)",
                             backgroundColor: "#ffffff",
                             color: "#000",
                             boxShadow: isMatched
