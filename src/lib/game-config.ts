@@ -1,37 +1,66 @@
+export type WinLevel = {
+  level: number;
+  min: number;
+  max: number;
+  message: string;
+};
+
 export type GameConfig = {
   title: string;
   titleAccent: string;
   instruction: string;
-  targetProductName: string;
-  targetsRequired: number;
-  targetsHidden: number;
-  attemptsAllowed: number;
+  heroProductName: string;
   durationSeconds: number;
-  gridCols: number;
   gridRows: number;
+  gridCols: number;
+  totalPairs: number;
+  flipBackDelayMs: number;
+  trackWrongAttempts: boolean;
+  winLevels: WinLevel[];
+  brandColor: string;
 };
+
+export const DEFAULT_WIN_LEVELS: WinLevel[] = [
+  { level: 1, min: 1, max: 4, message: "BIEN JOUÉ !" },
+  { level: 2, min: 5, max: 9, message: "JOLI SCORE !" },
+  { level: 3, min: 10, max: 14, message: "TRÈS BONNE MÉMOIRE !" },
+  { level: 4, min: 15, max: 20, message: "EXCELLENT !" },
+  { level: 5, min: 21, max: 27, message: "INCROYABLE !" },
+  { level: 6, min: 28, max: 32, message: "BRAVO, SCORE PARFAIT !" },
+];
 
 export const DEFAULT_CONFIG: GameConfig = {
   title: "MEMORY",
   titleAccent: "GAME",
-  instruction: "3 MANCHES — 2 ESSAIS PAR MANCHE — RETROUVEZ 2 MASCARAS IT'S A STRETCH !",
-  targetProductName: "IT'S A STRETCH",
-  targetsRequired: 2,
-  targetsHidden: 7,
-  attemptsAllowed: 2,
-  durationSeconds: 10,
-  gridCols: 3,
-  gridRows: 3,
+  instruction:
+    "RETROUVEZ UN MAXIMUM DE PAIRES DE PRODUITS AVANT LA FIN DU CHRONO !",
+  heroProductName: "IT'S A STRETCH",
+  durationSeconds: 60,
+  gridRows: 8,
+  gridCols: 8,
+  totalPairs: 32,
+  flipBackDelayMs: 850,
+  trackWrongAttempts: true,
+  winLevels: DEFAULT_WIN_LEVELS,
+  brandColor: "#ed6f7e",
 };
 
-const KEY = "sephora-game-config-v3";
+const KEY = "sephora-game-config-v4";
 
 export function loadConfig(): GameConfig {
   if (typeof window === "undefined") return DEFAULT_CONFIG;
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return DEFAULT_CONFIG;
-    return { ...DEFAULT_CONFIG, ...JSON.parse(raw) };
+    const parsed = JSON.parse(raw) as Partial<GameConfig>;
+    return {
+      ...DEFAULT_CONFIG,
+      ...parsed,
+      winLevels:
+        Array.isArray(parsed.winLevels) && parsed.winLevels.length === 6
+          ? parsed.winLevels
+          : DEFAULT_WIN_LEVELS,
+    };
   } catch {
     return DEFAULT_CONFIG;
   }
@@ -41,23 +70,49 @@ export function saveConfig(c: GameConfig) {
   localStorage.setItem(KEY, JSON.stringify(c));
 }
 
-export type SessionResult = "WIN" | "LOSS" | "TIMEOUT";
+export function validateWinLevels(levels: WinLevel[]): string | null {
+  if (levels.length !== 6) return "Il doit y avoir exactement 6 niveaux.";
+  for (let i = 0; i < levels.length; i++) {
+    const lv = levels[i];
+    if (lv.min < 1) return `Niveau ${i + 1} : minimum ≥ 1.`;
+    if (lv.max < lv.min) return `Niveau ${i + 1} : max ≥ min.`;
+    if (i > 0 && lv.min <= levels[i - 1].max)
+      return `Niveau ${i + 1} : doit commencer après le précédent.`;
+  }
+  if (levels[5].max > 32) return "Niveau 6 : max ≤ 32.";
+  return null;
+}
+
+export function computeWinLevel(
+  pairsFound: number,
+  levels: WinLevel[],
+): WinLevel | null {
+  if (pairsFound <= 0) return null;
+  for (const lv of levels) {
+    if (pairsFound >= lv.min && pairsFound <= lv.max) return lv;
+  }
+  return null;
+}
+
+export type CompletedReason = "TIMEOUT" | "PERFECT_SCORE" | "MANUAL_RESTART";
+
 export type GameSession = {
   id: string;
-  result: SessionResult;
-  targetsFound: number;
-  attemptsUsed: number;
+  pairsFound: number;
+  totalPairs: number;
+  wrongAttempts: number;
+  finalWinLevel: number | null;
   durationSeconds: number;
+  completedReason: CompletedReason;
   createdAt: number;
-  ticketCode?: string;
 };
 
-const SESS_KEY = "sephora-game-sessions";
+const SESS_KEY = "sephora-game-sessions-v2";
 
 export function loadSessions(): GameSession[] {
   if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(localStorage.getItem(SESS_KEY) ?? "[]");
+    return JSON.parse(localStorage.getItem(SESS_KEY) ?? "[]") as GameSession[];
   } catch {
     return [];
   }
