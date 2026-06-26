@@ -282,7 +282,7 @@ export function GameBoard() {
             <div className="w-full max-w-md">
               <div className="flex items-end justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-white/55">
-                  Temps restant
+                  Time remaining
                 </span>
                 <motion.span
                   key={`${timeRemaining}-${status}`}
@@ -315,7 +315,7 @@ export function GameBoard() {
             <div className="mt-2 hidden flex-col gap-2 border-t border-white/15 pt-4 lg:flex">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
-                  Paires trouvées
+                  Pairs found
                 </span>
                 <span className="font-display text-[24px] leading-none tabular-nums">
                   {pad2(pairsFound)}
@@ -324,7 +324,7 @@ export function GameBoard() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
-                  Niveau
+                  Level
                 </span>
                 <span
                   className="font-display text-[24px] leading-none tabular-nums"
@@ -476,7 +476,7 @@ export function GameBoard() {
               <div className="mt-5 divide-y divide-white/10">
                 <div className="flex items-center justify-between py-3">
                   <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
-                    Paires
+                    Pairs
                   </span>
                   <span
                     data-testid="pairs-count"
@@ -488,7 +488,7 @@ export function GameBoard() {
                 </div>
                 <div className="flex items-center justify-between py-3">
                   <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
-                    Niveau
+                    Level
                   </span>
                   <span
                     data-testid="current-level"
@@ -502,7 +502,7 @@ export function GameBoard() {
                 {config.trackWrongAttempts && (
                   <div className="flex items-center justify-between py-3">
                     <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
-                      Erreurs
+                      Errors
                     </span>
                     <span className="font-display text-[20px] leading-none tabular-nums text-white/70">
                       {pad2(wrongAttempts)}
@@ -514,7 +514,7 @@ export function GameBoard() {
 
             <div className="border-t border-white/20 pt-4">
               <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
-                Niveaux
+                Levels
               </span>
               <div className="mt-3 flex flex-col gap-1.5">
                 {config.winLevels.map((lv) => {
@@ -536,7 +536,7 @@ export function GameBoard() {
                       }
                     >
                       <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/70">
-                        Niv. {lv.level}
+                        Lv. {lv.level}
                       </span>
                       <span
                         className="text-[10px] font-bold tabular-nums"
@@ -582,7 +582,7 @@ export function GameBoard() {
               key={i}
               className="flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.32em] text-white/70"
             >
-              <span>Trouvez les paires</span>
+              <span>Find the pairs</span>
               <StripesMark className="h-2.5 w-4 opacity-60" color="#ffffff" />
               <span className="text-white">{config.heroProductName}</span>
               <StripesMark className="h-2.5 w-4 opacity-60" color="#ffffff" />
@@ -641,11 +641,11 @@ export function GameBoard() {
                     Sephora Collection · Memory Game
                   </span>
                   <h2 className="font-display whitespace-nowrap text-[36px] uppercase leading-[0.9] text-white sm:text-[52px]">
-                    Prêt(e)&nbsp;à&nbsp;<span style={{ color: PINK }}>jouer</span>&nbsp;?
+                    Ready&nbsp;to&nbsp;<span style={{ color: PINK }}>play</span>?
                   </h2>
                   <p className="-mt-2 max-w-[36ch] text-[10px] font-bold uppercase tracking-[0.24em] text-white/55">
-                    Plateau 6×6 — {totalPairs} paires —{" "}
-                    {config.durationSeconds}s — 6 niveaux à débloquer
+                    6×6 board — {totalPairs} pairs —{" "}
+                    {config.durationSeconds}s — 6 levels to unlock
                   </p>
                 </>
               )}
@@ -657,8 +657,8 @@ export function GameBoard() {
                     style={{ color: PINK }}
                   >
                     {completedReason === "PERFECT_SCORE"
-                      ? "Score parfait"
-                      : "Temps écoulé"}
+                      ? "Perfect score"
+                      : "Time's up"}
                   </span>
                   <h2
                     data-testid="final-headline"
@@ -666,14 +666,14 @@ export function GameBoard() {
                   >
                     {pairsFound === 0 ? (
                       <>
-                        DOMMAGE,{" "}
+                        TOO BAD,{" "}
                         <span style={{ color: PINK }}>
-                          retentez votre&nbsp;chance&nbsp;!
+                          try&nbsp;again!
                         </span>
                       </>
                     ) : (
                       <>
-                        {finalLevel?.message ?? "BIEN JOUÉ !"}
+                        {finalLevel?.message ?? "WELL PLAYED!"}
                       </>
                     )}
                   </h2>
@@ -685,7 +685,7 @@ export function GameBoard() {
                     <span className="text-white/40">/{totalPairs}</span>
                   </div>
                   <div className="text-[12px] font-bold uppercase tracking-[0.28em] text-white/70">
-                    Paires trouvées
+                    Pairs found
                   </div>
                   {finalLevel && (
                     <div
@@ -693,12 +693,12 @@ export function GameBoard() {
                       className="mt-1 border px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em]"
                       style={{ borderColor: PINK, color: PINK }}
                     >
-                      Niveau {finalLevel.level} / 6
+                      Level {finalLevel.level} / 6
                     </div>
                   )}
                   {config.trackWrongAttempts && (
                     <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/45">
-                      Erreurs : {wrongAttempts}
+                      Errors: {wrongAttempts}
                     </div>
                   )}
                 </>
@@ -710,7 +710,7 @@ export function GameBoard() {
                   className="wordmark px-14 py-4 text-[12px]"
                   style={{ backgroundColor: PINK, color: "#000" }}
                 >
-                  {status === "idle" ? "Commencer" : "Rejouer"}
+                  {status === "idle" ? "Start" : "Play again"}
                 </MotionButton>
 
                 {(status === "completed" || status === "timeout") && (
@@ -719,7 +719,7 @@ export function GameBoard() {
                     className="wordmark px-10 py-4 text-[12px] border border-white/30 text-white"
                     style={{ backgroundColor: "transparent" }}
                   >
-                    Retour à l'accueil
+                    Back to home
                   </MotionButton>
                 )}
               </div>
