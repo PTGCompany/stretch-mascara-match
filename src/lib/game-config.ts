@@ -21,12 +21,12 @@ export type GameConfig = {
 };
 
 export const DEFAULT_WIN_LEVELS: WinLevel[] = [
-  { level: 1, min: 1, max: 3, message: "BIEN JOUÉ !" },
-  { level: 2, min: 4, max: 6, message: "JOLI SCORE !" },
-  { level: 3, min: 7, max: 9, message: "TRÈS BONNE MÉMOIRE !" },
-  { level: 4, min: 10, max: 13, message: "EXCELLENT !" },
-  { level: 5, min: 14, max: 17, message: "INCROYABLE !" },
-  { level: 6, min: 18, max: 18, message: "BRAVO, SCORE PARFAIT !" },
+  { level: 1, min: 1, max: 3, message: "WELL PLAYED!" },
+  { level: 2, min: 4, max: 6, message: "NICE SCORE!" },
+  { level: 3, min: 7, max: 9, message: "GREAT MEMORY!" },
+  { level: 4, min: 10, max: 13, message: "EXCELLENT!" },
+  { level: 5, min: 14, max: 17, message: "INCREDIBLE!" },
+  { level: 6, min: 18, max: 18, message: "BRAVO, PERFECT SCORE!" },
 ];
 
 export const DEFAULT_CONFIG: GameConfig = {
