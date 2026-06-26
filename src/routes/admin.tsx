@@ -241,7 +241,7 @@ function AdminPage() {
                 key={lv.level}
                 className="grid grid-cols-[60px_repeat(2,1fr)_2fr] items-center gap-2"
               >
-                <span className="text-xs font-bold uppercase">Niv {lv.level}</span>
+                <span className="text-xs font-bold uppercase">Lv {lv.level}</span>
                 <input
                   type="number"
                   min={1}
@@ -313,7 +313,7 @@ function AdminPage() {
                 className="rounded-xl border bg-muted/30 p-2 text-center"
               >
                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Niv {i + 1}
+                  Lv {i + 1}
                 </div>
                 <div
                   className="text-lg font-black"

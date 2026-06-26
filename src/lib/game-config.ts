@@ -21,19 +21,19 @@ export type GameConfig = {
 };
 
 export const DEFAULT_WIN_LEVELS: WinLevel[] = [
-  { level: 1, min: 1, max: 3, message: "BIEN JOUÉ !" },
-  { level: 2, min: 4, max: 6, message: "JOLI SCORE !" },
-  { level: 3, min: 7, max: 9, message: "TRÈS BONNE MÉMOIRE !" },
-  { level: 4, min: 10, max: 13, message: "EXCELLENT !" },
-  { level: 5, min: 14, max: 17, message: "INCROYABLE !" },
-  { level: 6, min: 18, max: 18, message: "BRAVO, SCORE PARFAIT !" },
+  { level: 1, min: 1, max: 3, message: "WELL PLAYED!" },
+  { level: 2, min: 4, max: 6, message: "NICE SCORE!" },
+  { level: 3, min: 7, max: 9, message: "GREAT MEMORY!" },
+  { level: 4, min: 10, max: 13, message: "EXCELLENT!" },
+  { level: 5, min: 14, max: 17, message: "INCREDIBLE!" },
+  { level: 6, min: 18, max: 18, message: "BRAVO, PERFECT SCORE!" },
 ];
 
 export const DEFAULT_CONFIG: GameConfig = {
   title: "MEMORY",
   titleAccent: "GAME",
   instruction:
-    "RETROUVEZ UN MAXIMUM DE PAIRES DE PRODUITS AVANT LA FIN DU CHRONO !",
+    "FIND AS MANY PRODUCT PAIRS AS POSSIBLE BEFORE TIME RUNS OUT!",
   heroProductName: "IT'S A STRETCH",
   durationSeconds: 60,
   gridRows: 6,
@@ -45,7 +45,7 @@ export const DEFAULT_CONFIG: GameConfig = {
   brandColor: "#ed6f7e",
 };
 
-const KEY = "sephora-game-config-v5";
+const KEY = "sephora-game-config-v6";
 
 export function loadConfig(): GameConfig {
   if (typeof window === "undefined") return DEFAULT_CONFIG;
@@ -71,15 +71,15 @@ export function saveConfig(c: GameConfig) {
 }
 
 export function validateWinLevels(levels: WinLevel[]): string | null {
-  if (levels.length !== 6) return "Il doit y avoir exactement 6 niveaux.";
+  if (levels.length !== 6) return "There must be exactly 6 levels.";
   for (let i = 0; i < levels.length; i++) {
     const lv = levels[i];
-    if (lv.min < 1) return `Niveau ${i + 1} : minimum ≥ 1.`;
-    if (lv.max < lv.min) return `Niveau ${i + 1} : max ≥ min.`;
+    if (lv.min < 1) return `Level ${i + 1}: minimum ≥ 1.`;
+    if (lv.max < lv.min) return `Level ${i + 1}: max ≥ min.`;
     if (i > 0 && lv.min <= levels[i - 1].max)
-      return `Niveau ${i + 1} : doit commencer après le précédent.`;
+      return `Level ${i + 1}: must start after the previous one.`;
   }
-  if (levels[5].max > 18) return "Niveau 6 : max ≤ 18.";
+  if (levels[5].max > 18) return "Level 6: max ≤ 18.";
   return null;
 }
 
