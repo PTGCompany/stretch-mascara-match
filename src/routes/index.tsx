@@ -8,13 +8,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Touchscreen activation: trouvez un maximum de paires de produits Sephora Collection avant la fin du chrono !",
+          "Touchscreen activation: find as many Sephora Collection product pairs as possible before time runs out!",
       },
       { property: "og:title", content: "Sephora Collection — Memory Game" },
       {
         property: "og:description",
         content:
-          "Plateau 8×8 — 32 paires à retrouver — 6 niveaux de score à débloquer.",
+          "6×6 board — 18 pairs to find — 6 score levels to unlock.",
       },
     ],
   }),
