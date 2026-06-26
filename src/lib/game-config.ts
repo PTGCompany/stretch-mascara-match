@@ -33,7 +33,7 @@ export const DEFAULT_CONFIG: GameConfig = {
   title: "MEMORY",
   titleAccent: "GAME",
   instruction:
-    "RETROUVEZ UN MAXIMUM DE PAIRES DE PRODUITS AVANT LA FIN DU CHRONO !",
+    "FIND AS MANY PRODUCT PAIRS AS POSSIBLE BEFORE TIME RUNS OUT!",
   heroProductName: "IT'S A STRETCH",
   durationSeconds: 60,
   gridRows: 6,
