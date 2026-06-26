@@ -193,7 +193,7 @@ test.describe("memory game — 8x8 single play", () => {
       timeout: 8000,
     });
     await expect(page.getByTestId("final-pairs")).toContainText("1");
-    await expect(page.getByTestId("final-level")).toContainText("Niveau 1");
+    await expect(page.getByTestId("final-level")).toContainText("Level 1");
     await expect(
       page.getByRole("button", { name: /rejouer/i }),
     ).toBeVisible();
