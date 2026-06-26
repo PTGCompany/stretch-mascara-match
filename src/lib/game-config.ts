@@ -71,15 +71,15 @@ export function saveConfig(c: GameConfig) {
 }
 
 export function validateWinLevels(levels: WinLevel[]): string | null {
-  if (levels.length !== 6) return "Il doit y avoir exactement 6 niveaux.";
+  if (levels.length !== 6) return "There must be exactly 6 levels.";
   for (let i = 0; i < levels.length; i++) {
     const lv = levels[i];
-    if (lv.min < 1) return `Niveau ${i + 1} : minimum ≥ 1.`;
-    if (lv.max < lv.min) return `Niveau ${i + 1} : max ≥ min.`;
+    if (lv.min < 1) return `Level ${i + 1}: minimum ≥ 1.`;
+    if (lv.max < lv.min) return `Level ${i + 1}: max ≥ min.`;
     if (i > 0 && lv.min <= levels[i - 1].max)
-      return `Niveau ${i + 1} : doit commencer après le précédent.`;
+      return `Level ${i + 1}: must start after the previous one.`;
   }
-  if (levels[5].max > 18) return "Niveau 6 : max ≤ 18.";
+  if (levels[5].max > 18) return "Level 6: max ≤ 18.";
   return null;
 }
 
