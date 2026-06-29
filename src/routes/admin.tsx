@@ -306,7 +306,7 @@ function AdminPage() {
             <Stat label="Perfects" value={stats.perfects} />
             <Stat label="Timeouts" value={stats.timeouts} />
           </div>
-          <div className="mt-4 grid grid-cols-6 gap-2">
+          <div className="mt-4 grid grid-cols-5 gap-2">
             {stats.byLevel.map((n, i) => (
               <div
                 key={i}
