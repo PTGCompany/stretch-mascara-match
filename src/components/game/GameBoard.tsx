@@ -644,9 +644,10 @@ export function GameBoard() {
                     Ready&nbsp;to&nbsp;<span style={{ color: PINK }}>play</span>?
                   </h2>
                   <p className="-mt-2 max-w-[36ch] text-[10px] font-bold uppercase tracking-[0.24em] text-white/55">
-                    6×6 board — {totalPairs} pairs —{" "}
+                    {config.gridCols}×{config.gridRows} board — {totalPairs} pairs —{" "}
                     {config.durationSeconds}s — 6 levels to unlock
                   </p>
+
                 </>
               )}
 
