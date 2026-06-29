@@ -233,7 +233,7 @@ function AdminPage() {
           </div>
 
           <h3 className="mt-6 text-sm font-black uppercase tracking-wider">
-            Win levels (1 → 6)
+            Reward tiers (1 → 5)
           </h3>
           <div className="mt-3 space-y-2">
             {config.winLevels.map((lv, idx) => (
