@@ -39,12 +39,12 @@ function AdminPage() {
         avgWrong: "0",
         perfects: 0,
         timeouts: 0,
-        byLevel: [0, 0, 0, 0, 0, 0],
+        byLevel: [0, 0, 0, 0, 0],
       };
     const avgPairs = (
       sessions.reduce((a, s) => a + s.pairsFound, 0) / total
     ).toFixed(1);
-    const best = sessions.reduce((m, s) => Math.max(m, s.pairsFound), 0);
+    const best = sessions.reduce((m, s) => Math.max(m, s.score ?? s.pairsFound), 0);
     const avgWrong = (
       sessions.reduce((a, s) => a + s.wrongAttempts, 0) / total
     ).toFixed(1);
@@ -54,9 +54,9 @@ function AdminPage() {
     const timeouts = sessions.filter(
       (s) => s.completedReason === "TIMEOUT",
     ).length;
-    const byLevel = [0, 0, 0, 0, 0, 0];
+    const byLevel = [0, 0, 0, 0, 0];
     for (const s of sessions) {
-      if (s.finalWinLevel && s.finalWinLevel >= 1 && s.finalWinLevel <= 6) {
+      if (s.finalWinLevel && s.finalWinLevel >= 1 && s.finalWinLevel <= 5) {
         byLevel[s.finalWinLevel - 1]++;
       }
     }
