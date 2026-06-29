@@ -11,6 +11,7 @@ import {
   loadConfig,
   saveSession,
   computeWinLevel,
+  computeScore,
   type GameConfig,
   type CompletedReason,
 } from "@/lib/game-config";
@@ -56,7 +57,12 @@ export function GameBoard() {
   const flipTimerRef = useRef<number | null>(null);
   const sessionSavedRef = useRef(false);
 
-  const currentLevel = useMemo(
+  const liveScore = useMemo(
+    () => computeScore(pairsFound, timeRemaining, config),
+    [pairsFound, timeRemaining, config],
+  );
+
+  const currentTier = useMemo(
     () => computeWinLevel(pairsFound, config.winLevels),
     [pairsFound, config.winLevels],
   );
@@ -67,7 +73,6 @@ export function GameBoard() {
       flipTimerRef.current = null;
     }
     const fresh = buildBoard(totalPairs);
-    // Pad with placeholders if total > 2*totalPairs (defensive — defaults match).
     while (fresh.length < total) {
       const extra = fresh[fresh.length % fresh.length] ?? fresh[0];
       fresh.push({ ...extra, id: fresh.length });
@@ -101,16 +106,19 @@ export function GameBoard() {
   }, [config.durationSeconds]);
 
   const finalizeGame = useCallback(
-    (reason: CompletedReason, finalPairs: number, finalWrong: number) => {
+    (reason: CompletedReason, finalPairs: number, finalWrong: number, finalTimeRemaining: number) => {
       if (sessionSavedRef.current) return;
       sessionSavedRef.current = true;
-      const level = computeWinLevel(finalPairs, config.winLevels);
+      const tier = computeWinLevel(finalPairs, config.winLevels);
+      const score = computeScore(finalPairs, finalTimeRemaining, config);
       saveSession({
         id: crypto.randomUUID(),
         pairsFound: finalPairs,
         totalPairs,
         wrongAttempts: finalWrong,
-        finalWinLevel: level?.level ?? null,
+        finalWinLevel: tier?.level ?? null,
+        score,
+        timeRemaining: finalTimeRemaining,
         durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
         completedReason: reason,
         createdAt: Date.now(),
@@ -118,10 +126,9 @@ export function GameBoard() {
       setCompletedReason(reason);
       setStatus(reason === "PERFECT_SCORE" ? "completed" : "timeout");
     },
-    [config.winLevels, totalPairs],
+    [config, totalPairs],
   );
 
-  // Tap handler
   const onTapCard = (idx: number) => {
     if (status !== "playing") return;
     if (isCheckingPair) return;
@@ -138,7 +145,6 @@ export function GameBoard() {
 
     if (newFlipped.length < 2) return;
 
-    // 2 cards flipped — evaluate pair
     setIsCheckingPair(true);
     const [aIdx, bIdx] = newFlipped;
     const a = cards[aIdx];
@@ -146,7 +152,6 @@ export function GameBoard() {
     const match = a.productId === b.productId;
 
     if (match) {
-      // Lock both as matched
       window.setTimeout(() => {
         setCardStates((prev) => {
           const copy = [...prev];
@@ -159,11 +164,10 @@ export function GameBoard() {
         setFlippedIds([]);
         setIsCheckingPair(false);
         if (newPairs >= totalPairs) {
-          finalizeGame("PERFECT_SCORE", newPairs, wrongAttempts);
+          finalizeGame("PERFECT_SCORE", newPairs, wrongAttempts, timeRemaining);
         }
       }, 320);
     } else {
-      // Flip back after delay
       const newWrong = wrongAttempts + 1;
       if (config.trackWrongAttempts) setWrongAttempts(newWrong);
       flipTimerRef.current = window.setTimeout(() => {
@@ -180,11 +184,10 @@ export function GameBoard() {
     }
   };
 
-  // Timer
   useEffect(() => {
     if (status !== "playing") return;
     if (timeRemaining <= 0) {
-      finalizeGame("TIMEOUT", pairsFound, wrongAttempts);
+      finalizeGame("TIMEOUT", pairsFound, wrongAttempts, 0);
       return;
     }
     const id = window.setTimeout(
@@ -210,12 +213,21 @@ export function GameBoard() {
   const timeUrgent = status === "playing" && timeRemaining <= 10;
   const overlayOpen = status === "idle" || status === "completed" || status === "timeout";
 
-  const finalLevel = useMemo(
+  const finalTier = useMemo(
     () => computeWinLevel(pairsFound, config.winLevels),
     [pairsFound, config.winLevels],
   );
 
-  // Compute responsive grid card size
+  const finalScore = useMemo(() => {
+    if (status === "completed") {
+      return computeScore(pairsFound, timeRemaining, config);
+    }
+    if (status === "timeout") {
+      return computeScore(pairsFound, 0, config);
+    }
+    return liveScore;
+  }, [status, pairsFound, timeRemaining, config, liveScore]);
+
   const gridStyle: React.CSSProperties = {
     gridTemplateColumns: `repeat(${config.gridCols}, minmax(0, 1fr))`,
     gridTemplateRows: `repeat(${config.gridRows}, minmax(0, 1fr))`,
@@ -282,7 +294,7 @@ export function GameBoard() {
             <div className="w-full max-w-md">
               <div className="flex items-end justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-white/55">
-                  Time remaining
+                  Temps restant
                 </span>
                 <motion.span
                   key={`${timeRemaining}-${status}`}
@@ -310,47 +322,22 @@ export function GameBoard() {
                 />
               </div>
             </div>
-
-            {/* In-play score recap (subtle) */}
-            <div className="mt-2 hidden flex-col gap-2 border-t border-white/15 pt-4 lg:flex">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
-                  Pairs found
-                </span>
-                <span className="font-display text-[24px] leading-none tabular-nums">
-                  {pad2(pairsFound)}
-                  <span className="text-white/30">/{pad2(totalPairs)}</span>
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
-                  Level
-                </span>
-                <span
-                  className="font-display text-[24px] leading-none tabular-nums"
-                  style={{ color: currentLevel ? PINK : "rgba(255,255,255,0.4)" }}
-                >
-                  {currentLevel ? pad2(currentLevel.level) : "—"}
-                  <span className="text-white/30">/06</span>
-                </span>
-              </div>
-            </div>
           </section>
 
-          {/* CENTER — 8x8 board */}
+          {/* CENTER — board (4x5 by default) */}
           <section className="flex min-w-0 items-center justify-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full max-w-[640px] border border-white/15 bg-white/[0.04] p-3 backdrop-blur-sm sm:p-4"
+              className="relative w-full max-w-[520px] border border-white/15 bg-white/[0.04] p-3 backdrop-blur-sm sm:p-4"
             >
               <span className="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t" style={{ borderColor: PINK }} />
               <span className="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t" style={{ borderColor: PINK }} />
               <span className="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l" style={{ borderColor: PINK }} />
               <span className="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r" style={{ borderColor: PINK }} />
 
-              <div className="grid gap-1.5 sm:gap-2" style={gridStyle}>
+              <div className="grid gap-2 sm:gap-2.5" style={gridStyle}>
                 {Array.from({ length: total }).map((_, i) => {
                   const card = cards[i];
                   const s = cardStates[i] ?? "hidden";
@@ -358,18 +345,25 @@ export function GameBoard() {
                   const isMatched = s === "matched";
                   const interactive =
                     status === "playing" && !isCheckingPair && s === "hidden";
+                  const ariaLabel = !card
+                    ? "Carte cachée"
+                    : isMatched
+                      ? `Paire trouvée, ${card.productName}`
+                      : isRevealed
+                        ? card.productName
+                        : "Carte cachée";
                   return (
                     <button
                       key={i}
                       type="button"
-                      aria-label={`Card ${i + 1}`}
+                      aria-label={ariaLabel}
                       data-card-index={i}
                       data-card-state={s}
                       data-product-id={card?.productId ?? ""}
                       disabled={!interactive}
                       aria-disabled={!interactive}
                       onClick={() => onTapCard(i)}
-                      className="group relative aspect-square w-full rounded-full focus-visible:outline-none disabled:cursor-not-allowed motion-reduce:transition-none"
+                      className="group relative aspect-square w-full rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sephora-pink)] disabled:cursor-not-allowed motion-reduce:transition-none"
                       style={{
                         perspective: 1000,
                         touchAction: "manipulation",
@@ -399,7 +393,7 @@ export function GameBoard() {
                         >
                           <SephoraToken />
                         </div>
-                        {/* front — product face (rotated 180° via plain CSS so motion can't clobber it) */}
+                        {/* front — product packshot */}
                         <div
                           className="absolute inset-0"
                           style={{
@@ -411,7 +405,7 @@ export function GameBoard() {
                           <motion.div
                             animate={isMatched ? { scale: [1, 1.08, 1] } : { scale: 1 }}
                             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-                            className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden rounded-full p-1 text-center"
+                            className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-full"
                             style={{
                               backgroundColor: "#ffffff",
                               color: "#000",
@@ -421,28 +415,13 @@ export function GameBoard() {
                             }}
                           >
                             {card && (
-                              <>
-                                <span
-                                  aria-hidden
-                                  className="text-[18px] leading-none sm:text-[22px]"
-                                >
-                                  {card.emoji}
-                                </span>
-                                <span
-                                  className="mt-0.5 max-w-full truncate px-1 text-[5px] font-black uppercase leading-tight tracking-[0.06em] sm:text-[6px]"
-                                  title={card.productName}
-                                >
-                                  {card.productName}
-                                </span>
-                                {card.isHeroProduct && (
-                                  <span
-                                    className="mt-px text-[4px] font-bold uppercase tracking-[0.16em]"
-                                    style={{ color: PINK }}
-                                  >
-                                    ★ HERO
-                                  </span>
-                                )}
-                              </>
+                              <img
+                                src={card.imageUrl}
+                                alt={card.productName}
+                                loading="lazy"
+                                draggable={false}
+                                className="h-[78%] w-[78%] select-none object-contain"
+                              />
                             )}
                           </motion.div>
                         </div>
@@ -476,7 +455,7 @@ export function GameBoard() {
               <div className="mt-5 divide-y divide-white/10">
                 <div className="flex items-center justify-between py-3">
                   <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
-                    Pairs
+                    Paires
                   </span>
                   <span
                     data-testid="pairs-count"
@@ -488,21 +467,20 @@ export function GameBoard() {
                 </div>
                 <div className="flex items-center justify-between py-3">
                   <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
-                    Level
+                    Points
                   </span>
                   <span
-                    data-testid="current-level"
+                    data-testid="current-score"
                     className="font-display text-[28px] leading-none tabular-nums"
-                    style={{ color: currentLevel ? PINK : "rgba(255,255,255,0.4)" }}
+                    style={{ color: pairsFound > 0 ? PINK : "rgba(255,255,255,0.4)" }}
                   >
-                    {currentLevel ? pad2(currentLevel.level) : "—"}
-                    <span className="text-white/30">/06</span>
+                    {liveScore}
                   </span>
                 </div>
                 {config.trackWrongAttempts && (
                   <div className="flex items-center justify-between py-3">
                     <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
-                      Errors
+                      Erreurs
                     </span>
                     <span className="font-display text-[20px] leading-none tabular-nums text-white/70">
                       {pad2(wrongAttempts)}
@@ -514,14 +492,14 @@ export function GameBoard() {
 
             <div className="border-t border-white/20 pt-4">
               <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
-                Levels
+                Paliers de gain
               </span>
               <div className="mt-3 flex flex-col gap-1.5">
                 {config.winLevels.map((lv) => {
                   const isReached =
-                    currentLevel != null && currentLevel.level >= lv.level;
+                    currentTier != null && currentTier.level >= lv.level;
                   const isCurrent =
-                    currentLevel != null && currentLevel.level === lv.level;
+                    currentTier != null && currentTier.level === lv.level;
                   return (
                     <div
                       key={lv.level}
@@ -536,7 +514,7 @@ export function GameBoard() {
                       }
                     >
                       <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/70">
-                        Lv. {lv.level}
+                        Niv. {lv.level}
                       </span>
                       <span
                         className="text-[10px] font-bold tabular-nums"
@@ -582,7 +560,7 @@ export function GameBoard() {
               key={i}
               className="flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.32em] text-white/70"
             >
-              <span>Find the pairs</span>
+              <span>Trouvez les paires</span>
               <StripesMark className="h-2.5 w-4 opacity-60" color="#ffffff" />
               <span className="text-white">{config.heroProductName}</span>
               <StripesMark className="h-2.5 w-4 opacity-60" color="#ffffff" />
@@ -640,14 +618,13 @@ export function GameBoard() {
                   >
                     Sephora Collection · Memory Game
                   </span>
-                  <h2 className="font-display whitespace-nowrap text-[36px] uppercase leading-[0.9] text-white sm:text-[52px]">
-                    Ready&nbsp;to&nbsp;<span style={{ color: PINK }}>play</span>?
+                  <h2 className="font-display text-[36px] uppercase leading-[0.9] text-white sm:text-[52px]">
+                    Prêt(e)&nbsp;à&nbsp;<span style={{ color: PINK }}>jouer</span>&nbsp;?
                   </h2>
                   <p className="-mt-2 max-w-[36ch] text-[10px] font-bold uppercase tracking-[0.24em] text-white/55">
-                    {config.gridCols}×{config.gridRows} board — {totalPairs} pairs —{" "}
-                    {config.durationSeconds}s — 6 levels to unlock
+                    {config.gridCols}×{config.gridRows} — {totalPairs} paires —{" "}
+                    {config.durationSeconds}s
                   </p>
-
                 </>
               )}
 
@@ -658,48 +635,70 @@ export function GameBoard() {
                     style={{ color: PINK }}
                   >
                     {completedReason === "PERFECT_SCORE"
-                      ? "Perfect score"
-                      : "Time's up"}
+                      ? "Bravo, toutes les paires ont été trouvées !"
+                      : "Temps écoulé"}
                   </span>
                   <h2
                     data-testid="final-headline"
-                    className="font-display text-[36px] uppercase leading-[0.95] text-white sm:text-[48px]"
+                    className="font-display text-[32px] uppercase leading-[0.95] text-white sm:text-[44px]"
                   >
                     {pairsFound === 0 ? (
                       <>
-                        TOO BAD,{" "}
+                        DOMMAGE,{" "}
                         <span style={{ color: PINK }}>
-                          try&nbsp;again!
+                          retentez&nbsp;votre&nbsp;chance&nbsp;!
                         </span>
                       </>
                     ) : (
-                      <>
-                        {finalLevel?.message ?? "WELL PLAYED!"}
-                      </>
+                      <>{finalTier?.message ?? "GAIN NIVEAU 1"}</>
                     )}
                   </h2>
-                  <div
-                    className="font-display text-[48px] uppercase leading-none tabular-nums text-white sm:text-[64px]"
-                    data-testid="final-pairs"
-                  >
-                    {pairsFound}
-                    <span className="text-white/40">/{totalPairs}</span>
+                  <div className="flex flex-col items-center gap-1">
+                    <div
+                      className="font-display text-[40px] uppercase leading-none tabular-nums text-white sm:text-[52px]"
+                      data-testid="final-pairs"
+                    >
+                      {pairsFound}
+                      <span className="text-white/40">/{totalPairs}</span>
+                    </div>
+                    <div className="text-[11px] font-bold uppercase tracking-[0.28em] text-white/70">
+                      Paires trouvées
+                    </div>
                   </div>
-                  <div className="text-[12px] font-bold uppercase tracking-[0.28em] text-white/70">
-                    Pairs found
+                  <div className="flex flex-col items-center gap-1">
+                    <div
+                      data-testid="final-score"
+                      className="font-display text-[28px] leading-none tabular-nums"
+                      style={{ color: PINK }}
+                    >
+                      {finalScore} pts
+                    </div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
+                      Score final
+                    </div>
                   </div>
-                  {finalLevel && (
+                  {finalTier && (
                     <div
                       data-testid="final-level"
-                      className="mt-1 border px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em]"
-                      style={{ borderColor: PINK, color: PINK }}
+                      className="mt-1 flex flex-col items-center gap-1 border px-5 py-3"
+                      style={{ borderColor: PINK }}
                     >
-                      Level {finalLevel.level} / 6
+                      <span
+                        className="text-[11px] font-black uppercase tracking-[0.24em]"
+                        style={{ color: PINK }}
+                      >
+                        Niveau {finalTier.level} / 5
+                      </span>
+                      {finalTier.gainDescription && (
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
+                          {finalTier.gainDescription}
+                        </span>
+                      )}
                     </div>
                   )}
                   {config.trackWrongAttempts && (
                     <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/45">
-                      Errors: {wrongAttempts}
+                      Erreurs : {wrongAttempts}
                     </div>
                   )}
                 </>
@@ -711,7 +710,7 @@ export function GameBoard() {
                   className="wordmark px-14 py-4 text-[12px]"
                   style={{ backgroundColor: PINK, color: "#000" }}
                 >
-                  {status === "idle" ? "Start" : "Play again"}
+                  {status === "idle" ? "Commencer" : "Rejouer"}
                 </MotionButton>
 
                 {(status === "completed" || status === "timeout") && (
@@ -720,7 +719,7 @@ export function GameBoard() {
                     className="wordmark px-10 py-4 text-[12px] border border-white/30 text-white"
                     style={{ backgroundColor: "transparent" }}
                   >
-                    Back to home
+                    Accueil
                   </MotionButton>
                 )}
               </div>

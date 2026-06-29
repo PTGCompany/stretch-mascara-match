@@ -12,8 +12,8 @@ import { test, expect, type Page } from "@playwright/test";
  *  - replay to get a fresh shuffled board
  */
 
-const CONFIG_KEY = "sephora-game-config-v4";
-const SESS_KEY = "sephora-game-sessions-v2";
+const CONFIG_KEY = "sephora-game-config-v7";
+const SESS_KEY = "sephora-game-sessions-v3";
 
 type ConfigOverride = Record<string, unknown>;
 
@@ -24,19 +24,21 @@ async function seedConfig(page: Page, overrides: ConfigOverride): Promise<void> 
     instruction: "TEST",
     heroProductName: "IT'S A STRETCH",
     durationSeconds: 60,
-    gridRows: 8,
-    gridCols: 8,
-    totalPairs: 32,
+    gridRows: 5,
+    gridCols: 4,
+    totalPairs: 10,
     flipBackDelayMs: 600,
     trackWrongAttempts: true,
+    pointsPerPair: 100,
+    timeBonusEnabled: true,
+    timeBonusPointsPerSecond: 10,
     brandColor: "#ed6f7e",
     winLevels: [
-      { level: 1, min: 1, max: 4, message: "BIEN JOUÉ !" },
-      { level: 2, min: 5, max: 9, message: "JOLI SCORE !" },
-      { level: 3, min: 10, max: 14, message: "TRÈS BONNE MÉMOIRE !" },
-      { level: 4, min: 15, max: 20, message: "EXCELLENT !" },
-      { level: 5, min: 21, max: 27, message: "INCROYABLE !" },
-      { level: 6, min: 28, max: 32, message: "BRAVO, SCORE PARFAIT !" },
+      { level: 1, min: 1, max: 2, message: "GAIN NIVEAU 1" },
+      { level: 2, min: 3, max: 4, message: "GAIN NIVEAU 2" },
+      { level: 3, min: 5, max: 6, message: "GAIN NIVEAU 3" },
+      { level: 4, min: 7, max: 8, message: "GAIN NIVEAU 4" },
+      { level: 5, min: 9, max: 10, message: "GAIN NIVEAU 5" },
     ],
   };
   const cfg = { ...base, ...overrides };

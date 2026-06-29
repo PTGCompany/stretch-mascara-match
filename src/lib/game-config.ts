@@ -3,6 +3,7 @@ export type WinLevel = {
   min: number;
   max: number;
   message: string;
+  gainDescription?: string;
 };
 
 export type GameConfig = {
@@ -16,36 +17,45 @@ export type GameConfig = {
   totalPairs: number;
   flipBackDelayMs: number;
   trackWrongAttempts: boolean;
+  pointsPerPair: number;
+  timeBonusEnabled: boolean;
+  timeBonusPointsPerSecond: number;
   winLevels: WinLevel[];
   brandColor: string;
 };
 
+/**
+ * Reward tiers (stored as `winLevels` for backwards compatibility).
+ * 0-pair case ("DOMMAGE…") is handled at render time, not as a tier.
+ */
 export const DEFAULT_WIN_LEVELS: WinLevel[] = [
-  { level: 1, min: 1, max: 3, message: "WELL PLAYED!" },
-  { level: 2, min: 4, max: 6, message: "NICE SCORE!" },
-  { level: 3, min: 7, max: 9, message: "GREAT MEMORY!" },
-  { level: 4, min: 10, max: 13, message: "EXCELLENT!" },
-  { level: 5, min: 14, max: 17, message: "INCREDIBLE!" },
-  { level: 6, min: 18, max: 18, message: "BRAVO, PERFECT SCORE!" },
+  { level: 1, min: 1, max: 2, message: "GAIN NIVEAU 1", gainDescription: "Échantillon découverte" },
+  { level: 2, min: 3, max: 4, message: "GAIN NIVEAU 2", gainDescription: "Mini-format soin" },
+  { level: 3, min: 5, max: 6, message: "GAIN NIVEAU 3", gainDescription: "Trousse beauté" },
+  { level: 4, min: 7, max: 8, message: "GAIN NIVEAU 4", gainDescription: "Produit Sephora Collection" },
+  { level: 5, min: 9, max: 10, message: "GAIN NIVEAU 5", gainDescription: "Coffret signature" },
 ];
 
 export const DEFAULT_CONFIG: GameConfig = {
   title: "MEMORY",
   titleAccent: "GAME",
   instruction:
-    "FIND AS MANY PRODUCT PAIRS AS POSSIBLE BEFORE TIME RUNS OUT!",
+    "RETROUVEZ LE MAXIMUM DE PAIRES EN 30 SECONDES !",
   heroProductName: "IT'S A STRETCH",
-  durationSeconds: 60,
-  gridRows: 6,
-  gridCols: 6,
-  totalPairs: 18,
-  flipBackDelayMs: 850,
+  durationSeconds: 30,
+  gridRows: 5,
+  gridCols: 4,
+  totalPairs: 10,
+  flipBackDelayMs: 900,
   trackWrongAttempts: true,
+  pointsPerPair: 100,
+  timeBonusEnabled: true,
+  timeBonusPointsPerSecond: 10,
   winLevels: DEFAULT_WIN_LEVELS,
   brandColor: "#ed6f7e",
 };
 
-const KEY = "sephora-game-config-v6";
+const KEY = "sephora-game-config-v7";
 
 export function loadConfig(): GameConfig {
   if (typeof window === "undefined") return DEFAULT_CONFIG;
@@ -57,7 +67,7 @@ export function loadConfig(): GameConfig {
       ...DEFAULT_CONFIG,
       ...parsed,
       winLevels:
-        Array.isArray(parsed.winLevels) && parsed.winLevels.length === 6
+        Array.isArray(parsed.winLevels) && parsed.winLevels.length === 5
           ? parsed.winLevels
           : DEFAULT_WIN_LEVELS,
     };
@@ -71,15 +81,15 @@ export function saveConfig(c: GameConfig) {
 }
 
 export function validateWinLevels(levels: WinLevel[]): string | null {
-  if (levels.length !== 6) return "There must be exactly 6 levels.";
+  if (levels.length !== 5) return "There must be exactly 5 reward tiers.";
   for (let i = 0; i < levels.length; i++) {
     const lv = levels[i];
-    if (lv.min < 1) return `Level ${i + 1}: minimum ≥ 1.`;
-    if (lv.max < lv.min) return `Level ${i + 1}: max ≥ min.`;
+    if (lv.min < 1) return `Tier ${i + 1}: min ≥ 1.`;
+    if (lv.max < lv.min) return `Tier ${i + 1}: max ≥ min.`;
     if (i > 0 && lv.min <= levels[i - 1].max)
-      return `Level ${i + 1}: must start after the previous one.`;
+      return `Tier ${i + 1}: must start after the previous one.`;
   }
-  if (levels[5].max > 18) return "Level 6: max ≤ 18.";
+  if (levels[4].max > 10) return "Tier 5: max ≤ 10.";
   return null;
 }
 
@@ -94,6 +104,19 @@ export function computeWinLevel(
   return null;
 }
 
+export function computeScore(
+  pairsFound: number,
+  timeRemaining: number,
+  config: Pick<GameConfig, "pointsPerPair" | "timeBonusEnabled" | "timeBonusPointsPerSecond" | "totalPairs">,
+): number {
+  const base = pairsFound * config.pointsPerPair;
+  const bonus =
+    config.timeBonusEnabled && pairsFound >= config.totalPairs
+      ? Math.max(0, timeRemaining) * config.timeBonusPointsPerSecond
+      : 0;
+  return base + bonus;
+}
+
 export type CompletedReason = "TIMEOUT" | "PERFECT_SCORE" | "MANUAL_RESTART";
 
 export type GameSession = {
@@ -102,12 +125,14 @@ export type GameSession = {
   totalPairs: number;
   wrongAttempts: number;
   finalWinLevel: number | null;
+  score: number;
+  timeRemaining: number;
   durationSeconds: number;
   completedReason: CompletedReason;
   createdAt: number;
 };
 
-const SESS_KEY = "sephora-game-sessions-v2";
+const SESS_KEY = "sephora-game-sessions-v3";
 
 export function loadSessions(): GameSession[] {
   if (typeof window === "undefined") return [];
