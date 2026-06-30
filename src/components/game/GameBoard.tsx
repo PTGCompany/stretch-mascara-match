@@ -480,7 +480,7 @@ export function GameBoard() {
                 {config.trackWrongAttempts && (
                   <div className="flex items-center justify-between py-3">
                     <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
-                      Erreurs
+                      Misses
                     </span>
                     <span className="font-display text-[20px] leading-none tabular-nums text-white/70">
                       {pad2(wrongAttempts)}
