@@ -346,12 +346,12 @@ export function GameBoard() {
                   const interactive =
                     status === "playing" && !isCheckingPair && s === "hidden";
                   const ariaLabel = !card
-                    ? "Carte cachée"
+                    ? "Hidden card"
                     : isMatched
-                      ? `Paire trouvée, ${card.productName}`
+                      ? `Pair found, ${card.productName}`
                       : isRevealed
                         ? card.productName
-                        : "Carte cachée";
+                        : "Hidden card";
                   return (
                     <button
                       key={i}
