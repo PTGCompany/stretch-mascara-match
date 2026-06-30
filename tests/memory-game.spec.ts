@@ -34,11 +34,11 @@ async function seedConfig(page: Page, overrides: ConfigOverride): Promise<void> 
     timeBonusPointsPerSecond: 10,
     brandColor: "#ed6f7e",
     winLevels: [
-      { level: 1, min: 1, max: 2, message: "GAIN NIVEAU 1" },
-      { level: 2, min: 3, max: 4, message: "GAIN NIVEAU 2" },
-      { level: 3, min: 5, max: 6, message: "GAIN NIVEAU 3" },
-      { level: 4, min: 7, max: 8, message: "GAIN NIVEAU 4" },
-      { level: 5, min: 9, max: 10, message: "GAIN NIVEAU 5" },
+      { level: 1, min: 1, max: 2, message: "TIER 1 REWARD" },
+      { level: 2, min: 3, max: 4, message: "TIER 2 REWARD" },
+      { level: 3, min: 5, max: 6, message: "TIER 3 REWARD" },
+      { level: 4, min: 7, max: 8, message: "TIER 4 REWARD" },
+      { level: 5, min: 9, max: 10, message: "TIER 5 REWARD" },
     ],
   };
   const cfg = { ...base, ...overrides };
