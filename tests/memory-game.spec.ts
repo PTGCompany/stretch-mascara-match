@@ -120,7 +120,7 @@ async function startGame(page: Page): Promise<void> {
     .toBe(true);
 }
 
-test.describe("memory game — 8x8 single play", () => {
+test.describe("memory game — 4×5 single play", () => {
   test("flipping a matching pair locks both cards as matched and increments pairs", async ({
     page,
   }) => {
