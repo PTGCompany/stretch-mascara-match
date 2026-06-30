@@ -674,7 +674,7 @@ export function GameBoard() {
                       {finalScore} pts
                     </div>
                     <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
-                      Score final
+                      Final score
                     </div>
                   </div>
                   {finalTier && (
