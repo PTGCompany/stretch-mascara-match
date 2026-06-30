@@ -710,7 +710,7 @@ export function GameBoard() {
                   className="wordmark px-14 py-4 text-[12px]"
                   style={{ backgroundColor: PINK, color: "#000" }}
                 >
-                  {status === "idle" ? "Commencer" : "Rejouer"}
+                  {status === "idle" ? "Start" : "Play again"}
                 </MotionButton>
 
                 {(status === "completed" || status === "timeout") && (
