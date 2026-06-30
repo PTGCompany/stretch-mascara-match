@@ -807,6 +807,11 @@ export function GameBoard() {
                       )}
                     </div>
                   )}
+                  {finalTier && (
+                    <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.32em] text-white/55">
+                      Ticket&nbsp;<span className="text-white" data-testid="ticket-code">{ticketCode}</span>
+                    </div>
+                  )}
                   {config.trackWrongAttempts && (
                     <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/45">
                       Misses: {wrongAttempts}
