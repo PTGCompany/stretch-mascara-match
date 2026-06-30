@@ -221,12 +221,14 @@ export function GameBoard() {
   const progress = useMemo(() => {
     if (status === "playing")
       return (timeRemaining / config.durationSeconds) * 100;
-    if (status === "idle") return 100;
+    if (status === "idle" || status === "rules") return 100;
     return 0;
   }, [status, timeRemaining, config.durationSeconds]);
 
+
   const timeUrgent = status === "playing" && timeRemaining <= 10;
-  const overlayOpen = status === "idle" || status === "completed" || status === "timeout";
+  const overlayOpen = status === "idle" || status === "rules" || status === "completed" || status === "timeout";
+
 
   const finalTier = useMemo(
     () => computeWinLevel(pairsFound, config.winLevels),
@@ -323,9 +325,10 @@ export function GameBoard() {
                   className="font-display text-[44px] leading-none tabular-nums tracking-tight sm:text-[56px]"
                   style={{ color: timeUrgent ? PINK : "#ffffff" }}
                 >
-                  {status === "idle"
+                  {status === "idle" || status === "rules"
                     ? fmtTime(config.durationSeconds)
                     : fmtTime(timeRemaining)}
+
                 </motion.span>
               </div>
               <div className="mt-3 h-[3px] w-full overflow-hidden bg-white/10">
