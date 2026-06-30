@@ -21,7 +21,8 @@ import { Settings } from "lucide-react";
 import { MARQUEE } from "@/lib/motion";
 
 type CardVisual = "hidden" | "flipped" | "matched";
-type GameStatus = "idle" | "playing" | "completed" | "timeout";
+type GameStatus = "idle" | "rules" | "playing" | "completed" | "timeout";
+
 
 const PINK = "#ed6f7e";
 
@@ -96,6 +97,7 @@ export function GameBoard() {
       flipTimerRef.current = null;
     }
     setStatus("idle");
+    setCards([]);
     setCardStates([]);
     setFlippedIds([]);
     setPairsFound(0);
@@ -104,6 +106,19 @@ export function GameBoard() {
     setTimeRemaining(config.durationSeconds);
     setCompletedReason(null);
   }, [config.durationSeconds]);
+
+  const showRules = useCallback(() => {
+    setStatus("rules");
+    setCards([]);
+    setCardStates([]);
+    setFlippedIds([]);
+    setPairsFound(0);
+    setWrongAttempts(0);
+    setIsCheckingPair(false);
+    setTimeRemaining(config.durationSeconds);
+    setCompletedReason(null);
+  }, [config.durationSeconds]);
+
 
   const finalizeGame = useCallback(
     (reason: CompletedReason, finalPairs: number, finalWrong: number, finalTimeRemaining: number) => {
