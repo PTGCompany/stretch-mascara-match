@@ -219,7 +219,7 @@ test.describe("memory game — 8x8 single play", () => {
     await expect(playAgain).toBeVisible({ timeout: 8000 });
     await playAgain.click();
 
-    // All 64 cards back to hidden, pair count 00, no final screen.
+    // All 20 cards back to hidden, pair count 00, no final screen.
     await expect(page.getByTestId("pairs-count")).toContainText("00", {
       timeout: 5000,
     });
