@@ -245,6 +245,66 @@ export function GameBoard() {
     return liveScore;
   }, [status, pairsFound, timeRemaining, config, liveScore]);
 
+  const ticketCode = useMemo(() => {
+    if (status !== "completed" && status !== "timeout") return "";
+    const r = Math.random().toString(36).slice(2, 6).toUpperCase();
+    const t = Date.now().toString(36).slice(-4).toUpperCase();
+    return `SC-${t}${r}`;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
+
+  const printTicket = useCallback(() => {
+    if (!finalTier) return;
+    const now = new Date();
+    const dateStr = now.toLocaleString();
+    const giftLine = finalTier.gainDescription ?? "";
+    const html = `<!doctype html><html><head><meta charset="utf-8"/><title>Sephora Collection — Reward Ticket ${ticketCode}</title>
+<style>
+  @page { size: 80mm auto; margin: 6mm; }
+  * { box-sizing: border-box; }
+  body { font-family: 'Jost', system-ui, -apple-system, Arial, sans-serif; color:#000; background:#fff; margin:0; padding:18px; }
+  .ticket { width: 100%; max-width: 320px; margin: 0 auto; border: 2px solid #000; padding: 18px; }
+  .head { text-align:center; border-bottom: 1px dashed #000; padding-bottom: 12px; }
+  .brand { font-weight: 900; letter-spacing: .32em; font-size: 12px; }
+  .brand small { display:block; letter-spacing:.28em; font-weight:700; margin-top:2px; }
+  .row { display:flex; justify-content:space-between; padding: 8px 0; border-bottom: 1px dotted #999; font-size: 12px; letter-spacing:.08em; text-transform:uppercase; }
+  .row .k { color:#555; font-weight:700; }
+  .row .v { font-weight:900; }
+  .tier { margin-top: 12px; padding: 12px; border: 2px solid #ed6f7e; text-align:center; }
+  .tier .t { font-size: 11px; letter-spacing:.28em; font-weight:900; color:#ed6f7e; text-transform:uppercase; }
+  .tier .g { font-size: 14px; font-weight:900; margin-top:6px; text-transform:uppercase; letter-spacing:.16em; }
+  .code { margin-top: 14px; text-align:center; font-family: 'Courier New', monospace; font-size: 18px; letter-spacing:.32em; font-weight:900; border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 10px 0; }
+  .foot { margin-top: 12px; text-align:center; font-size: 10px; letter-spacing:.18em; text-transform:uppercase; color:#444; }
+  .stripes { height: 10px; margin: 10px 0; background-image: repeating-linear-gradient(90deg,#000 0 6px,transparent 6px 12px); }
+</style></head>
+<body>
+  <div class="ticket">
+    <div class="head">
+      <div class="brand">≡ SEPHORA<small>COLLECTION</small></div>
+      <div class="stripes"></div>
+      <div style="font-size:11px;letter-spacing:.24em;font-weight:700;text-transform:uppercase">Reward Ticket</div>
+    </div>
+    <div class="row"><span class="k">Date</span><span class="v">${dateStr}</span></div>
+    <div class="row"><span class="k">Pairs found</span><span class="v">${pairsFound}/${totalPairs}</span></div>
+    <div class="row"><span class="k">Score</span><span class="v">${finalScore} pts</span></div>
+    <div class="row"><span class="k">Tier</span><span class="v">${finalTier.level} / 5</span></div>
+    <div class="tier">
+      <div class="t">${finalTier.message}</div>
+      ${giftLine ? `<div class="g">${giftLine}</div>` : ""}
+    </div>
+    <div class="code">${ticketCode}</div>
+    <div class="foot">Present this ticket in store to claim your gift.</div>
+    <div class="stripes"></div>
+  </div>
+  <script>window.addEventListener('load',()=>{setTimeout(()=>{window.print();},150);});</script>
+</body></html>`;
+    const w = window.open("", "_blank", "width=420,height=720");
+    if (!w) return;
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+  }, [finalTier, finalScore, pairsFound, totalPairs, ticketCode]);
+
   const gridStyle: React.CSSProperties = {
     gridTemplateColumns: `repeat(${config.gridCols}, minmax(0, 1fr))`,
     gridTemplateRows: `repeat(${config.gridRows}, minmax(0, 1fr))`,
