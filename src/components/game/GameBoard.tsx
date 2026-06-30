@@ -514,7 +514,7 @@ export function GameBoard() {
                       }
                     >
                       <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/70">
-                        Niv. {lv.level}
+                        Tier {lv.level}
                       </span>
                       <span
                         className="text-[10px] font-bold tabular-nums"
