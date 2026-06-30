@@ -23,15 +23,15 @@ export type Product = {
  */
 export const PRODUCTS: Product[] = [
   { id: "p01", productId: "p01", productName: "IT'S A STRETCH", productCategory: "MASCARA", imageUrl: stretchMascara.url, isHeroProduct: true },
-  { id: "p02", productId: "p02", productName: "OUTRAGEOUS PLUMP", productCategory: "LÈVRES", imageUrl: outrageousPlump.url, isHeroProduct: false },
-  { id: "p03", productId: "p03", productName: "ALL THAT MATTE(R)S", productCategory: "PALETTE YEUX", imageUrl: allThatMatters.url, isHeroProduct: false },
-  { id: "p04", productId: "p04", productName: "BEST SKIN EVER MATTE", productCategory: "TEINT", imageUrl: bseMatte.url, isHeroProduct: false },
-  { id: "p05", productId: "p05", productName: "BRIGHTENING MOCHI CLEANSER", productCategory: "SOIN", imageUrl: mochiCleanser.url, isHeroProduct: false },
-  { id: "p06", productId: "p06", productName: "LIFT & FIRM SERUM", productCategory: "SOIN", imageUrl: liftFirm.url, isHeroProduct: false },
-  { id: "p07", productId: "p07", productName: "JELLY TONER PADS GLOW", productCategory: "SOIN", imageUrl: jellyGlow.url, isHeroProduct: false },
-  { id: "p08", productId: "p08", productName: "CLEAR & PURIFY TONER", productCategory: "SOIN", imageUrl: clearPurify.url, isHeroProduct: false },
-  { id: "p09", productId: "p09", productName: "JELLY TONER PADS SOOTHE", productCategory: "SOIN", imageUrl: jellySoothe.url, isHeroProduct: false },
-  { id: "p10", productId: "p10", productName: "BLUSH SHIMMER", productCategory: "TEINT", imageUrl: blushShimmer.url, isHeroProduct: false },
+  { id: "p02", productId: "p02", productName: "OUTRAGEOUS PLUMP", productCategory: "LIPS", imageUrl: outrageousPlump.url, isHeroProduct: false },
+  { id: "p03", productId: "p03", productName: "ALL THAT MATTE(R)S", productCategory: "EYE PALETTE", imageUrl: allThatMatters.url, isHeroProduct: false },
+  { id: "p04", productId: "p04", productName: "BEST SKIN EVER MATTE", productCategory: "COMPLEXION", imageUrl: bseMatte.url, isHeroProduct: false },
+  { id: "p05", productId: "p05", productName: "BRIGHTENING MOCHI CLEANSER", productCategory: "SKINCARE", imageUrl: mochiCleanser.url, isHeroProduct: false },
+  { id: "p06", productId: "p06", productName: "LIFT & FIRM SERUM", productCategory: "SKINCARE", imageUrl: liftFirm.url, isHeroProduct: false },
+  { id: "p07", productId: "p07", productName: "JELLY TONER PADS GLOW", productCategory: "SKINCARE", imageUrl: jellyGlow.url, isHeroProduct: false },
+  { id: "p08", productId: "p08", productName: "CLEAR & PURIFY TONER", productCategory: "SKINCARE", imageUrl: clearPurify.url, isHeroProduct: false },
+  { id: "p09", productId: "p09", productName: "JELLY TONER PADS SOOTHE", productCategory: "SKINCARE", imageUrl: jellySoothe.url, isHeroProduct: false },
+  { id: "p10", productId: "p10", productName: "BLUSH SHIMMER", productCategory: "COMPLEXION", imageUrl: blushShimmer.url, isHeroProduct: false },
 ];
 
 export type BoardCard = {

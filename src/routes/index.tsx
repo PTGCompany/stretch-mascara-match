@@ -14,7 +14,7 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "6×6 board — 18 pairs to find — 6 score levels to unlock.",
+          "4×5 board — 10 pairs to find — 5 reward tiers to unlock.",
       },
     ],
   }),

@@ -346,12 +346,12 @@ export function GameBoard() {
                   const interactive =
                     status === "playing" && !isCheckingPair && s === "hidden";
                   const ariaLabel = !card
-                    ? "Carte cachée"
+                    ? "Hidden card"
                     : isMatched
-                      ? `Paire trouvée, ${card.productName}`
+                      ? `Pair found, ${card.productName}`
                       : isRevealed
                         ? card.productName
-                        : "Carte cachée";
+                        : "Hidden card";
                   return (
                     <button
                       key={i}
@@ -455,7 +455,7 @@ export function GameBoard() {
               <div className="mt-5 divide-y divide-white/10">
                 <div className="flex items-center justify-between py-3">
                   <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
-                    Paires
+                    Pairs
                   </span>
                   <span
                     data-testid="pairs-count"
@@ -480,7 +480,7 @@ export function GameBoard() {
                 {config.trackWrongAttempts && (
                   <div className="flex items-center justify-between py-3">
                     <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
-                      Erreurs
+                      Misses
                     </span>
                     <span className="font-display text-[20px] leading-none tabular-nums text-white/70">
                       {pad2(wrongAttempts)}
@@ -492,7 +492,7 @@ export function GameBoard() {
 
             <div className="border-t border-white/20 pt-4">
               <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
-                Paliers de gain
+                Reward tiers
               </span>
               <div className="mt-3 flex flex-col gap-1.5">
                 {config.winLevels.map((lv) => {
@@ -514,7 +514,7 @@ export function GameBoard() {
                       }
                     >
                       <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/70">
-                        Niv. {lv.level}
+                        Tier {lv.level}
                       </span>
                       <span
                         className="text-[10px] font-bold tabular-nums"
@@ -560,7 +560,7 @@ export function GameBoard() {
               key={i}
               className="flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.32em] text-white/70"
             >
-              <span>Trouvez les paires</span>
+              <span>Find the pairs</span>
               <StripesMark className="h-2.5 w-4 opacity-60" color="#ffffff" />
               <span className="text-white">{config.heroProductName}</span>
               <StripesMark className="h-2.5 w-4 opacity-60" color="#ffffff" />
@@ -619,10 +619,10 @@ export function GameBoard() {
                     Sephora Collection · Memory Game
                   </span>
                   <h2 className="font-display text-[36px] uppercase leading-[0.9] text-white sm:text-[52px]">
-                    Prêt(e)&nbsp;à&nbsp;<span style={{ color: PINK }}>jouer</span>&nbsp;?
+                    Ready&nbsp;to&nbsp;<span style={{ color: PINK }}>play</span>?
                   </h2>
                   <p className="-mt-2 max-w-[36ch] text-[10px] font-bold uppercase tracking-[0.24em] text-white/55">
-                    {config.gridCols}×{config.gridRows} — {totalPairs} paires —{" "}
+                    {config.gridCols}×{config.gridRows} — {totalPairs} pairs —{" "}
                     {config.durationSeconds}s
                   </p>
                 </>
@@ -635,8 +635,8 @@ export function GameBoard() {
                     style={{ color: PINK }}
                   >
                     {completedReason === "PERFECT_SCORE"
-                      ? "Bravo, toutes les paires ont été trouvées !"
-                      : "Temps écoulé"}
+                      ? "Bravo — you found every pair!"
+                      : "Time's up"}
                   </span>
                   <h2
                     data-testid="final-headline"
@@ -644,13 +644,13 @@ export function GameBoard() {
                   >
                     {pairsFound === 0 ? (
                       <>
-                        DOMMAGE,{" "}
+                        SO CLOSE,{" "}
                         <span style={{ color: PINK }}>
-                          retentez&nbsp;votre&nbsp;chance&nbsp;!
+                          try&nbsp;again!
                         </span>
                       </>
                     ) : (
-                      <>{finalTier?.message ?? "GAIN NIVEAU 1"}</>
+                      <>{finalTier?.message ?? "TIER 1 REWARD"}</>
                     )}
                   </h2>
                   <div className="flex flex-col items-center gap-1">
@@ -662,7 +662,7 @@ export function GameBoard() {
                       <span className="text-white/40">/{totalPairs}</span>
                     </div>
                     <div className="text-[11px] font-bold uppercase tracking-[0.28em] text-white/70">
-                      Paires trouvées
+                      Pairs found
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-1">
@@ -674,7 +674,7 @@ export function GameBoard() {
                       {finalScore} pts
                     </div>
                     <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
-                      Score final
+                      Final score
                     </div>
                   </div>
                   {finalTier && (
@@ -687,7 +687,7 @@ export function GameBoard() {
                         className="text-[11px] font-black uppercase tracking-[0.24em]"
                         style={{ color: PINK }}
                       >
-                        Niveau {finalTier.level} / 5
+                        Tier {finalTier.level} / 5
                       </span>
                       {finalTier.gainDescription && (
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
@@ -698,7 +698,7 @@ export function GameBoard() {
                   )}
                   {config.trackWrongAttempts && (
                     <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/45">
-                      Erreurs : {wrongAttempts}
+                      Misses: {wrongAttempts}
                     </div>
                   )}
                 </>
@@ -710,7 +710,7 @@ export function GameBoard() {
                   className="wordmark px-14 py-4 text-[12px]"
                   style={{ backgroundColor: PINK, color: "#000" }}
                 >
-                  {status === "idle" ? "Commencer" : "Rejouer"}
+                  {status === "idle" ? "Start" : "Play again"}
                 </MotionButton>
 
                 {(status === "completed" || status === "timeout") && (
@@ -719,7 +719,7 @@ export function GameBoard() {
                     className="wordmark px-10 py-4 text-[12px] border border-white/30 text-white"
                     style={{ backgroundColor: "transparent" }}
                   >
-                    Accueil
+                    Home
                   </MotionButton>
                 )}
               </div>
