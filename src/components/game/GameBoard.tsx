@@ -635,8 +635,8 @@ export function GameBoard() {
                     style={{ color: PINK }}
                   >
                     {completedReason === "PERFECT_SCORE"
-                      ? "Bravo, toutes les paires ont été trouvées !"
-                      : "Temps écoulé"}
+                      ? "Bravo — you found every pair!"
+                      : "Time's up"}
                   </span>
                   <h2
                     data-testid="final-headline"
@@ -644,13 +644,13 @@ export function GameBoard() {
                   >
                     {pairsFound === 0 ? (
                       <>
-                        DOMMAGE,{" "}
+                        SO CLOSE,{" "}
                         <span style={{ color: PINK }}>
-                          retentez&nbsp;votre&nbsp;chance&nbsp;!
+                          try&nbsp;again!
                         </span>
                       </>
                     ) : (
-                      <>{finalTier?.message ?? "GAIN NIVEAU 1"}</>
+                      <>{finalTier?.message ?? "TIER 1 REWARD"}</>
                     )}
                   </h2>
                   <div className="flex flex-col items-center gap-1">
@@ -662,7 +662,7 @@ export function GameBoard() {
                       <span className="text-white/40">/{totalPairs}</span>
                     </div>
                     <div className="text-[11px] font-bold uppercase tracking-[0.28em] text-white/70">
-                      Paires trouvées
+                      Pairs found
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-1">
