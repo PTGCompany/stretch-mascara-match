@@ -560,7 +560,7 @@ export function GameBoard() {
               key={i}
               className="flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.32em] text-white/70"
             >
-              <span>Trouvez les paires</span>
+              <span>Find the pairs</span>
               <StripesMark className="h-2.5 w-4 opacity-60" color="#ffffff" />
               <span className="text-white">{config.heroProductName}</span>
               <StripesMark className="h-2.5 w-4 opacity-60" color="#ffffff" />
