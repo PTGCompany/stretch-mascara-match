@@ -719,7 +719,7 @@ export function GameBoard() {
                     className="wordmark px-10 py-4 text-[12px] border border-white/30 text-white"
                     style={{ backgroundColor: "transparent" }}
                   >
-                    Accueil
+                    Home
                   </MotionButton>
                 )}
               </div>
