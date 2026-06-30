@@ -12,7 +12,7 @@ import { test, expect, type Page } from "@playwright/test";
  *  - replay to get a fresh shuffled board
  */
 
-const CONFIG_KEY = "sephora-game-config-v7";
+const CONFIG_KEY = "sephora-game-config-v8";
 const SESS_KEY = "sephora-game-sessions-v3";
 
 type ConfigOverride = Record<string, unknown>;
@@ -104,12 +104,15 @@ async function findMismatchedPair(page: Page): Promise<[number, number]> {
 async function startGame(page: Page): Promise<void> {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("networkidle");
-  const commencer = page.getByRole("button", { name: /commencer/i });
-  await expect(commencer).toBeVisible();
+  const start = page.getByRole("button", { name: /start/i });
+  await expect(start).toBeVisible();
+  await start.click();
+  const playNow = page.getByRole("button", { name: /play now/i });
+  await expect(playNow).toBeVisible();
   await expect
     .poll(
       async () => {
-        await commencer.click({ trial: false }).catch(() => {});
+        await playNow.click({ trial: false }).catch(() => {});
         return await card(page, 0).isEnabled();
       },
       { timeout: 10_000, intervals: [200, 400, 600] },
