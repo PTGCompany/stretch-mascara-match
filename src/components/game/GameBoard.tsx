@@ -698,7 +698,7 @@ export function GameBoard() {
                   )}
                   {config.trackWrongAttempts && (
                     <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/45">
-                      Erreurs : {wrongAttempts}
+                      Misses: {wrongAttempts}
                     </div>
                   )}
                 </>
