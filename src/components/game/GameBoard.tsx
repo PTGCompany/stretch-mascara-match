@@ -646,6 +646,39 @@ export function GameBoard() {
                 </>
               )}
 
+              {status === "rules" && (
+                <>
+                  <span
+                    className="text-[10px] font-bold uppercase tracking-[0.32em]"
+                    style={{ color: PINK }}
+                  >
+                    How to play
+                  </span>
+                  <h2 className="font-display text-[32px] uppercase leading-[0.9] text-white sm:text-[44px]">
+                    Find the&nbsp;<span style={{ color: PINK }}>pairs</span>
+                  </h2>
+                  <ul className="flex max-w-[42ch] flex-col gap-3 text-left text-[12px] font-medium uppercase leading-relaxed tracking-[0.16em] text-white/75">
+                    <li className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>1</span>
+                      <span>Tap a card to reveal a Sephora Collection product.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>2</span>
+                      <span>Find two identical products to lock the pair.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>3</span>
+                      <span>You have {config.durationSeconds} seconds to match as many pairs as possible.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>4</span>
+                      <span>Unlock reward tiers based on the number of pairs you find.</span>
+                    </li>
+                  </ul>
+                </>
+              )}
+
+
               {(status === "completed" || status === "timeout") && (
                 <>
                   <span
