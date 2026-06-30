@@ -757,12 +757,22 @@ export function GameBoard() {
 
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <MotionButton
-                  onClick={startPlay}
+                  onClick={status === "idle" ? showRules : startPlay}
                   className="wordmark px-14 py-4 text-[12px]"
                   style={{ backgroundColor: PINK, color: "#000" }}
                 >
-                  {status === "idle" ? "Start" : "Play again"}
+                  {status === "idle" ? "Start" : status === "rules" ? "Play now" : "Play again"}
                 </MotionButton>
+
+                {status === "rules" && (
+                  <MotionButton
+                    onClick={goHome}
+                    className="wordmark px-10 py-4 text-[12px] border border-white/30 text-white"
+                    style={{ backgroundColor: "transparent" }}
+                  >
+                    Back
+                  </MotionButton>
+                )}
 
                 {(status === "completed" || status === "timeout") && (
                   <MotionButton
@@ -774,6 +784,7 @@ export function GameBoard() {
                   </MotionButton>
                 )}
               </div>
+
             </motion.div>
           </motion.div>
         )}
