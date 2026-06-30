@@ -26,14 +26,14 @@ export type GameConfig = {
 
 /**
  * Reward tiers (stored as `winLevels` for backwards compatibility).
- * 0-pair case ("DOMMAGE…") is handled at render time, not as a tier.
+ * 0-pair case ("SO CLOSE…") is handled at render time, not as a tier.
  */
 export const DEFAULT_WIN_LEVELS: WinLevel[] = [
-  { level: 1, min: 1, max: 2, message: "GAIN NIVEAU 1", gainDescription: "Échantillon découverte" },
-  { level: 2, min: 3, max: 4, message: "GAIN NIVEAU 2", gainDescription: "Mini-format soin" },
-  { level: 3, min: 5, max: 6, message: "GAIN NIVEAU 3", gainDescription: "Trousse beauté" },
-  { level: 4, min: 7, max: 8, message: "GAIN NIVEAU 4", gainDescription: "Produit Sephora Collection" },
-  { level: 5, min: 9, max: 10, message: "GAIN NIVEAU 5", gainDescription: "Coffret signature" },
+  { level: 1, min: 1, max: 2, message: "TIER 1 REWARD", gainDescription: "Discovery sample" },
+  { level: 2, min: 3, max: 4, message: "TIER 2 REWARD", gainDescription: "Mini skincare format" },
+  { level: 3, min: 5, max: 6, message: "TIER 3 REWARD", gainDescription: "Beauty pouch" },
+  { level: 4, min: 7, max: 8, message: "TIER 4 REWARD", gainDescription: "Sephora Collection product" },
+  { level: 5, min: 9, max: 10, message: "TIER 5 REWARD", gainDescription: "Signature gift set" },
 ];
 
 export const DEFAULT_CONFIG: GameConfig = {
