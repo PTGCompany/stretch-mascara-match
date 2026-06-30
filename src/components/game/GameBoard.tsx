@@ -687,7 +687,7 @@ export function GameBoard() {
                         className="text-[11px] font-black uppercase tracking-[0.24em]"
                         style={{ color: PINK }}
                       >
-                        Niveau {finalTier.level} / 5
+                        Tier {finalTier.level} / 5
                       </span>
                       {finalTier.gainDescription && (
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
