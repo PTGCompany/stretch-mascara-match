@@ -21,7 +21,8 @@ import { Settings } from "lucide-react";
 import { MARQUEE } from "@/lib/motion";
 
 type CardVisual = "hidden" | "flipped" | "matched";
-type GameStatus = "idle" | "playing" | "completed" | "timeout";
+type GameStatus = "idle" | "rules" | "playing" | "completed" | "timeout";
+
 
 const PINK = "#ed6f7e";
 
@@ -96,6 +97,7 @@ export function GameBoard() {
       flipTimerRef.current = null;
     }
     setStatus("idle");
+    setCards([]);
     setCardStates([]);
     setFlippedIds([]);
     setPairsFound(0);
@@ -104,6 +106,19 @@ export function GameBoard() {
     setTimeRemaining(config.durationSeconds);
     setCompletedReason(null);
   }, [config.durationSeconds]);
+
+  const showRules = useCallback(() => {
+    setStatus("rules");
+    setCards([]);
+    setCardStates([]);
+    setFlippedIds([]);
+    setPairsFound(0);
+    setWrongAttempts(0);
+    setIsCheckingPair(false);
+    setTimeRemaining(config.durationSeconds);
+    setCompletedReason(null);
+  }, [config.durationSeconds]);
+
 
   const finalizeGame = useCallback(
     (reason: CompletedReason, finalPairs: number, finalWrong: number, finalTimeRemaining: number) => {
@@ -206,12 +221,14 @@ export function GameBoard() {
   const progress = useMemo(() => {
     if (status === "playing")
       return (timeRemaining / config.durationSeconds) * 100;
-    if (status === "idle") return 100;
+    if (status === "idle" || status === "rules") return 100;
     return 0;
   }, [status, timeRemaining, config.durationSeconds]);
 
+
   const timeUrgent = status === "playing" && timeRemaining <= 10;
-  const overlayOpen = status === "idle" || status === "completed" || status === "timeout";
+  const overlayOpen = status === "idle" || status === "rules" || status === "completed" || status === "timeout";
+
 
   const finalTier = useMemo(
     () => computeWinLevel(pairsFound, config.winLevels),
@@ -308,9 +325,10 @@ export function GameBoard() {
                   className="font-display text-[44px] leading-none tabular-nums tracking-tight sm:text-[56px]"
                   style={{ color: timeUrgent ? PINK : "#ffffff" }}
                 >
-                  {status === "idle"
+                  {status === "idle" || status === "rules"
                     ? fmtTime(config.durationSeconds)
                     : fmtTime(timeRemaining)}
+
                 </motion.span>
               </div>
               <div className="mt-3 h-[3px] w-full overflow-hidden bg-white/10">
@@ -628,6 +646,39 @@ export function GameBoard() {
                 </>
               )}
 
+              {status === "rules" && (
+                <>
+                  <span
+                    className="text-[10px] font-bold uppercase tracking-[0.32em]"
+                    style={{ color: PINK }}
+                  >
+                    How to play
+                  </span>
+                  <h2 className="font-display text-[32px] uppercase leading-[0.9] text-white sm:text-[44px]">
+                    Find the&nbsp;<span style={{ color: PINK }}>pairs</span>
+                  </h2>
+                  <ul className="flex max-w-[42ch] flex-col gap-3 text-left text-[12px] font-medium uppercase leading-relaxed tracking-[0.16em] text-white/75">
+                    <li className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>1</span>
+                      <span>Tap a card to reveal a Sephora Collection product.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>2</span>
+                      <span>Find two identical products to lock the pair.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>3</span>
+                      <span>You have {config.durationSeconds} seconds to match as many pairs as possible.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>4</span>
+                      <span>Unlock reward tiers based on the number of pairs you find.</span>
+                    </li>
+                  </ul>
+                </>
+              )}
+
+
               {(status === "completed" || status === "timeout") && (
                 <>
                   <span
@@ -706,12 +757,22 @@ export function GameBoard() {
 
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <MotionButton
-                  onClick={startPlay}
+                  onClick={status === "idle" ? showRules : startPlay}
                   className="wordmark px-14 py-4 text-[12px]"
                   style={{ backgroundColor: PINK, color: "#000" }}
                 >
-                  {status === "idle" ? "Start" : "Play again"}
+                  {status === "idle" ? "Start" : status === "rules" ? "Play now" : "Play again"}
                 </MotionButton>
+
+                {status === "rules" && (
+                  <MotionButton
+                    onClick={goHome}
+                    className="wordmark px-10 py-4 text-[12px] border border-white/30 text-white"
+                    style={{ backgroundColor: "transparent" }}
+                  >
+                    Back
+                  </MotionButton>
+                )}
 
                 {(status === "completed" || status === "timeout") && (
                   <MotionButton
@@ -723,6 +784,7 @@ export function GameBoard() {
                   </MotionButton>
                 )}
               </div>
+
             </motion.div>
           </motion.div>
         )}
