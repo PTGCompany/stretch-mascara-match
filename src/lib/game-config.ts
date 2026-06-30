@@ -55,7 +55,7 @@ export const DEFAULT_CONFIG: GameConfig = {
   brandColor: "#ed6f7e",
 };
 
-const KEY = "sephora-game-config-v7";
+const KEY = "sephora-game-config-v8";
 
 export function loadConfig(): GameConfig {
   if (typeof window === "undefined") return DEFAULT_CONFIG;
