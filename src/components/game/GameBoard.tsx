@@ -455,7 +455,7 @@ export function GameBoard() {
               <div className="mt-5 divide-y divide-white/10">
                 <div className="flex items-center justify-between py-3">
                   <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
-                    Paires
+                    Pairs
                   </span>
                   <span
                     data-testid="pairs-count"
