@@ -492,7 +492,7 @@ export function GameBoard() {
 
             <div className="border-t border-white/20 pt-4">
               <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
-                Paliers de gain
+                Reward tiers
               </span>
               <div className="mt-3 flex flex-col gap-1.5">
                 {config.winLevels.map((lv) => {
