@@ -40,7 +40,7 @@ export const DEFAULT_CONFIG: GameConfig = {
   title: "MEMORY",
   titleAccent: "GAME",
   instruction:
-    "RETROUVEZ LE MAXIMUM DE PAIRES EN 30 SECONDES !",
+    "FIND AS MANY PAIRS AS YOU CAN IN 30 SECONDS!",
   heroProductName: "IT'S A STRETCH",
   durationSeconds: 30,
   gridRows: 5,
