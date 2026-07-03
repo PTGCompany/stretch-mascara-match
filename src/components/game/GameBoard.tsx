@@ -721,13 +721,11 @@ export function GameBoard() {
                   >
                     {pairsFound === 0 ? (
                       <>
-                        SO CLOSE,{" "}
-                        <span style={{ color: PINK }}>
-                          try&nbsp;again!
-                        </span>
+                        NO&nbsp;<span style={{ color: PINK }}>REWARD</span>
+                        <span className="mt-2 block text-[14px] tracking-[0.28em] text-white/60">TRY AGAIN!</span>
                       </>
                     ) : (
-                      <>{finalTier?.message ?? "TIER 1 REWARD"}</>
+                      <>{finalTier?.message ?? "WELL PLAYED!"}</>
                     )}
                   </h2>
                   <div className="flex flex-col items-center gap-1">
