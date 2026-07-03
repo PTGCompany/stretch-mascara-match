@@ -239,44 +239,122 @@ function AdminPage() {
           </div>
 
           <h3 className="mt-6 text-sm font-black uppercase tracking-wider">
-            Reward tiers (1 → 5)
+            Reward tiers (1 → 3)
           </h3>
-          <div className="mt-3 space-y-2">
+          <p className="mt-1 text-xs text-muted-foreground">
+            Based on <strong>pairs found</strong> — 0 pairs is a separate no-reward state.
+          </p>
+          <div className="mt-3 space-y-4">
             {config.winLevels.map((lv, idx) => (
               <div
                 key={lv.level}
-                className="grid grid-cols-[60px_repeat(2,1fr)_2fr] items-center gap-2"
+                className="rounded-xl border border-white/10 bg-muted/20 p-3"
               >
-                <span className="text-xs font-bold uppercase">Lv {lv.level}</span>
-                <input
-                  type="number"
-                  min={1}
-                  max={32}
-                  className="input"
-                  value={lv.min}
-                  onChange={(e) =>
-                    updateLevel(idx, { min: Number(e.target.value) })
-                  }
-                />
-                <input
-                  type="number"
-                  min={1}
-                  max={32}
-                  className="input"
-                  value={lv.max}
-                  onChange={(e) =>
-                    updateLevel(idx, { max: Number(e.target.value) })
-                  }
-                />
-                <input
-                  className="input"
-                  value={lv.message}
-                  onChange={(e) =>
-                    updateLevel(idx, { message: e.target.value })
-                  }
-                />
+                <div className="mb-2 text-xs font-black uppercase tracking-wider text-white/80">
+                  Reward Level {lv.level}
+                </div>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  <Field label="Min pairs">
+                    <input
+                      type="number"
+                      min={1}
+                      max={10}
+                      className="input"
+                      value={lv.min}
+                      onChange={(e) => updateLevel(idx, { min: Number(e.target.value) })}
+                    />
+                  </Field>
+                  <Field label="Max pairs">
+                    <input
+                      type="number"
+                      min={1}
+                      max={10}
+                      className="input"
+                      value={lv.max}
+                      onChange={(e) => updateLevel(idx, { max: Number(e.target.value) })}
+                    />
+                  </Field>
+                  <Field label="Tier label">
+                    <input
+                      className="input"
+                      value={lv.label}
+                      onChange={(e) => updateLevel(idx, { label: e.target.value })}
+                    />
+                  </Field>
+                  <Field label="Tier message">
+                    <input
+                      className="input"
+                      value={lv.message}
+                      onChange={(e) => updateLevel(idx, { message: e.target.value })}
+                    />
+                  </Field>
+                  <Field label="Gain description" full>
+                    <input
+                      className="input"
+                      value={lv.gainDescription ?? ""}
+                      onChange={(e) => updateLevel(idx, { gainDescription: e.target.value })}
+                    />
+                  </Field>
+                  <Field label="Ticket text" full>
+                    <input
+                      className="input"
+                      value={lv.ticketText ?? ""}
+                      onChange={(e) => updateLevel(idx, { ticketText: e.target.value })}
+                    />
+                  </Field>
+                </div>
               </div>
             ))}
+          </div>
+
+          <h3 className="mt-6 text-sm font-black uppercase tracking-wider">
+            Ticket printing
+          </h3>
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Field label="Enable ticket printing">
+              <label className="inline-flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={config.ticketPrintingEnabled}
+                  onChange={(e) => update("ticketPrintingEnabled", e.target.checked)}
+                />
+                <span className="text-xs">Show print button on end screen</span>
+              </label>
+            </Field>
+            <Field label="Print no-reward ticket">
+              <label className="inline-flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={config.printNoRewardTicketEnabled}
+                  onChange={(e) => update("printNoRewardTicketEnabled", e.target.checked)}
+                />
+                <span className="text-xs">Allow printing when 0 pairs</span>
+              </label>
+            </Field>
+            <Field label="Auto-print on ticket page">
+              <label className="inline-flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={config.autoPrintEnabled}
+                  onChange={(e) => update("autoPrintEnabled", e.target.checked)}
+                />
+                <span className="text-xs">Trigger window.print() on load</span>
+              </label>
+            </Field>
+            <Field label="Ticket brand title">
+              <input
+                className="input"
+                value={config.ticketBrandTitle}
+                onChange={(e) => update("ticketBrandTitle", e.target.value)}
+              />
+            </Field>
+            <Field label="Ticket footer text" full>
+              <input
+                className="input"
+                value={config.ticketFooterText}
+                onChange={(e) => update("ticketFooterText", e.target.value)}
+              />
+            </Field>
           </div>
           {error && (
             <p className="mt-3 text-xs font-bold text-destructive">{error}</p>
