@@ -2,8 +2,10 @@ export type WinLevel = {
   level: number;
   min: number;
   max: number;
+  label: string;
   message: string;
   gainDescription?: string;
+  ticketText?: string;
 };
 
 export type GameConfig = {
@@ -22,25 +24,52 @@ export type GameConfig = {
   timeBonusPointsPerSecond: number;
   winLevels: WinLevel[];
   brandColor: string;
+  ticketPrintingEnabled: boolean;
+  printNoRewardTicketEnabled: boolean;
+  autoPrintEnabled: boolean;
+  ticketFooterText: string;
+  ticketBrandTitle: string;
 };
 
 /**
- * Reward tiers (stored as `winLevels` for backwards compatibility).
- * 0-pair case ("SO CLOSE…") is handled at render time, not as a tier.
+ * Reward tiers based on `pairsFound` (not raw score) so a time bonus never
+ * bumps a lower pair count into a higher tier. 0 pairs = no-reward and is
+ * handled at render time, not as a tier.
  */
 export const DEFAULT_WIN_LEVELS: WinLevel[] = [
-  { level: 1, min: 1, max: 2, message: "TIER 1 REWARD", gainDescription: "Discovery sample" },
-  { level: 2, min: 3, max: 4, message: "TIER 2 REWARD", gainDescription: "Mini skincare format" },
-  { level: 3, min: 5, max: 6, message: "TIER 3 REWARD", gainDescription: "Beauty pouch" },
-  { level: 4, min: 7, max: 8, message: "TIER 4 REWARD", gainDescription: "Sephora Collection product" },
-  { level: 5, min: 9, max: 10, message: "TIER 5 REWARD", gainDescription: "Signature gift set" },
+  {
+    level: 1,
+    min: 1,
+    max: 3,
+    label: "REWARD LEVEL 1",
+    message: "WELL PLAYED!",
+    gainDescription: "Discovery sample",
+    ticketText: "Reward Level 1 — Discovery sample",
+  },
+  {
+    level: 2,
+    min: 4,
+    max: 7,
+    label: "REWARD LEVEL 2",
+    message: "GREAT SCORE!",
+    gainDescription: "Mini format gift",
+    ticketText: "Reward Level 2 — Mini format gift",
+  },
+  {
+    level: 3,
+    min: 8,
+    max: 10,
+    label: "REWARD LEVEL 3",
+    message: "EXCELLENT MEMORY!",
+    gainDescription: "Signature gift set",
+    ticketText: "Reward Level 3 — Signature gift set",
+  },
 ];
 
 export const DEFAULT_CONFIG: GameConfig = {
   title: "MEMORY",
   titleAccent: "GAME",
-  instruction:
-    "FIND AS MANY PAIRS AS YOU CAN IN 30 SECONDS!",
+  instruction: "FIND AS MANY PAIRS AS YOU CAN IN 30 SECONDS!",
   heroProductName: "IT'S A STRETCH",
   durationSeconds: 30,
   gridRows: 5,
@@ -53,9 +82,14 @@ export const DEFAULT_CONFIG: GameConfig = {
   timeBonusPointsPerSecond: 10,
   winLevels: DEFAULT_WIN_LEVELS,
   brandColor: "#ed6f7e",
+  ticketPrintingEnabled: true,
+  printNoRewardTicketEnabled: false,
+  autoPrintEnabled: true,
+  ticketFooterText: "Show this ticket to the Sephora Collection team.",
+  ticketBrandTitle: "SEPHORA COLLECTION",
 };
 
-const KEY = "sephora-game-config-v8";
+const KEY = "sephora-game-config-v9";
 
 export function loadConfig(): GameConfig {
   if (typeof window === "undefined") return DEFAULT_CONFIG;
@@ -67,7 +101,7 @@ export function loadConfig(): GameConfig {
       ...DEFAULT_CONFIG,
       ...parsed,
       winLevels:
-        Array.isArray(parsed.winLevels) && parsed.winLevels.length === 5
+        Array.isArray(parsed.winLevels) && parsed.winLevels.length === 3
           ? parsed.winLevels
           : DEFAULT_WIN_LEVELS,
     };
@@ -81,15 +115,14 @@ export function saveConfig(c: GameConfig) {
 }
 
 export function validateWinLevels(levels: WinLevel[]): string | null {
-  if (levels.length !== 5) return "There must be exactly 5 reward tiers.";
+  if (levels.length !== 3) return "There must be exactly 3 reward tiers.";
   for (let i = 0; i < levels.length; i++) {
     const lv = levels[i];
-    if (lv.min < 1) return `Tier ${i + 1}: min ≥ 1.`;
-    if (lv.max < lv.min) return `Tier ${i + 1}: max ≥ min.`;
+    if (lv.min < 1 || lv.min > 10) return `Tier ${i + 1}: min must be between 1 and 10.`;
+    if (lv.max < lv.min || lv.max > 10) return `Tier ${i + 1}: max must be between min and 10.`;
     if (i > 0 && lv.min <= levels[i - 1].max)
-      return `Tier ${i + 1}: must start after the previous one.`;
+      return `Tier ${i + 1}: must start after the previous tier.`;
   }
-  if (levels[4].max > 10) return "Tier 5: max ≤ 10.";
   return null;
 }
 
@@ -118,6 +151,7 @@ export function computeScore(
 }
 
 export type CompletedReason = "TIMEOUT" | "PERFECT_SCORE" | "MANUAL_RESTART";
+export type PrintStatus = "NOT_REQUESTED" | "REQUESTED" | "PRINTED" | "FAILED";
 
 export type GameSession = {
   id: string;
@@ -125,14 +159,18 @@ export type GameSession = {
   totalPairs: number;
   wrongAttempts: number;
   finalWinLevel: number | null;
+  rewardTierLabel: string | null;
+  rewardTierMessage: string | null;
   score: number;
   timeRemaining: number;
   durationSeconds: number;
+  ticketCode: string;
+  printStatus: PrintStatus;
   completedReason: CompletedReason;
   createdAt: number;
 };
 
-const SESS_KEY = "sephora-game-sessions-v3";
+const SESS_KEY = "sephora-game-sessions-v4";
 
 export function loadSessions(): GameSession[] {
   if (typeof window === "undefined") return [];
@@ -143,12 +181,35 @@ export function loadSessions(): GameSession[] {
   }
 }
 
+export function findSession(id: string): GameSession | null {
+  return loadSessions().find((s) => s.id === id) ?? null;
+}
+
 export function saveSession(s: GameSession) {
   const all = loadSessions();
   all.unshift(s);
   localStorage.setItem(SESS_KEY, JSON.stringify(all.slice(0, 500)));
 }
 
+export function updateSessionPrintStatus(id: string, printStatus: PrintStatus) {
+  const all = loadSessions();
+  const next = all.map((s) => (s.id === id ? { ...s, printStatus } : s));
+  localStorage.setItem(SESS_KEY, JSON.stringify(next));
+}
+
 export function clearSessions() {
   localStorage.removeItem(SESS_KEY);
+}
+
+export function generateTicketCode(): string {
+  const r =
+    typeof crypto !== "undefined" && "getRandomValues" in crypto
+      ? Array.from(crypto.getRandomValues(new Uint8Array(2)))
+          .map((n) => n.toString(36).padStart(2, "0"))
+          .join("")
+          .slice(0, 4)
+          .toUpperCase()
+      : Math.random().toString(36).slice(2, 6).toUpperCase();
+  const t = Date.now().toString(36).slice(-4).toUpperCase();
+  return `SC-${t}${r}`;
 }

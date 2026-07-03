@@ -12,8 +12,8 @@ import { test, expect, type Page } from "@playwright/test";
  *  - replay to get a fresh shuffled board
  */
 
-const CONFIG_KEY = "sephora-game-config-v8";
-const SESS_KEY = "sephora-game-sessions-v3";
+const CONFIG_KEY = "sephora-game-config-v9";
+const SESS_KEY = "sephora-game-sessions-v4";
 
 type ConfigOverride = Record<string, unknown>;
 
@@ -33,12 +33,15 @@ async function seedConfig(page: Page, overrides: ConfigOverride): Promise<void> 
     timeBonusEnabled: true,
     timeBonusPointsPerSecond: 10,
     brandColor: "#ed6f7e",
+    ticketPrintingEnabled: true,
+    printNoRewardTicketEnabled: false,
+    autoPrintEnabled: false,
+    ticketFooterText: "Show this ticket to the Sephora Collection team.",
+    ticketBrandTitle: "SEPHORA COLLECTION",
     winLevels: [
-      { level: 1, min: 1, max: 2, message: "TIER 1 REWARD" },
-      { level: 2, min: 3, max: 4, message: "TIER 2 REWARD" },
-      { level: 3, min: 5, max: 6, message: "TIER 3 REWARD" },
-      { level: 4, min: 7, max: 8, message: "TIER 4 REWARD" },
-      { level: 5, min: 9, max: 10, message: "TIER 5 REWARD" },
+      { level: 1, min: 1, max: 3, label: "REWARD LEVEL 1", message: "WELL PLAYED!" },
+      { level: 2, min: 4, max: 7, label: "REWARD LEVEL 2", message: "GREAT SCORE!" },
+      { level: 3, min: 8, max: 10, label: "REWARD LEVEL 3", message: "EXCELLENT MEMORY!" },
     ],
   };
   const cfg = { ...base, ...overrides };
