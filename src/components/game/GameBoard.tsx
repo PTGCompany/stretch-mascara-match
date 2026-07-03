@@ -10,8 +10,10 @@ import {
 import {
   loadConfig,
   saveSession,
+  updateSessionPrintStatus,
   computeWinLevel,
   computeScore,
+  generateTicketCode,
   type GameConfig,
   type CompletedReason,
 } from "@/lib/game-config";
