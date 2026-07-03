@@ -807,16 +807,17 @@ export function GameBoard() {
 
                 {(status === "completed" || status === "timeout") && (
                   <>
-                    {finalTier && (
-                      <MotionButton
-                        onClick={printTicket}
-                        className="wordmark px-10 py-4 text-[12px]"
-                        style={{ backgroundColor: "#fff", color: "#000" }}
-                        data-testid="print-ticket"
-                      >
-                        Print ticket
-                      </MotionButton>
-                    )}
+                    {config.ticketPrintingEnabled &&
+                      (finalTier || config.printNoRewardTicketEnabled) && (
+                        <MotionButton
+                          onClick={printTicket}
+                          className="wordmark px-10 py-4 text-[12px]"
+                          style={{ backgroundColor: "#fff", color: "#000" }}
+                          data-testid="print-ticket"
+                        >
+                          Print my ticket
+                        </MotionButton>
+                      )}
                     <MotionButton
                       onClick={goHome}
                       className="wordmark px-10 py-4 text-[12px] border border-white/30 text-white"
