@@ -130,18 +130,26 @@ export function GameBoard() {
       sessionSavedRef.current = true;
       const tier = computeWinLevel(finalPairs, config.winLevels);
       const score = computeScore(finalPairs, finalTimeRemaining, config);
+      const id = crypto.randomUUID();
+      const code = generateTicketCode();
       saveSession({
-        id: crypto.randomUUID(),
+        id,
         pairsFound: finalPairs,
         totalPairs,
         wrongAttempts: finalWrong,
         finalWinLevel: tier?.level ?? null,
+        rewardTierLabel: tier?.label ?? null,
+        rewardTierMessage: tier?.message ?? null,
         score,
         timeRemaining: finalTimeRemaining,
         durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
+        ticketCode: code,
+        printStatus: "NOT_REQUESTED",
         completedReason: reason,
         createdAt: Date.now(),
       });
+      setSessionId(id);
+      setTicketCode(code);
       setCompletedReason(reason);
       setStatus(reason === "PERFECT_SCORE" ? "completed" : "timeout");
     },
