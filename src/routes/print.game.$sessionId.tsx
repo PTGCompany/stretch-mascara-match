@@ -166,15 +166,25 @@ function PrintTicketPage() {
 
         <div className="no-print mt-6 flex flex-col items-center gap-3">
           <p className="text-xs text-neutral-600">
-            If the print window does not open, click the button below.
+            If the print window does not open, use the buttons below.
           </p>
-          <button
-            type="button"
-            onClick={doPrint}
-            className="rounded-none bg-black px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white"
-          >
-            Print
-          </button>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={doPrint}
+              className="rounded-none bg-black px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white"
+            >
+              Print
+            </button>
+            <button
+              type="button"
+              onClick={doDownloadPdf}
+              data-testid="download-pdf"
+              className="rounded-none border-2 border-black bg-white px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-black"
+            >
+              Download PDF
+            </button>
+          </div>
         </div>
       </div>
     </div>
