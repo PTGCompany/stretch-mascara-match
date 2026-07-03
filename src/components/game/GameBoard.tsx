@@ -333,8 +333,11 @@ export function GameBoard() {
             {/* Timer */}
             <div className="w-full max-w-md">
               <div className="flex items-end justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-white/55">
-                  Temps restant
+                <span
+                  data-testid="time-remaining-label"
+                  className="text-[10px] font-bold uppercase tracking-[0.32em] text-white/55"
+                >
+                  Time remaining
                 </span>
                 <motion.span
                   key={`${timeRemaining}-${status}`}
