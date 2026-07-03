@@ -55,6 +55,35 @@ function PrintTicketPage() {
     }
   };
 
+  const doDownloadPdf = async () => {
+    const node = document.querySelector<HTMLElement>('[data-testid="print-ticket-body"]');
+    if (!node || !session) return;
+    try {
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import("html2canvas"),
+        import("jspdf"),
+      ]);
+      const canvas = await html2canvas(node, {
+        backgroundColor: "#ffffff",
+        scale: 2,
+        useCORS: true,
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({
+        unit: "mm",
+        format: [80, (canvas.height * 80) / canvas.width],
+        orientation: "portrait",
+      });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      pdf.addImage(imgData, "PNG", 0, 0, pageW, pageH);
+      pdf.save(`sephora-ticket-${session.ticketCode}.pdf`);
+      updateSessionPrintStatus(session.id, "PRINTED");
+    } catch {
+      if (session) updateSessionPrintStatus(session.id, "FAILED");
+    }
+  };
+
   if (!ready) {
     return <div className="p-10 text-center text-black">Loading…</div>;
   }
@@ -137,15 +166,25 @@ function PrintTicketPage() {
 
         <div className="no-print mt-6 flex flex-col items-center gap-3">
           <p className="text-xs text-neutral-600">
-            If the print window does not open, click the button below.
+            If the print window does not open, use the buttons below.
           </p>
-          <button
-            type="button"
-            onClick={doPrint}
-            className="rounded-none bg-black px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white"
-          >
-            Print
-          </button>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={doPrint}
+              className="rounded-none bg-black px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white"
+            >
+              Print
+            </button>
+            <button
+              type="button"
+              onClick={doDownloadPdf}
+              data-testid="download-pdf"
+              className="rounded-none border-2 border-black bg-white px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-black"
+            >
+              Download PDF
+            </button>
+          </div>
         </div>
       </div>
     </div>
