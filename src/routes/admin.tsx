@@ -389,15 +389,18 @@ function AdminPage() {
             <Stat label="Avg errors" value={stats.avgWrong} />
             <Stat label="Perfects" value={stats.perfects} />
             <Stat label="Timeouts" value={stats.timeouts} />
+            <Stat label="No reward" value={stats.noReward} />
+            <Stat label="Tickets printed" value={stats.printed} />
+            <Stat label="Print failures" value={stats.printFailed} />
           </div>
-          <div className="mt-4 grid grid-cols-5 gap-2">
+          <div className="mt-4 grid grid-cols-3 gap-2">
             {stats.byLevel.map((n, i) => (
               <div
                 key={i}
                 className="rounded-xl border bg-muted/30 p-2 text-center"
               >
                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Lv {i + 1}
+                  Reward Level {i + 1}
                 </div>
                 <div
                   className="text-lg font-black"
