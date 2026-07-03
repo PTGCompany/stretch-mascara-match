@@ -39,7 +39,10 @@ function AdminPage() {
         avgWrong: "0",
         perfects: 0,
         timeouts: 0,
-        byLevel: [0, 0, 0, 0, 0],
+        noReward: 0,
+        byLevel: [0, 0, 0],
+        printed: 0,
+        printFailed: 0,
       };
     const avgPairs = (
       sessions.reduce((a, s) => a + s.pairsFound, 0) / total
@@ -54,13 +57,16 @@ function AdminPage() {
     const timeouts = sessions.filter(
       (s) => s.completedReason === "TIMEOUT",
     ).length;
-    const byLevel = [0, 0, 0, 0, 0];
+    const noReward = sessions.filter((s) => s.pairsFound === 0).length;
+    const byLevel = [0, 0, 0];
     for (const s of sessions) {
-      if (s.finalWinLevel && s.finalWinLevel >= 1 && s.finalWinLevel <= 5) {
+      if (s.finalWinLevel && s.finalWinLevel >= 1 && s.finalWinLevel <= 3) {
         byLevel[s.finalWinLevel - 1]++;
       }
     }
-    return { total, avgPairs, best, avgWrong, perfects, timeouts, byLevel };
+    const printed = sessions.filter((s) => s.printStatus === "PRINTED").length;
+    const printFailed = sessions.filter((s) => s.printStatus === "FAILED").length;
+    return { total, avgPairs, best, avgWrong, perfects, timeouts, noReward, byLevel, printed, printFailed };
   }, [sessions]);
 
   const update = <K extends keyof GameConfig>(k: K, v: GameConfig[K]) =>
