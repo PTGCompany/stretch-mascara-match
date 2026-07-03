@@ -55,6 +55,8 @@ export function GameBoard() {
   const [timeRemaining, setTimeRemaining] = useState(config.durationSeconds);
   const [completedReason, setCompletedReason] =
     useState<CompletedReason | null>(null);
+  const [sessionId, setSessionId] = useState<string>("");
+  const [ticketCode, setTicketCode] = useState<string>("");
 
   const startedAt = useRef<number>(0);
   const flipTimerRef = useRef<number | null>(null);
