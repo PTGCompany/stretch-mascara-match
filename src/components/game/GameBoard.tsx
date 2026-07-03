@@ -764,7 +764,7 @@ export function GameBoard() {
                         className="text-[11px] font-black uppercase tracking-[0.24em]"
                         style={{ color: PINK }}
                       >
-                        Tier {finalTier.level} / 5
+                        {finalTier.label} · Tier {finalTier.level} / 3
                       </span>
                       {finalTier.gainDescription && (
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
@@ -773,7 +773,7 @@ export function GameBoard() {
                       )}
                     </div>
                   )}
-                  {finalTier && (
+                  {ticketCode && (
                     <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.32em] text-white/55">
                       Ticket&nbsp;<span className="text-white" data-testid="ticket-code">{ticketCode}</span>
                     </div>
