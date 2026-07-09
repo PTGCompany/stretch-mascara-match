@@ -114,29 +114,14 @@ export function HamburgerLogo() {
  */
 export function SephoraToken() {
   return (
-    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden leading-none">
-      {/* signature stripes (≥4) bleeding across the token */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(0deg, rgba(255,255,255,0.08) 0 6px, transparent 6px 14px)",
-        }}
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-black p-1.5 leading-none">
+      <img
+        src={sephoraDeliStackedAsset.url}
+        alt="Sephora Collection Deli"
+        draggable={false}
+        className="relative max-h-full max-w-full select-none"
+        style={{ objectFit: "contain", pointerEvents: "none" }}
       />
-      <StripesMark className="relative mb-1.5 h-[10px] w-[22px]" color="#ffffff" />
-      <span
-        className="wordmark relative text-[10px] text-white"
-        style={{ letterSpacing: "0.22em" }}
-      >
-        SEPHORA
-      </span>
-      <span
-        className="relative mt-[2px] text-[6px] font-semibold text-white/80"
-        style={{ letterSpacing: "0.36em" }}
-      >
-        COLLECTION
-      </span>
     </div>
   );
 }
