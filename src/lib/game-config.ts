@@ -169,6 +169,7 @@ export type GameSession = {
   finalWinLevel: number | null;
   rewardTierLabel: string | null;
   rewardTierMessage: string | null;
+  rewardProductName: string | null;
   score: number;
   timeRemaining: number;
   durationSeconds: number;
