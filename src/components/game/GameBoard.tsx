@@ -321,7 +321,8 @@ export function GameBoard() {
 
       {/* MAIN */}
       <main className="relative z-10 flex flex-1 min-h-0 flex-col px-4 py-4">
-        <div className="mx-auto flex w-full max-w-[520px] flex-1 min-h-0 flex-col gap-3">
+        <div className="mx-auto flex w-full flex-1 min-h-0 flex-col gap-3">
+
           {/* TOP — title + timer */}
           <section className="flex min-w-0 flex-col">
             <div className="flex items-start justify-between gap-3">
