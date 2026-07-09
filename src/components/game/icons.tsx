@@ -1,6 +1,7 @@
 import mascaraAsset from "@/assets/sephora-mascara.png.asset.json";
 import sephoraCircularAsset from "@/assets/sephora-circular.png.asset.json";
 import sephoraDeliStackedAsset from "@/assets/sephora-deli-stacked.png.asset.json";
+import sephoraCollectionCircularAsset from "@/assets/sephora-collection-circular.png.asset.json";
 const sephoraDeliHorizontalAsset = sephoraDeliStackedAsset;
 
 export function MascaraIcon({ className = "" }: { className?: string }) {
@@ -116,8 +117,8 @@ export function SephoraToken() {
   return (
     <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-black p-1.5 leading-none">
       <img
-        src={sephoraDeliStackedAsset.url}
-        alt="Sephora Collection Deli"
+        src={sephoraCollectionCircularAsset.url}
+        alt="Sephora Collection"
         draggable={false}
         className="relative max-h-full max-w-full select-none"
         style={{ objectFit: "contain", pointerEvents: "none" }}
