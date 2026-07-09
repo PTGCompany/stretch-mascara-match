@@ -262,11 +262,10 @@ export function GameBoard() {
     if (!sessionId) return;
     updateSessionPrintStatus(sessionId, "REQUESTED");
     const url = `/print/game/${sessionId}`;
-    const w = window.open(url, "_blank", "width=420,height=720");
-    if (!w) {
-      // Popup blocked — fall back to same-tab navigation.
-      window.location.href = url;
-    }
+    // Navigate in the same tab — popups are blocked inside the Lovable
+    // preview iframe and in most modern browsers when not triggered by a
+    // direct user gesture chain, which left the ticket invisible.
+    window.location.assign(url);
   }, [sessionId]);
 
   const gridStyle: React.CSSProperties = {
