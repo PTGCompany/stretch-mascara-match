@@ -43,7 +43,10 @@ export function StripesMark({
 }
 
 /**
- * Sephora Collection logo — the brand-preferred 2-line lockup on dark backgrounds.
+ * Sephora Collection × DELI lockup — the horizontal wordmark used inline in headers,
+ * hero title panels, and any wide placement. The `color` prop is preserved for API
+ * compatibility with earlier callers: passing white applies an invert+hue-rotate filter
+ * so the black wordmark reads on dark backgrounds while keeping the pink "DELI" pink.
  */
 export function SephoraCollectionLogo({
   className = "",
@@ -54,24 +57,50 @@ export function SephoraCollectionLogo({
   color?: string;
   size?: number;
 }) {
+  const isLight = /^#?(f{3,6}|fff|ffffff)$/i.test(color.replace("#", "")) || color === "white";
   return (
-    <div className={`flex items-center gap-3 select-none ${className}`} style={{ color }}>
-      <StripesMark className="shrink-0" color={color} style={{ width: size * 0.95, height: size * 0.7 }} />
-      <div className="flex flex-col leading-none">
-        <span
-          className="wordmark"
-          style={{ fontSize: size, lineHeight: 1, letterSpacing: "0.18em" }}
-        >
-          SEPHORA
-        </span>
-        <span
-          className="wordmark"
-          style={{ fontSize: size * 0.5, lineHeight: 1, marginTop: size * 0.18, letterSpacing: "0.32em" }}
-        >
-          COLLECTION
-        </span>
-      </div>
-    </div>
+    <img
+      src={sephoraDeliHorizontalAsset.url}
+      alt="Sephora Collection Deli"
+      draggable={false}
+      className={`select-none ${className}`}
+      style={{
+        height: size * 2.2,
+        width: "auto",
+        display: "block",
+        objectFit: "contain",
+        filter: isLight ? "invert(1) hue-rotate(180deg)" : "none",
+        pointerEvents: "none",
+      }}
+    />
+  );
+}
+
+/**
+ * Stacked variant — Sephora Collection over a large "DELI" wordmark. Use for
+ * portrait / narrow placements such as the printable ticket header.
+ */
+export function SephoraDeliStackedLogo({
+  className = "",
+  maxHeight = 96,
+}: {
+  className?: string;
+  maxHeight?: number;
+}) {
+  return (
+    <img
+      src={sephoraDeliStackedAsset.url}
+      alt="Sephora Collection Deli"
+      draggable={false}
+      className={`select-none ${className}`}
+      style={{
+        maxHeight,
+        width: "auto",
+        display: "block",
+        objectFit: "contain",
+        pointerEvents: "none",
+      }}
+    />
   );
 }
 
