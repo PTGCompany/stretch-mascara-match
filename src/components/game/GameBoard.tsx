@@ -440,7 +440,7 @@ export function GameBoard() {
                       >
                         {/* back — Sephora token */}
                         <div
-                          className="absolute inset-0 rounded-full"
+                          className="absolute inset-0 overflow-hidden rounded-full"
                           style={{
                             backfaceVisibility: "hidden",
                             WebkitBackfaceVisibility: "hidden",
