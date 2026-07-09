@@ -142,12 +142,12 @@ export function SephoraToken() {
 }
 
 /**
- * Circular SEPHORA medallion — single ring with the word "SEPHORA" repeated twice
- * around the circle, slowly rotating clockwise. Matches the brand emblem.
+ * Brand medallion shown on the idle splash — displays the Sephora Collection
+ * Deli stacked lockup. (Formerly a rotating circular SEPHORA mark; replaced
+ * to align with the current Sephora Collection Deli identity.)
  */
 export function CircularSephoraMark({
   size = 220,
-  durationSec = 28,
   className = "",
 }: {
   size?: number;
@@ -158,31 +158,24 @@ export function CircularSephoraMark({
   return (
     <div
       className={`relative inline-block select-none ${className}`}
-      style={{ width: size, height: size, borderRadius: "50%", overflow: "hidden" }}
-      aria-label="Sephora"
+      style={{ width: size, height: size }}
+      aria-label="Sephora Collection Deli"
     >
       <img
-        src={sephoraCircularAsset.url}
-        alt="Sephora"
+        src={sephoraDeliStackedAsset.url}
+        alt="Sephora Collection Deli"
         width={size}
         height={size}
         draggable={false}
         style={{
           display: "block",
-          width: size,
-          height: size,
+          width: "100%",
+          height: "100%",
           objectFit: "contain",
-          animation: `betc-spin ${durationSec}s linear infinite`,
-          transformOrigin: "50% 50%",
           pointerEvents: "none",
         }}
       />
-      <style>{`
-        @keyframes betc-spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }
+
