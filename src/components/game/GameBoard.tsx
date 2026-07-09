@@ -315,8 +315,8 @@ export function GameBoard() {
         <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.6fr)_minmax(0,0.75fr)] lg:gap-8">
           {/* LEFT — title + timer */}
           <section className="flex min-w-0 flex-col gap-6">
-            <div className="flex flex-col">
-              <SephoraCollectionLogo color="#ffffff" size={16} />
+            <div className="flex flex-col items-start">
+              <SephoraCollectionLogo color="#ffffff" size={16} className="self-start" />
               <motion.h1
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
