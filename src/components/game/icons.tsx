@@ -1,7 +1,7 @@
 import mascaraAsset from "@/assets/sephora-mascara.png.asset.json";
 import sephoraCircularAsset from "@/assets/sephora-circular.png.asset.json";
-import sephoraDeliHorizontalAsset from "@/assets/sephora-deli-horizontal.png.asset.json";
-import sephoraDeliStackedAsset from "@/assets/sephora-deli-stacked.png.asset.json";
+import sephoraDeliStackedAsset from "@/assets/sephora-deli-stacked.gif.asset.json";
+const sephoraDeliHorizontalAsset = sephoraDeliStackedAsset;
 
 export function MascaraIcon({ className = "" }: { className?: string }) {
   return (
