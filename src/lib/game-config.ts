@@ -97,7 +97,7 @@ export const DEFAULT_CONFIG: GameConfig = {
   sephoraDeliLogoUrl: "/__l5e/assets-v1/c4a55cef-333f-4881-92bb-9068d57fbb37/sephora-deli-stacked.gif",
 };
 
-const KEY = "sephora-game-config-v11";
+const KEY = "sephora-game-config-v12";
 
 
 export function loadConfig(): GameConfig {
