@@ -279,15 +279,16 @@ function PrintTicketPage() {
           </div>
         </div>
 
-        <div className="relative min-h-[70dvh] flex-1 border-2 border-black bg-neutral-100">
-          {pdfUrl ? (
-            <iframe
-              ref={iframeRef}
-              src={`${pdfUrl}#toolbar=1&view=FitH`}
-              title="Reward ticket PDF"
-              data-testid="ticket-pdf-frame"
-              className="absolute inset-0 h-full w-full"
-            />
+        <div className="relative min-h-[70dvh] flex-1 border-2 border-black bg-neutral-100 overflow-auto">
+          {previewImg ? (
+            <div className="flex min-h-full items-center justify-center p-6">
+              <img
+                src={previewImg}
+                alt="Reward ticket preview"
+                data-testid="ticket-pdf-frame"
+                className="max-h-[80dvh] w-auto max-w-full object-contain shadow-[0_20px_60px_-20px_rgba(0,0,0,0.35)] bg-white"
+              />
+            </div>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-center text-xs uppercase tracking-[0.28em] text-neutral-600">
               {buildError ? (
@@ -296,7 +297,7 @@ function PrintTicketPage() {
                   <p className="mt-2 normal-case tracking-normal text-neutral-700">{buildError}</p>
                 </div>
               ) : (
-                <p>{building ? "Generating PDF…" : "Preparing ticket…"}</p>
+                <p>{building ? "Generating ticket…" : "Preparing ticket…"}</p>
               )}
             </div>
           )}
