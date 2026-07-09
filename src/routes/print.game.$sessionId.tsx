@@ -23,10 +23,14 @@ function PrintTicketPage() {
   const [session, setSession] = useState<GameSession | null>(null);
   const [config, setConfig] = useState<GameConfig | null>(null);
   const [ready, setReady] = useState(false);
+  const [logoOk, setLogoOk] = useState<boolean>(true);
 
   useEffect(() => {
-    setSession(findSession(sessionId));
-    setConfig(loadConfig());
+    const s = findSession(sessionId);
+    const c = loadConfig();
+    setSession(s);
+    setConfig(c);
+    setLogoOk(Boolean(c.sephoraDeliLogoUrl));
     setReady(true);
   }, [sessionId]);
 
@@ -107,7 +111,7 @@ function PrintTicketPage() {
     ? "No reward"
     : session.rewardProductName ?? "Gift";
 
-  const [logoOk, setLogoOk] = useState<boolean>(Boolean(config.sephoraDeliLogoUrl));
+  
 
   return (
     <div className="min-h-dvh bg-white text-black">
