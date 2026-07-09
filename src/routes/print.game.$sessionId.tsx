@@ -25,6 +25,7 @@ function PrintTicketPage() {
   const [ready, setReady] = useState(false);
   const [logoOk, setLogoOk] = useState<boolean>(true);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [previewImg, setPreviewImg] = useState<string | null>(null);
   const [building, setBuilding] = useState(false);
   const [buildError, setBuildError] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -60,7 +61,7 @@ function PrintTicketPage() {
       orientation: "portrait",
     });
     pdf.addImage(imgData, "PNG", 0, 0, widthMm, heightMm);
-    return pdf;
+    return { pdf, imgData };
   };
 
   const generateAndEmbed = async () => {
@@ -68,14 +69,16 @@ function PrintTicketPage() {
     setBuilding(true);
     setBuildError(null);
     try {
-      const pdf = await buildPdf();
-      if (!pdf) return;
+      const built = await buildPdf();
+      if (!built) return;
+      const { pdf, imgData } = built;
       const blob = pdf.output("blob");
       const url = URL.createObjectURL(blob);
       setPdfUrl((prev) => {
         if (prev) URL.revokeObjectURL(prev);
         return url;
       });
+      setPreviewImg(imgData);
       updateSessionPrintStatus(session.id, "PRINTED");
     } catch (e) {
       setBuildError(e instanceof Error ? e.message : "Failed to build PDF");
@@ -123,9 +126,9 @@ function PrintTicketPage() {
   const doDownloadPdf = async () => {
     if (!session) return;
     try {
-      const pdf = await buildPdf();
-      if (!pdf) return;
-      pdf.save(`sephora-ticket-${session.ticketCode}.pdf`);
+      const built = await buildPdf();
+      if (!built) return;
+      built.pdf.save(`sephora-ticket-${session.ticketCode}.pdf`);
       updateSessionPrintStatus(session.id, "PRINTED");
     } catch {
       if (session) updateSessionPrintStatus(session.id, "FAILED");
@@ -276,15 +279,16 @@ function PrintTicketPage() {
           </div>
         </div>
 
-        <div className="relative min-h-[70dvh] flex-1 border-2 border-black bg-neutral-100">
-          {pdfUrl ? (
-            <iframe
-              ref={iframeRef}
-              src={`${pdfUrl}#toolbar=1&view=FitH`}
-              title="Reward ticket PDF"
-              data-testid="ticket-pdf-frame"
-              className="absolute inset-0 h-full w-full"
-            />
+        <div className="relative min-h-[70dvh] flex-1 border-2 border-black bg-neutral-100 overflow-auto">
+          {previewImg ? (
+            <div className="flex min-h-full items-center justify-center p-6">
+              <img
+                src={previewImg}
+                alt="Reward ticket preview"
+                data-testid="ticket-pdf-frame"
+                className="max-h-[80dvh] w-auto max-w-full object-contain shadow-[0_20px_60px_-20px_rgba(0,0,0,0.35)] bg-white"
+              />
+            </div>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-center text-xs uppercase tracking-[0.28em] text-neutral-600">
               {buildError ? (
@@ -293,7 +297,7 @@ function PrintTicketPage() {
                   <p className="mt-2 normal-case tracking-normal text-neutral-700">{buildError}</p>
                 </div>
               ) : (
-                <p>{building ? "Generating PDF…" : "Preparing ticket…"}</p>
+                <p>{building ? "Generating ticket…" : "Preparing ticket…"}</p>
               )}
             </div>
           )}
