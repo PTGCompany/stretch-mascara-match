@@ -229,7 +229,7 @@ function PrintTicketPage() {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <button
               type="button"
-              onClick={doPrint}
+              onClick={() => { void doPrint(); }}
               className="rounded-none bg-black px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white"
             >
               Print
