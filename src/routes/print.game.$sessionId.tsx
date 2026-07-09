@@ -111,7 +111,7 @@ function PrintTicketPage() {
     ? "No reward"
     : session.rewardProductName ?? "Gift";
 
-  const [logoOk, setLogoOk] = useState<boolean>(Boolean(config.sephoraDeliLogoUrl));
+  
 
   return (
     <div className="min-h-dvh bg-white text-black">
