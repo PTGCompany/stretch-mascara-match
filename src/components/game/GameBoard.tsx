@@ -381,8 +381,15 @@ export function GameBoard() {
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full border border-white/15 bg-white/[0.04] p-2 backdrop-blur-sm sm:p-3"
+              className="relative border border-white/15 bg-white/[0.04] p-2 backdrop-blur-sm sm:p-3"
+              style={{
+                aspectRatio: `${config.gridCols} / ${config.gridRows}`,
+                maxWidth: "100%",
+                maxHeight: "100%",
+                width: `min(100%, calc(100% * ${config.gridCols} / ${config.gridRows}))`,
+              }}
             >
+
               <span className="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t" style={{ borderColor: PINK }} />
               <span className="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t" style={{ borderColor: PINK }} />
               <span className="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l" style={{ borderColor: PINK }} />
