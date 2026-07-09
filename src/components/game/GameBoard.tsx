@@ -274,15 +274,8 @@ export function GameBoard() {
   };
 
   return (
-    <div className="flex min-h-dvh w-full items-center justify-center bg-black">
-    <div
-      className="relative mx-auto flex flex-col overflow-hidden bg-black text-white shadow-2xl"
-      style={{
-        aspectRatio: "9 / 16",
-        height: "min(100dvh, calc(100vw * 16 / 9))",
-        width: "min(100vw, calc(100dvh * 9 / 16))",
-      }}
-    >
+    <div className="relative mx-auto flex min-h-dvh w-full max-w-[min(100vw,calc(100dvh*9/16))] flex-col overflow-hidden bg-black text-white">
+
 
 
       {/* TOP MARQUEE */}
