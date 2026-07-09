@@ -12,7 +12,7 @@ import { test, expect, type Page } from "@playwright/test";
  *  - replay to get a fresh shuffled board
  */
 
-const CONFIG_KEY = "sephora-game-config-v9";
+const CONFIG_KEY = "sephora-game-config-v10";
 const SESS_KEY = "sephora-game-sessions-v4";
 
 type ConfigOverride = Record<string, unknown>;
@@ -36,12 +36,14 @@ async function seedConfig(page: Page, overrides: ConfigOverride): Promise<void> 
     ticketPrintingEnabled: true,
     printNoRewardTicketEnabled: false,
     autoPrintEnabled: false,
-    ticketFooterText: "Show this ticket to the Sephora Collection team.",
-    ticketBrandTitle: "SEPHORA COLLECTION",
+    ticketFooterText: "PICK UP YOUR ORDER!",
+    ticketBrandTitle: "SEPHORA DELI",
+    ticketBrandFallbackText: "SEPHORA DELI",
+    sephoraDeliLogoUrl: "",
     winLevels: [
-      { level: 1, min: 1, max: 3, label: "REWARD LEVEL 1", message: "WELL PLAYED!" },
-      { level: 2, min: 4, max: 7, label: "REWARD LEVEL 2", message: "GREAT SCORE!" },
-      { level: 3, min: 8, max: 10, label: "REWARD LEVEL 3", message: "EXCELLENT MEMORY!" },
+      { level: 1, min: 1, max: 3, label: "REWARD LEVEL 1", message: "WELL PLAYED!", rewardProductName: "Gift 1" },
+      { level: 2, min: 4, max: 7, label: "REWARD LEVEL 2", message: "GREAT SCORE!", rewardProductName: "Gift 2" },
+      { level: 3, min: 8, max: 10, label: "REWARD LEVEL 3", message: "EXCELLENT MEMORY!", rewardProductName: "Gift 3" },
     ],
   };
   const cfg = { ...base, ...overrides };

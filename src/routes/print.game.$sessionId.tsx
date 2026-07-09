@@ -103,6 +103,11 @@ function PrintTicketPage() {
   const rewardMessage = noReward
     ? "TRY AGAIN!"
     : session.rewardTierMessage ?? "";
+  const rewardProduct = noReward
+    ? "No reward"
+    : session.rewardProductName ?? "Gift";
+
+  const [logoOk, setLogoOk] = useState<boolean>(Boolean(config.sephoraDeliLogoUrl));
 
   return (
     <div className="min-h-dvh bg-white text-black">
@@ -114,8 +119,9 @@ function PrintTicketPage() {
         }
         .ticket-wrap { max-width: 360px; margin: 0 auto; padding: 20px; }
         .ticket { border: 2px solid #000; padding: 18px; font-family: 'Jost', system-ui, -apple-system, Arial, sans-serif; }
-        .brand { text-align: center; font-weight: 900; letter-spacing: .32em; font-size: 12px; }
-        .brand small { display: block; letter-spacing: .28em; font-weight: 700; margin-top: 2px; }
+        .brand { text-align: center; font-weight: 900; letter-spacing: .32em; font-size: 14px; }
+        .brand img { display: block; margin: 0 auto 4px; max-height: 44px; max-width: 80%; object-fit: contain; }
+        .brand small { display: block; letter-spacing: .28em; font-weight: 700; margin-top: 4px; font-size: 10px; }
         .stripes { height: 10px; margin: 10px 0; background-image: repeating-linear-gradient(90deg,#000 0 6px,transparent 6px 12px); }
         .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dotted #999; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
         .row .k { color: #555; font-weight: 700; }
@@ -124,13 +130,38 @@ function PrintTicketPage() {
         .tier .t { font-size: 11px; letter-spacing: .28em; font-weight: 900; color: #ed6f7e; text-transform: uppercase; }
         .tier .g { font-size: 14px; font-weight: 900; margin-top: 6px; text-transform: uppercase; letter-spacing: .16em; }
         .code { margin-top: 14px; text-align: center; font-family: 'Courier New', monospace; font-size: 18px; letter-spacing: .32em; font-weight: 900; border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 10px 0; }
-        .foot { margin-top: 12px; text-align: center; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #444; }
+        .foot-cta {
+          margin-top: 14px;
+          text-align: center;
+          font-family: Futura, "Futura PT", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          font-size: 22px;
+          line-height: 1.1;
+          padding: 10px 6px;
+          border-top: 2px solid #000;
+          border-bottom: 2px solid #000;
+          color: #000;
+        }
+        @media print { .foot-cta { font-size: 18px; } }
       `}</style>
 
       <div className="ticket-wrap">
         <div className="ticket" data-testid="print-ticket-body">
-          <div className="brand">
-            ≡ {config.ticketBrandTitle}
+          <div className="brand" data-testid="ticket-brand">
+            {logoOk && config.sephoraDeliLogoUrl ? (
+              <img
+                src={config.sephoraDeliLogoUrl}
+                alt={config.ticketBrandFallbackText}
+                data-testid="ticket-brand-logo"
+                onError={() => setLogoOk(false)}
+              />
+            ) : (
+              <span data-testid="ticket-brand-fallback">
+                {config.ticketBrandFallbackText}
+              </span>
+            )}
             <small>MEMORY GAME</small>
           </div>
           <div className="stripes" />
@@ -149,18 +180,18 @@ function PrintTicketPage() {
           </div>
           <div className="row" data-testid="ticket-reward">
             <span className="k">Reward</span>
-            <span className="v">{rewardLabel}</span>
+            <span className="v">{rewardProduct}</span>
           </div>
 
           <div className="tier">
-            <div className="t">{rewardMessage}</div>
+            <div className="t">{rewardMessage || rewardLabel}</div>
             {!noReward && session.finalWinLevel && (
               <div className="g">Tier {session.finalWinLevel} / 3</div>
             )}
           </div>
 
           <div className="code" data-testid="ticket-code">{session.ticketCode}</div>
-          <div className="foot" data-testid="ticket-footer">{config.ticketFooterText}</div>
+          <div className="foot-cta" data-testid="ticket-footer">{config.ticketFooterText}</div>
           <div className="stripes" />
         </div>
 

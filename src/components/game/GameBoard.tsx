@@ -140,6 +140,7 @@ export function GameBoard() {
         finalWinLevel: tier?.level ?? null,
         rewardTierLabel: tier?.label ?? null,
         rewardTierMessage: tier?.message ?? null,
+        rewardProductName: tier?.rewardProductName ?? null,
         score,
         timeRemaining: finalTimeRemaining,
         durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
@@ -686,19 +687,19 @@ export function GameBoard() {
                   <ul className="flex max-w-[42ch] flex-col gap-3 text-left text-[12px] font-medium uppercase leading-relaxed tracking-[0.16em] text-white/75">
                     <li className="flex items-start gap-3">
                       <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>1</span>
-                      <span>Tap a card to reveal a Sephora Collection product.</span>
+                      <span data-testid="rule-step-1">Tap a card to reveal a Sephora Collection product.</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>2</span>
-                      <span>Find two identical products to lock the pair.</span>
+                      <span data-testid="rule-step-2">Find the matching card to complete the pair.</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>3</span>
-                      <span>You have {config.durationSeconds} seconds to match as many pairs as possible.</span>
+                      <span data-testid="rule-step-3">You have 30 seconds to find as many pairs as possible.</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>4</span>
-                      <span>Unlock reward tiers based on the number of pairs you find.</span>
+                      <span data-testid="rule-step-4">Unlock rewards based on the number of pairs you find.</span>
                     </li>
                   </ul>
                 </>
