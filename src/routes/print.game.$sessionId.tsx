@@ -25,6 +25,7 @@ function PrintTicketPage() {
   const [ready, setReady] = useState(false);
   const [logoOk, setLogoOk] = useState<boolean>(true);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [previewImg, setPreviewImg] = useState<string | null>(null);
   const [building, setBuilding] = useState(false);
   const [buildError, setBuildError] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -60,7 +61,7 @@ function PrintTicketPage() {
       orientation: "portrait",
     });
     pdf.addImage(imgData, "PNG", 0, 0, widthMm, heightMm);
-    return pdf;
+    return { pdf, imgData };
   };
 
   const generateAndEmbed = async () => {
@@ -68,14 +69,16 @@ function PrintTicketPage() {
     setBuilding(true);
     setBuildError(null);
     try {
-      const pdf = await buildPdf();
-      if (!pdf) return;
+      const built = await buildPdf();
+      if (!built) return;
+      const { pdf, imgData } = built;
       const blob = pdf.output("blob");
       const url = URL.createObjectURL(blob);
       setPdfUrl((prev) => {
         if (prev) URL.revokeObjectURL(prev);
         return url;
       });
+      setPreviewImg(imgData);
       updateSessionPrintStatus(session.id, "PRINTED");
     } catch (e) {
       setBuildError(e instanceof Error ? e.message : "Failed to build PDF");
