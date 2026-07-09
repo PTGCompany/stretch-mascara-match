@@ -126,9 +126,9 @@ function PrintTicketPage() {
   const doDownloadPdf = async () => {
     if (!session) return;
     try {
-      const pdf = await buildPdf();
-      if (!pdf) return;
-      pdf.save(`sephora-ticket-${session.ticketCode}.pdf`);
+      const built = await buildPdf();
+      if (!built) return;
+      built.pdf.save(`sephora-ticket-${session.ticketCode}.pdf`);
       updateSessionPrintStatus(session.id, "PRINTED");
     } catch {
       if (session) updateSessionPrintStatus(session.id, "FAILED");
