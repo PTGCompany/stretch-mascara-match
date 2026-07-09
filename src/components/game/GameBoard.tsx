@@ -274,8 +274,9 @@ export function GameBoard() {
   };
 
   return (
-    <div className="flex min-h-dvh w-full items-center justify-center bg-black">
-    <div className="relative mx-auto flex aspect-[9/16] max-h-dvh w-full max-w-[min(100vw,calc(100dvh*9/16))] flex-col overflow-hidden bg-black text-white shadow-2xl">
+    <div className="relative mx-auto flex min-h-dvh w-full max-w-[min(100vw,calc(100dvh*9/16))] flex-col overflow-hidden bg-black text-white">
+
+
 
       {/* TOP MARQUEE */}
       <div className="relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20">
@@ -312,8 +313,10 @@ export function GameBoard() {
       </div>
 
       {/* MAIN */}
-      <main className="relative z-10 flex flex-1 min-h-0 flex-col px-4 py-4">
-        <div className="mx-auto flex w-full max-w-[520px] flex-1 min-h-0 flex-col gap-3">
+      <main className="relative z-10 grid flex-1 min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-3 px-4 py-4">
+        <div className="contents">
+
+
           {/* TOP — title + timer */}
           <section className="flex min-w-0 flex-col">
             <div className="flex items-start justify-between gap-3">
@@ -379,8 +382,15 @@ export function GameBoard() {
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full border border-white/15 bg-white/[0.04] p-2 backdrop-blur-sm sm:p-3"
+              className="relative border border-white/15 bg-white/[0.04] p-2 backdrop-blur-sm sm:p-3"
+              style={{
+                aspectRatio: `${config.gridCols} / ${config.gridRows}`,
+                maxWidth: "100%",
+                maxHeight: "100%",
+                width: `min(100%, calc(100% * ${config.gridCols} / ${config.gridRows}))`,
+              }}
             >
+
               <span className="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t" style={{ borderColor: PINK }} />
               <span className="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t" style={{ borderColor: PINK }} />
               <span className="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l" style={{ borderColor: PINK }} />
@@ -840,7 +850,7 @@ export function GameBoard() {
         }
       `}</style>
     </div>
-    </div>
   );
 }
+
 
