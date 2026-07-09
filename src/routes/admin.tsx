@@ -355,6 +355,21 @@ function AdminPage() {
                 onChange={(e) => update("ticketBrandTitle", e.target.value)}
               />
             </Field>
+            <Field label="Sephora Deli logo URL" full>
+              <input
+                className="input"
+                value={config.sephoraDeliLogoUrl}
+                onChange={(e) => update("sephoraDeliLogoUrl", e.target.value)}
+                placeholder="/brand/sephora-deli-logo.svg"
+              />
+            </Field>
+            <Field label="Ticket brand fallback text">
+              <input
+                className="input"
+                value={config.ticketBrandFallbackText}
+                onChange={(e) => update("ticketBrandFallbackText", e.target.value)}
+              />
+            </Field>
             <Field label="Ticket footer text" full>
               <input
                 className="input"
