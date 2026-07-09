@@ -6,6 +6,7 @@ export type WinLevel = {
   message: string;
   gainDescription?: string;
   ticketText?: string;
+  rewardProductName?: string;
 };
 
 export type GameConfig = {
@@ -29,6 +30,8 @@ export type GameConfig = {
   autoPrintEnabled: boolean;
   ticketFooterText: string;
   ticketBrandTitle: string;
+  ticketBrandFallbackText: string;
+  sephoraDeliLogoUrl: string;
 };
 
 /**
@@ -44,7 +47,8 @@ export const DEFAULT_WIN_LEVELS: WinLevel[] = [
     label: "REWARD LEVEL 1",
     message: "WELL PLAYED!",
     gainDescription: "Discovery sample",
-    ticketText: "Reward Level 1 — Discovery sample",
+    ticketText: "Reward Level 1 — Gift 1",
+    rewardProductName: "Gift 1",
   },
   {
     level: 2,
@@ -53,7 +57,8 @@ export const DEFAULT_WIN_LEVELS: WinLevel[] = [
     label: "REWARD LEVEL 2",
     message: "GREAT SCORE!",
     gainDescription: "Mini format gift",
-    ticketText: "Reward Level 2 — Mini format gift",
+    ticketText: "Reward Level 2 — Gift 2",
+    rewardProductName: "Gift 2",
   },
   {
     level: 3,
@@ -62,7 +67,8 @@ export const DEFAULT_WIN_LEVELS: WinLevel[] = [
     label: "REWARD LEVEL 3",
     message: "EXCELLENT MEMORY!",
     gainDescription: "Signature gift set",
-    ticketText: "Reward Level 3 — Signature gift set",
+    ticketText: "Reward Level 3 — Gift 3",
+    rewardProductName: "Gift 3",
   },
 ];
 
@@ -85,11 +91,13 @@ export const DEFAULT_CONFIG: GameConfig = {
   ticketPrintingEnabled: true,
   printNoRewardTicketEnabled: false,
   autoPrintEnabled: true,
-  ticketFooterText: "Show this ticket to the Sephora Collection team.",
-  ticketBrandTitle: "SEPHORA COLLECTION",
+  ticketFooterText: "PICK UP YOUR ORDER!",
+  ticketBrandTitle: "SEPHORA DELI",
+  ticketBrandFallbackText: "SEPHORA DELI",
+  sephoraDeliLogoUrl: "/brand/sephora-deli-logo.svg",
 };
 
-const KEY = "sephora-game-config-v9";
+const KEY = "sephora-game-config-v10";
 
 export function loadConfig(): GameConfig {
   if (typeof window === "undefined") return DEFAULT_CONFIG;
