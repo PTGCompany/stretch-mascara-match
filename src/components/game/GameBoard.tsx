@@ -274,7 +274,9 @@ export function GameBoard() {
   };
 
   return (
-    <div className="relative flex min-h-dvh w-full flex-col overflow-hidden bg-black text-white">
+    <div className="flex min-h-dvh w-full items-center justify-center bg-black">
+    <div className="relative mx-auto flex aspect-[9/16] max-h-dvh w-full max-w-[min(100vw,calc(100dvh*9/16))] flex-col overflow-hidden bg-black text-white shadow-2xl">
+
       {/* TOP MARQUEE */}
       <div className="relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20">
         <div
@@ -310,32 +312,36 @@ export function GameBoard() {
       </div>
 
       {/* MAIN */}
-      <main className="relative z-10 flex flex-1 items-stretch justify-center px-5 py-6 sm:px-8 sm:py-8">
-        <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.6fr)_minmax(0,0.75fr)] lg:gap-8">
-          {/* LEFT — title + timer */}
-          <section className="flex min-w-0 flex-col gap-6">
-            <div className="flex flex-col items-start">
-              <SephoraCollectionLogo color="#ffffff" size={16} className="self-start" />
-              <motion.h1
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
-                className="font-display mt-4 text-[48px] uppercase leading-[0.85] tracking-tight sm:text-[64px] lg:text-[80px] text-white"
+      <main className="relative z-10 flex flex-1 min-h-0 flex-col px-4 py-4">
+        <div className="mx-auto flex w-full max-w-[520px] flex-1 min-h-0 flex-col gap-3">
+          {/* TOP — title + timer */}
+          <section className="flex min-w-0 flex-col">
+            <div className="flex items-start justify-between gap-3">
+              <SephoraCollectionLogo color="#ffffff" size={14} className="shrink-0" />
+              <Link
+                to="/admin"
+                className="text-white/40 transition-colors hover:text-white"
+                aria-label="Admin"
               >
-                {config.title}{" "}
-                <span style={{ color: PINK }}>{config.titleAccent}</span>
-              </motion.h1>
-              <p className="mt-4 max-w-[34ch] text-[10px] font-bold uppercase leading-relaxed tracking-[0.24em] text-white/55">
-                {config.instruction}
-              </p>
+                <Settings className="h-4 w-4" />
+              </Link>
             </div>
+            <motion.h1
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+              className="font-display mt-2 text-[36px] uppercase leading-[0.85] tracking-tight text-white"
+            >
+              {config.title}{" "}
+              <span style={{ color: PINK }}>{config.titleAccent}</span>
+            </motion.h1>
 
             {/* Timer */}
-            <div className="w-full max-w-md">
+            <div className="mt-3 w-full">
               <div className="flex items-end justify-between">
                 <span
                   data-testid="time-remaining-label"
-                  className="text-[10px] font-bold uppercase tracking-[0.32em] text-white/55"
+                  className="text-[9px] font-bold uppercase tracking-[0.32em] text-white/55"
                 >
                   Time remaining
                 </span>
@@ -348,16 +354,15 @@ export function GameBoard() {
                       : { scale: 1, opacity: 1 }
                   }
                   transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-display text-[44px] leading-none tabular-nums tracking-tight sm:text-[56px]"
+                  className="font-display text-[32px] leading-none tabular-nums tracking-tight"
                   style={{ color: timeUrgent ? PINK : "#ffffff" }}
                 >
                   {status === "idle" || status === "rules"
                     ? fmtTime(config.durationSeconds)
                     : fmtTime(timeRemaining)}
-
                 </motion.span>
               </div>
-              <div className="mt-3 h-[3px] w-full overflow-hidden bg-white/10">
+              <div className="mt-2 h-[3px] w-full overflow-hidden bg-white/10">
                 <motion.div
                   className="h-full"
                   animate={{ width: `${progress}%` }}
@@ -368,20 +373,20 @@ export function GameBoard() {
             </div>
           </section>
 
-          {/* CENTER — board (4x5 by default) */}
-          <section className="flex min-w-0 items-center justify-center">
+          {/* CENTER — board */}
+          <section className="flex min-h-0 flex-1 items-center justify-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full max-w-[520px] border border-white/15 bg-white/[0.04] p-3 backdrop-blur-sm sm:p-4"
+              className="relative w-full border border-white/15 bg-white/[0.04] p-2 backdrop-blur-sm sm:p-3"
             >
               <span className="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t" style={{ borderColor: PINK }} />
               <span className="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t" style={{ borderColor: PINK }} />
               <span className="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l" style={{ borderColor: PINK }} />
               <span className="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r" style={{ borderColor: PINK }} />
 
-              <div className="grid gap-2 sm:gap-2.5" style={gridStyle}>
+              <div className="grid gap-1.5 sm:gap-2" style={gridStyle}>
                 {Array.from({ length: total }).map((_, i) => {
                   const card = cards[i];
                   const s = cardStates[i] ?? "hidden";
@@ -477,105 +482,85 @@ export function GameBoard() {
             </motion.div>
           </section>
 
-          {/* RIGHT — status sidebar */}
-          <aside className="flex min-w-0 flex-col gap-6">
-            <div className="border-t border-white/20 pt-4">
-              <div className="flex items-center justify-between">
-                <span
-                  className="text-[10px] font-bold uppercase tracking-[0.28em]"
-                  style={{ color: PINK }}
-                >
-                  Score
+          {/* BOTTOM — stats + tiers */}
+          <section className="flex min-w-0 flex-col gap-2 border-t border-white/20 pt-2">
+            <div className="grid grid-cols-3 gap-2">
+              <div className="flex flex-col">
+                <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-white/55">
+                  Pairs
                 </span>
-                <Link
-                  to="/admin"
-                  className="text-white/40 transition-colors hover:text-white"
-                  aria-label="Admin"
+                <span
+                  data-testid="pairs-count"
+                  className="font-display text-[22px] leading-none tabular-nums"
                 >
-                  <Settings className="h-4 w-4" />
-                </Link>
+                  {pad2(pairsFound)}
+                  <span className="text-white/30">/{pad2(totalPairs)}</span>
+                </span>
               </div>
+              <div className="flex flex-col">
+                <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-white/55">
+                  Points
+                </span>
+                <span
+                  data-testid="current-score"
+                  className="font-display text-[22px] leading-none tabular-nums"
+                  style={{ color: pairsFound > 0 ? PINK : "rgba(255,255,255,0.4)" }}
+                >
+                  {liveScore}
+                </span>
+              </div>
+              {config.trackWrongAttempts ? (
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-white/55">
+                    Misses
+                  </span>
+                  <span className="font-display text-[22px] leading-none tabular-nums text-white/70">
+                    {pad2(wrongAttempts)}
+                  </span>
+                </div>
+              ) : (
+                <div />
+              )}
+            </div>
 
-              <div className="mt-5 divide-y divide-white/10">
-                <div className="flex items-center justify-between py-3">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
-                    Pairs
-                  </span>
-                  <span
-                    data-testid="pairs-count"
-                    className="font-display text-[28px] leading-none tabular-nums"
+            <div className="flex flex-wrap gap-1">
+              {config.winLevels.map((lv) => {
+                const isReached =
+                  currentTier != null && currentTier.level >= lv.level;
+                const isCurrent =
+                  currentTier != null && currentTier.level === lv.level;
+                return (
+                  <div
+                    key={lv.level}
+                    className="flex flex-1 min-w-0 items-center justify-between gap-1 border border-white/10 px-2 py-1"
+                    style={
+                      isCurrent
+                        ? {
+                            borderColor: PINK,
+                            backgroundColor: "rgba(237,111,126,0.08)",
+                          }
+                        : undefined
+                    }
                   >
-                    {pad2(pairsFound)}
-                    <span className="text-white/30">/{pad2(totalPairs)}</span>
-                  </span>
-                </div>
-                <div className="flex items-center justify-between py-3">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
-                    Points
-                  </span>
-                  <span
-                    data-testid="current-score"
-                    className="font-display text-[28px] leading-none tabular-nums"
-                    style={{ color: pairsFound > 0 ? PINK : "rgba(255,255,255,0.4)" }}
-                  >
-                    {liveScore}
-                  </span>
-                </div>
-                {config.trackWrongAttempts && (
-                  <div className="flex items-center justify-between py-3">
-                    <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-white/80">
-                      Misses
+                    <span className="text-[8px] font-bold uppercase tracking-[0.16em] text-white/70">
+                      T{lv.level}
                     </span>
-                    <span className="font-display text-[20px] leading-none tabular-nums text-white/70">
-                      {pad2(wrongAttempts)}
+                    <span
+                      className="text-[9px] font-bold tabular-nums"
+                      style={{
+                        color: isReached ? PINK : "rgba(255,255,255,0.4)",
+                      }}
+                    >
+                      {lv.min}–{lv.max}
                     </span>
                   </div>
-                )}
-              </div>
+                );
+              })}
             </div>
-
-            <div className="border-t border-white/20 pt-4">
-              <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
-                Reward tiers
-              </span>
-              <div className="mt-3 flex flex-col gap-1.5">
-                {config.winLevels.map((lv) => {
-                  const isReached =
-                    currentTier != null && currentTier.level >= lv.level;
-                  const isCurrent =
-                    currentTier != null && currentTier.level === lv.level;
-                  return (
-                    <div
-                      key={lv.level}
-                      className="flex items-center justify-between border border-white/10 px-2.5 py-1.5"
-                      style={
-                        isCurrent
-                          ? {
-                              borderColor: PINK,
-                              backgroundColor: "rgba(237,111,126,0.08)",
-                            }
-                          : undefined
-                      }
-                    >
-                      <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/70">
-                        Tier {lv.level}
-                      </span>
-                      <span
-                        className="text-[10px] font-bold tabular-nums"
-                        style={{
-                          color: isReached ? PINK : "rgba(255,255,255,0.4)",
-                        }}
-                      >
-                        {lv.min}–{lv.max}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </aside>
+          </section>
         </div>
       </main>
+
 
       {/* BOTTOM MARQUEE */}
       <div className="relative z-20 flex h-10 items-center overflow-hidden border-t border-white/20">
@@ -855,5 +840,7 @@ export function GameBoard() {
         }
       `}</style>
     </div>
+    </div>
   );
 }
+
