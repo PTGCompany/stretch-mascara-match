@@ -94,7 +94,7 @@ export const DEFAULT_CONFIG: GameConfig = {
   ticketFooterText: "PICK UP YOUR ORDER!",
   ticketBrandTitle: "SEPHORA DELI",
   ticketBrandFallbackText: "SEPHORA DELI",
-  sephoraDeliLogoUrl: "/__l5e/assets-v1/8cce2b40-c212-4ba5-9615-1b5ada53c47a/sephora-deli-stacked.png",
+  sephoraDeliLogoUrl: "/__l5e/assets-v1/72bf6f6a-492a-4d63-9dde-a4c41a951b75/sephora-deli-stacked.png",
 };
 
 const KEY = "sephora-game-config-v14";
