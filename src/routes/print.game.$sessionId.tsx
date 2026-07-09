@@ -34,53 +34,76 @@ function PrintTicketPage() {
     setReady(true);
   }, [sessionId]);
 
+  const buildPdf = async () => {
+    const node = document.querySelector<HTMLElement>('[data-testid="print-ticket-body"]');
+    if (!node || !session) return null;
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import("html2canvas"),
+      import("jspdf"),
+    ]);
+    const canvas = await html2canvas(node, {
+      backgroundColor: "#ffffff",
+      scale: 2,
+      useCORS: true,
+    });
+    const imgData = canvas.toDataURL("image/png");
+    const widthMm = 80;
+    const heightMm = (canvas.height * widthMm) / canvas.width;
+    const pdf = new jsPDF({
+      unit: "mm",
+      format: [widthMm, heightMm],
+      orientation: "portrait",
+    });
+    pdf.addImage(imgData, "PNG", 0, 0, widthMm, heightMm);
+    return pdf;
+  };
+
   useEffect(() => {
     if (!ready || !session || !config) return;
     if (!config.autoPrintEnabled) return;
     const noReward = session.pairsFound <= 0;
     if (noReward && !config.printNoRewardTicketEnabled) return;
     const t = window.setTimeout(() => {
-      try {
-        window.print();
-        updateSessionPrintStatus(session.id, "PRINTED");
-      } catch {
-        updateSessionPrintStatus(session.id, "FAILED");
-      }
-    }, 200);
+      void doPrint();
+    }, 300);
     return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, session, config]);
 
-  const doPrint = () => {
+  const doPrint = async () => {
+    if (!session) return;
     try {
-      window.print();
-      if (session) updateSessionPrintStatus(session.id, "PRINTED");
+      const pdf = await buildPdf();
+      if (!pdf) return;
+      // Open the PDF in a new tab so the browser's native PDF viewer
+      // shows it with a built-in print button.
+      const blobUrl = pdf.output("bloburl");
+      const win = window.open(blobUrl, "_blank");
+      if (!win) {
+        // Popup blocked — fall back to same-tab navigation to the PDF.
+        window.location.href = blobUrl.toString();
+      } else {
+        // Trigger print dialog once the PDF viewer has loaded.
+        win.addEventListener("load", () => {
+          try {
+            win.focus();
+            win.print();
+          } catch {
+            /* noop */
+          }
+        });
+      }
+      updateSessionPrintStatus(session.id, "PRINTED");
     } catch {
-      if (session) updateSessionPrintStatus(session.id, "FAILED");
+      updateSessionPrintStatus(session.id, "FAILED");
     }
   };
 
   const doDownloadPdf = async () => {
-    const node = document.querySelector<HTMLElement>('[data-testid="print-ticket-body"]');
-    if (!node || !session) return;
+    if (!session) return;
     try {
-      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-        import("html2canvas"),
-        import("jspdf"),
-      ]);
-      const canvas = await html2canvas(node, {
-        backgroundColor: "#ffffff",
-        scale: 2,
-        useCORS: true,
-      });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({
-        unit: "mm",
-        format: [80, (canvas.height * 80) / canvas.width],
-        orientation: "portrait",
-      });
-      const pageW = pdf.internal.pageSize.getWidth();
-      const pageH = pdf.internal.pageSize.getHeight();
-      pdf.addImage(imgData, "PNG", 0, 0, pageW, pageH);
+      const pdf = await buildPdf();
+      if (!pdf) return;
       pdf.save(`sephora-ticket-${session.ticketCode}.pdf`);
       updateSessionPrintStatus(session.id, "PRINTED");
     } catch {
@@ -206,7 +229,7 @@ function PrintTicketPage() {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <button
               type="button"
-              onClick={doPrint}
+              onClick={() => { void doPrint(); }}
               className="rounded-none bg-black px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white"
             >
               Print
