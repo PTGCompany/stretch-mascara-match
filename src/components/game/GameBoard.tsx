@@ -140,6 +140,7 @@ export function GameBoard() {
         finalWinLevel: tier?.level ?? null,
         rewardTierLabel: tier?.label ?? null,
         rewardTierMessage: tier?.message ?? null,
+        rewardProductName: tier?.rewardProductName ?? null,
         score,
         timeRemaining: finalTimeRemaining,
         durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
