@@ -57,7 +57,8 @@ export function SephoraCollectionLogo({
   color?: string;
   size?: number;
 }) {
-  const isLight = /^#?(f{3,6}|fff|ffffff)$/i.test(color.replace("#", "")) || color === "white";
+  const _colorUnused = color;
+  void _colorUnused;
   return (
     <img
       src={sephoraDeliHorizontalAsset.url}
@@ -69,7 +70,6 @@ export function SephoraCollectionLogo({
         width: "auto",
         display: "block",
         objectFit: "contain",
-        filter: isLight ? "invert(1) hue-rotate(180deg)" : "none",
         pointerEvents: "none",
       }}
     />
