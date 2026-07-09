@@ -1,5 +1,5 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   findSession,
   loadConfig,
@@ -24,6 +24,11 @@ function PrintTicketPage() {
   const [config, setConfig] = useState<GameConfig | null>(null);
   const [ready, setReady] = useState(false);
   const [logoOk, setLogoOk] = useState<boolean>(true);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [building, setBuilding] = useState(false);
+  const [buildError, setBuildError] = useState<string | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const builtOnceRef = useRef(false);
 
   useEffect(() => {
     const s = findSession(sessionId);
@@ -58,45 +63,61 @@ function PrintTicketPage() {
     return pdf;
   };
 
+  const generateAndEmbed = async () => {
+    if (!session || building) return;
+    setBuilding(true);
+    setBuildError(null);
+    try {
+      const pdf = await buildPdf();
+      if (!pdf) return;
+      const blob = pdf.output("blob");
+      const url = URL.createObjectURL(blob);
+      setPdfUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return url;
+      });
+      updateSessionPrintStatus(session.id, "PRINTED");
+    } catch (e) {
+      setBuildError(e instanceof Error ? e.message : "Failed to build PDF");
+      updateSessionPrintStatus(session.id, "FAILED");
+    } finally {
+      setBuilding(false);
+    }
+  };
+
+  // Auto-generate the PDF once the ticket DOM is ready.
   useEffect(() => {
     if (!ready || !session || !config) return;
-    if (!config.autoPrintEnabled) return;
+    if (builtOnceRef.current) return;
     const noReward = session.pairsFound <= 0;
     if (noReward && !config.printNoRewardTicketEnabled) return;
+    builtOnceRef.current = true;
     const t = window.setTimeout(() => {
-      void doPrint();
+      void generateAndEmbed();
     }, 300);
     return () => window.clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, session, config]);
 
-  const doPrint = async () => {
-    if (!session) return;
-    try {
-      const pdf = await buildPdf();
-      if (!pdf) return;
-      // Open the PDF in a new tab so the browser's native PDF viewer
-      // shows it with a built-in print button.
-      const blobUrl = pdf.output("bloburl");
-      const win = window.open(blobUrl, "_blank");
-      if (!win) {
-        // Popup blocked — fall back to same-tab navigation to the PDF.
-        window.location.href = blobUrl.toString();
-      } else {
-        // Trigger print dialog once the PDF viewer has loaded.
-        win.addEventListener("load", () => {
-          try {
-            win.focus();
-            win.print();
-          } catch {
-            /* noop */
-          }
-        });
+  useEffect(() => {
+    return () => {
+      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const printEmbedded = () => {
+    const frame = iframeRef.current;
+    if (frame && frame.contentWindow) {
+      try {
+        frame.contentWindow.focus();
+        frame.contentWindow.print();
+        return;
+      } catch {
+        /* fall through */
       }
-      updateSessionPrintStatus(session.id, "PRINTED");
-    } catch {
-      updateSessionPrintStatus(session.id, "FAILED");
     }
+    if (pdfUrl) window.open(pdfUrl, "_blank");
   };
 
   const doDownloadPdf = async () => {
@@ -134,8 +155,6 @@ function PrintTicketPage() {
     ? "No reward"
     : session.rewardProductName ?? "Gift";
 
-  
-
   return (
     <div className="min-h-dvh bg-white text-black">
       <style>{`
@@ -144,20 +163,27 @@ function PrintTicketPage() {
           .no-print { display: none !important; }
           body { background: #fff !important; }
         }
-        .ticket-wrap { max-width: 360px; margin: 0 auto; padding: 20px; }
-        .ticket { border: 2px solid #000; padding: 18px; font-family: 'Jost', system-ui, -apple-system, Arial, sans-serif; }
-        .brand { text-align: center; font-weight: 900; letter-spacing: .32em; font-size: 14px; }
-        .brand img { display: block; margin: 0 auto 4px; max-height: 44px; max-width: 80%; object-fit: contain; }
-        .brand small { display: block; letter-spacing: .28em; font-weight: 700; margin-top: 4px; font-size: 10px; }
-        .stripes { height: 10px; margin: 10px 0; background-image: repeating-linear-gradient(90deg,#000 0 6px,transparent 6px 12px); }
-        .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dotted #999; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
-        .row .k { color: #555; font-weight: 700; }
-        .row .v { font-weight: 900; }
-        .tier { margin-top: 12px; padding: 12px; border: 2px solid #ed6f7e; text-align: center; }
-        .tier .t { font-size: 11px; letter-spacing: .28em; font-weight: 900; color: #ed6f7e; text-transform: uppercase; }
-        .tier .g { font-size: 14px; font-weight: 900; margin-top: 6px; text-transform: uppercase; letter-spacing: .16em; }
-        .code { margin-top: 14px; text-align: center; font-family: 'Courier New', monospace; font-size: 18px; letter-spacing: .32em; font-weight: 900; border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 10px 0; }
-        .foot-cta {
+        /* Hide the source ticket off-screen — it's only used to rasterize the PDF. */
+        .ticket-source {
+          position: absolute;
+          left: -10000px;
+          top: 0;
+          width: 360px;
+          background: #fff;
+        }
+        .ticket-source .ticket { border: 2px solid #000; padding: 18px; font-family: 'Jost', system-ui, -apple-system, Arial, sans-serif; }
+        .ticket-source .brand { text-align: center; font-weight: 900; letter-spacing: .32em; font-size: 14px; }
+        .ticket-source .brand img { display: block; margin: 0 auto 4px; max-height: 44px; max-width: 80%; object-fit: contain; }
+        .ticket-source .brand small { display: block; letter-spacing: .28em; font-weight: 700; margin-top: 4px; font-size: 10px; }
+        .ticket-source .stripes { height: 10px; margin: 10px 0; background-image: repeating-linear-gradient(90deg,#000 0 6px,transparent 6px 12px); }
+        .ticket-source .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dotted #999; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+        .ticket-source .row .k { color: #555; font-weight: 700; }
+        .ticket-source .row .v { font-weight: 900; }
+        .ticket-source .tier { margin-top: 12px; padding: 12px; border: 2px solid #ed6f7e; text-align: center; }
+        .ticket-source .tier .t { font-size: 11px; letter-spacing: .28em; font-weight: 900; color: #ed6f7e; text-transform: uppercase; }
+        .ticket-source .tier .g { font-size: 14px; font-weight: 900; margin-top: 6px; text-transform: uppercase; letter-spacing: .16em; }
+        .ticket-source .code { margin-top: 14px; text-align: center; font-family: 'Courier New', monospace; font-size: 18px; letter-spacing: .32em; font-weight: 900; border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 10px 0; }
+        .ticket-source .foot-cta {
           margin-top: 14px;
           text-align: center;
           font-family: Futura, "Futura PT", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
@@ -171,10 +197,10 @@ function PrintTicketPage() {
           border-bottom: 2px solid #000;
           color: #000;
         }
-        @media print { .foot-cta { font-size: 18px; } }
       `}</style>
 
-      <div className="ticket-wrap">
+      {/* Off-screen source used by html2canvas to build the PDF */}
+      <div className="ticket-source" aria-hidden="true">
         <div className="ticket" data-testid="print-ticket-body">
           <div className="brand" data-testid="ticket-brand">
             {logoOk && config.sephoraDeliLogoUrl ? (
@@ -221,16 +247,21 @@ function PrintTicketPage() {
           <div className="foot-cta" data-testid="ticket-footer">{config.ticketFooterText}</div>
           <div className="stripes" />
         </div>
+      </div>
 
-        <div className="no-print mt-6 flex flex-col items-center gap-3">
-          <p className="text-xs text-neutral-600">
-            If the print window does not open, use the buttons below.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-3">
+      {/* Visible PDF viewer */}
+      <div className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-4 p-4 sm:p-6">
+        <div className="no-print flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-sm font-bold uppercase tracking-[0.28em] text-black">
+            Reward ticket · {session.ticketCode}
+          </h1>
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
-              onClick={() => { void doPrint(); }}
-              className="rounded-none bg-black px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white"
+              onClick={printEmbedded}
+              disabled={!pdfUrl}
+              data-testid="print-ticket"
+              className="rounded-none bg-black px-6 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white disabled:opacity-50"
             >
               Print
             </button>
@@ -238,11 +269,34 @@ function PrintTicketPage() {
               type="button"
               onClick={doDownloadPdf}
               data-testid="download-pdf"
-              className="rounded-none border-2 border-black bg-white px-8 py-3 text-xs font-bold uppercase tracking-[0.28em] text-black"
+              className="rounded-none border-2 border-black bg-white px-6 py-3 text-xs font-bold uppercase tracking-[0.28em] text-black"
             >
               Download PDF
             </button>
           </div>
+        </div>
+
+        <div className="relative min-h-[70dvh] flex-1 border-2 border-black bg-neutral-100">
+          {pdfUrl ? (
+            <iframe
+              ref={iframeRef}
+              src={`${pdfUrl}#toolbar=1&view=FitH`}
+              title="Reward ticket PDF"
+              data-testid="ticket-pdf-frame"
+              className="absolute inset-0 h-full w-full"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-center text-xs uppercase tracking-[0.28em] text-neutral-600">
+              {buildError ? (
+                <div>
+                  <p className="font-bold text-red-600">Failed to build PDF</p>
+                  <p className="mt-2 normal-case tracking-normal text-neutral-700">{buildError}</p>
+                </div>
+              ) : (
+                <p>{building ? "Generating PDF…" : "Preparing ticket…"}</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
