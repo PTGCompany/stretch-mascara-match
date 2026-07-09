@@ -207,9 +207,9 @@ function PrintTicketPage() {
       <div className="ticket-source" aria-hidden="true">
         <div className="ticket" data-testid="print-ticket-body">
           <div className="brand" data-testid="ticket-brand">
-            {logoOk && config.sephoraDeliLogoUrl ? (
+            {logoOk ? (
               <img
-                src={config.sephoraDeliLogoUrl}
+                src={ticketLogoAsset.url}
                 alt={config.ticketBrandFallbackText}
                 data-testid="ticket-brand-logo"
                 onError={() => setLogoOk(false)}
