@@ -842,7 +842,7 @@ export function GameBoard() {
         }
       `}</style>
     </div>
-    </div>
   );
 }
+
 
