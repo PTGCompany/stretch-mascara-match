@@ -295,6 +295,13 @@ function AdminPage() {
                       onChange={(e) => updateLevel(idx, { gainDescription: e.target.value })}
                     />
                   </Field>
+                  <Field label="Reward product name" full>
+                    <input
+                      className="input"
+                      value={lv.rewardProductName ?? ""}
+                      onChange={(e) => updateLevel(idx, { rewardProductName: e.target.value })}
+                    />
+                  </Field>
                   <Field label="Ticket text" full>
                     <input
                       className="input"
