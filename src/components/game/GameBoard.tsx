@@ -313,8 +313,9 @@ export function GameBoard() {
       </div>
 
       {/* MAIN */}
-      <main className="relative z-10 flex flex-1 min-h-0 flex-col px-4 py-4">
-        <div className="mx-auto flex w-full flex-1 min-h-0 flex-col gap-3">
+      <main className="relative z-10 grid flex-1 min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-3 px-4 py-4">
+        <div className="contents">
+
 
           {/* TOP — title + timer */}
           <section className="flex min-w-0 flex-col">
