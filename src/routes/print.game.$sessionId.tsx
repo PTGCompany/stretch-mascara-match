@@ -177,8 +177,8 @@ function PrintTicketPage() {
         }
         .ticket-source .ticket { border: 2px solid #000; padding: 18px; font-family: 'Jost', system-ui, -apple-system, Arial, sans-serif; }
         .ticket-source .brand { text-align: center; font-weight: 900; letter-spacing: .32em; font-size: 14px; }
-        .ticket-source .brand img { display: block; margin: 0 auto 3px; height: auto; width: 22%; max-width: 70px; object-fit: contain; image-rendering: -webkit-optimize-contrast; }
-        .ticket-source .brand small { display: block; letter-spacing: .28em; font-weight: 700; margin-top: 4px; font-size: 10px; }
+        .ticket-source .brand img { display: block; margin: 0 auto 3px; height: auto; width: 38%; max-width: 120px; object-fit: contain; image-rendering: -webkit-optimize-contrast; }
+        .ticket-source .brand small { display: block; letter-spacing: .14em; font-weight: 700; margin-top: 4px; font-size: 9px; }
         .ticket-source .stripes { height: 10px; margin: 10px 0; background-image: repeating-linear-gradient(90deg,#000 0 6px,transparent 6px 12px); }
         .ticket-source .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dotted #999; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
         .ticket-source .row .k { color: #555; font-weight: 700; }
