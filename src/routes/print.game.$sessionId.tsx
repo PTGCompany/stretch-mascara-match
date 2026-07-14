@@ -219,7 +219,7 @@ function PrintTicketPage() {
                 {config.ticketBrandFallbackText}
               </span>
             )}
-            <small>MADE FRESH BY SEPHORA SINCE</small>
+            <small>MADE FRESH BY SEPHORA SINCE 1996</small>
           </div>
           <div className="stripes" />
           <div style={{ textAlign: "center", fontSize: 11, letterSpacing: ".24em", fontWeight: 700, textTransform: "uppercase" }}>
