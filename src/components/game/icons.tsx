@@ -146,24 +146,29 @@ export function CircularSephoraMark({
 }) {
   return (
     <div
-      className={`relative inline-block select-none ${className}`}
-      style={{ width: size, height: size }}
+      className={`relative inline-flex flex-col items-center select-none ${className}`}
+      style={{ width: size }}
       aria-label="Sephora Collection Deli"
     >
-      <img
-        src={sephoraDeliStackedAsset.url}
-        alt="Sephora Collection Deli"
-        width={size}
-        height={size}
-        draggable={false}
-        style={{
-          display: "block",
-          width: "100%",
-          height: "100%",
-          objectFit: "contain",
-          pointerEvents: "none",
-        }}
-      />
+      <div style={{ width: size, height: size }}>
+        <img
+          src={sephoraDeliStackedAsset.url}
+          alt="Sephora Collection Deli"
+          width={size}
+          height={size}
+          draggable={false}
+          style={{
+            display: "block",
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            pointerEvents: "none",
+          }}
+        />
+      </div>
+      <span className="mt-2 text-center font-sans text-[9px] font-medium uppercase tracking-[0.2em] text-white">
+        MADE FRESH BY SEPHORA SINCE 1996
+      </span>
     </div>
   );
 }
