@@ -147,7 +147,6 @@ export function CircularSephoraMark({
   return (
     <div
       className={`relative inline-flex flex-col items-center select-none ${className}`}
-      style={{ width: size }}
       aria-label="Sephora Collection Deli"
     >
       <div style={{ width: size, height: size }}>
@@ -166,7 +165,7 @@ export function CircularSephoraMark({
           }}
         />
       </div>
-      <span className="mt-2 text-center font-sans text-[9px] font-medium uppercase tracking-[0.2em] text-white">
+      <span className="mt-2 whitespace-nowrap text-center font-sans text-[9px] font-medium uppercase tracking-[0.2em] text-white">
         MADE FRESH BY SEPHORA SINCE 1996
       </span>
     </div>
