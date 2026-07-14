@@ -123,7 +123,7 @@ export function SephoraToken() {
         className="relative max-h-[72%] max-w-full select-none"
         style={{ objectFit: "contain", pointerEvents: "none" }}
       />
-      <span className="mt-1 text-center font-sans text-[8px] font-medium uppercase tracking-[0.2em] text-white">
+      <span className="mt-1 text-center font-sans text-[8px] font-bold uppercase tracking-[0.2em] text-white">
         MADE FRESH BY SEPHORA SINCE 1996
       </span>
     </div>
