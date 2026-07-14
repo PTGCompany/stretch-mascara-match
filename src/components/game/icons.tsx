@@ -115,20 +115,18 @@ export function HamburgerLogo() {
  */
 export function SephoraToken() {
   return (
-    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-black p-1.5 leading-none">
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-black p-1.5 leading-none">
       <img
         src={sephoraCollectionCircularAsset.url}
         alt="Sephora Collection"
         draggable={false}
-        className="relative max-h-[72%] max-w-full select-none"
+        className="relative max-h-[85%] max-w-full select-none"
         style={{ objectFit: "contain", pointerEvents: "none" }}
       />
-      <span className="mt-1 text-center font-sans text-[8px] font-bold uppercase tracking-[0.2em] text-white">
-        MADE FRESH BY SEPHORA SINCE 1996
-      </span>
     </div>
   );
 }
+
 
 /**
  * Brand medallion shown on the idle splash — displays the Sephora Collection
