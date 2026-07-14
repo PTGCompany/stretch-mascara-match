@@ -165,7 +165,7 @@ export function CircularSephoraMark({
           }}
         />
       </div>
-      <span className="mt-2 whitespace-nowrap text-center font-sans text-[9px] font-medium uppercase tracking-[0.2em] text-white">
+      <span className="mt-2 whitespace-nowrap text-center font-sans text-[9px] font-bold uppercase tracking-[0.2em] text-white">
         MADE FRESH BY SEPHORA SINCE 1996
       </span>
     </div>
