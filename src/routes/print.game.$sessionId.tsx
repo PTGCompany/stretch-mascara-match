@@ -219,7 +219,7 @@ function PrintTicketPage() {
                 {config.ticketBrandFallbackText}
               </span>
             )}
-            <small>MEMORY GAME</small>
+            <small>MADE FRESH BY SEPHORA SINCE</small>
           </div>
           <div className="stripes" />
           <div style={{ textAlign: "center", fontSize: 11, letterSpacing: ".24em", fontWeight: 700, textTransform: "uppercase" }}>
