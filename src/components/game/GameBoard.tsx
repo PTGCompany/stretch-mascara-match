@@ -280,7 +280,7 @@ export function GameBoard() {
 
 
       {/* TOP MARQUEE */}
-      <div className="relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20">
+      <div className="relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20 bg-black">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.18]"
@@ -577,7 +577,7 @@ export function GameBoard() {
 
 
       {/* BOTTOM MARQUEE */}
-      <div className="relative z-20 flex h-10 items-center overflow-hidden border-t border-white/20">
+      <div className="relative z-20 flex h-10 items-center overflow-hidden border-t border-white/20 bg-black">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.18]"
