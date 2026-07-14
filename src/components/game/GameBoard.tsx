@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import sephoraCollectionHorizontalAsset from "@/assets/sephora-collection-horizontal.png.asset.json";
 import { motion, AnimatePresence } from "framer-motion";
 import { MotionButton } from "@/components/MotionButton";
 import {
@@ -301,11 +302,14 @@ export function GameBoard() {
           {Array.from({ length: 10 }).map((_, i) => (
             <span
               key={i}
-              className="flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.32em] text-white"
+              className="flex items-center gap-10 whitespace-nowrap"
             >
-              <span>Sephora Collection</span>
-              <StripesMark className="h-2.5 w-4 opacity-70" color="#ffffff" />
-              <span className="text-white/70">Memory Game</span>
+              <img
+                src={sephoraCollectionHorizontalAsset.url}
+                alt="Sephora Collection"
+                className="h-4 w-auto shrink-0 select-none"
+                draggable={false}
+              />
               <StripesMark className="h-2.5 w-4 opacity-70" color="#ffffff" />
             </span>
           ))}
