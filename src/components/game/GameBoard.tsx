@@ -296,7 +296,6 @@ export function GameBoard() {
                 className="h-4 w-auto shrink-0 select-none"
                 draggable={false}
               />
-              <StripesMark className="h-2.5 w-4 opacity-70" color="#ffffff" />
             </span>
           ))}
         </div>
