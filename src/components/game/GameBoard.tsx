@@ -293,7 +293,7 @@ export function GameBoard() {
               <img
                 src={sephoraCollectionHorizontalAsset.url}
                 alt="Sephora Collection"
-                className="h-4 w-auto shrink-0 select-none"
+                className="h-7 w-auto shrink-0 select-none"
                 draggable={false}
               />
             </span>
