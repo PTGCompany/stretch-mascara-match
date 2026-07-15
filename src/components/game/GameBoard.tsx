@@ -282,20 +282,6 @@ export function GameBoard() {
       {/* TOP MARQUEE */}
       <div className="relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20 bg-black">
         <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.18]"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(115deg, #ffffff 0 1px, transparent 1px 14px)",
-            backgroundSize: "200% 100%",
-            animation: `betc-stripes-drift ${MARQUEE.stripeDriftSec}s linear infinite`,
-            maskImage:
-              "linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%)",
-            WebkitMaskImage:
-              "linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%)",
-          }}
-        />
-        <div
           className="relative flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
           style={{ animation: `betc-marquee ${MARQUEE.topSec}s linear infinite` }}
         >
@@ -578,20 +564,6 @@ export function GameBoard() {
 
       {/* BOTTOM MARQUEE */}
       <div className="relative z-20 flex h-10 items-center overflow-hidden border-t border-white/20 bg-black">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.18]"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(-115deg, #ffffff 0 1px, transparent 1px 14px)",
-            backgroundSize: "200% 100%",
-            animation: `betc-stripes-drift-reverse ${MARQUEE.stripeDriftReverseSec}s linear infinite`,
-            maskImage:
-              "linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%)",
-            WebkitMaskImage:
-              "linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%)",
-          }}
-        />
         <div
           className="relative flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
           style={{
