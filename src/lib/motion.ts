@@ -55,7 +55,7 @@ export const LOOP = {
 /** Marquee CSS animation durations (seconds) — shared by both bars. */
 export const MARQUEE = {
   topSec: 28,
-  bottomSec: 28,
+  bottomSec: 74,
   stripeDriftSec: 14,
   stripeDriftReverseSec: 18,
   logoSpinSec: 28,
