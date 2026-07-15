@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import sephoraCollectionHorizontalAsset from "@/assets/sephora-collection-horizontal.png.asset.json";
+import sephoraCollectionHorizontalAsset from "@/assets/sephora-header-logo.png.asset.json";
 import { motion, AnimatePresence } from "framer-motion";
 import { MotionButton } from "@/components/MotionButton";
 import {
