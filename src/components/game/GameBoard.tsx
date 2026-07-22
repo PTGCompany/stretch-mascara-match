@@ -607,7 +607,7 @@ export function GameBoard() {
                   src={sephoraDeliPinkAsset.url}
                   alt="Sephora Collection Deli — Made Fresh by Sephora Since 1996"
                   draggable={false}
-                  className="h-auto w-[85%] max-w-[420px] select-none object-contain object-center"
+                  className="h-full w-full select-none object-cover object-center"
                   style={{ pointerEvents: "none" }}
                 />
               </motion.div>
