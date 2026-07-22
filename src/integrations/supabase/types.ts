@@ -14,7 +14,116 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      game_attempts: {
+        Row: {
+          attempt_index: number
+          created_at: string
+          first_card_id: string | null
+          id: string
+          is_match: boolean
+          second_card_id: string | null
+          session_id: string
+          time_elapsed_ms: number | null
+        }
+        Insert: {
+          attempt_index: number
+          created_at?: string
+          first_card_id?: string | null
+          id?: string
+          is_match: boolean
+          second_card_id?: string | null
+          session_id: string
+          time_elapsed_ms?: number | null
+        }
+        Update: {
+          attempt_index?: number
+          created_at?: string
+          first_card_id?: string | null
+          id?: string
+          is_match?: boolean
+          second_card_id?: string | null
+          session_id?: string
+          time_elapsed_ms?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_attempts_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "game_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      game_sessions: {
+        Row: {
+          completed_at: string | null
+          completed_reason: string
+          completion_time_seconds: number | null
+          created_at: string
+          duration_seconds: number
+          final_win_level: number | null
+          id: string
+          is_win: boolean
+          pairs_found: number
+          print_status: string
+          reward_product_name: string | null
+          reward_tier_label: string | null
+          reward_tier_message: string | null
+          score: number
+          started_at: string
+          ticket_code: string
+          time_remaining: number
+          total_pairs: number
+          updated_at: string
+          wrong_attempts: number
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_reason: string
+          completion_time_seconds?: number | null
+          created_at?: string
+          duration_seconds: number
+          final_win_level?: number | null
+          id?: string
+          is_win?: boolean
+          pairs_found?: number
+          print_status?: string
+          reward_product_name?: string | null
+          reward_tier_label?: string | null
+          reward_tier_message?: string | null
+          score?: number
+          started_at?: string
+          ticket_code: string
+          time_remaining?: number
+          total_pairs: number
+          updated_at?: string
+          wrong_attempts?: number
+        }
+        Update: {
+          completed_at?: string | null
+          completed_reason?: string
+          completion_time_seconds?: number | null
+          created_at?: string
+          duration_seconds?: number
+          final_win_level?: number | null
+          id?: string
+          is_win?: boolean
+          pairs_found?: number
+          print_status?: string
+          reward_product_name?: string | null
+          reward_tier_label?: string | null
+          reward_tier_message?: string | null
+          score?: number
+          started_at?: string
+          ticket_code?: string
+          time_remaining?: number
+          total_pairs?: number
+          updated_at?: string
+          wrong_attempts?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
