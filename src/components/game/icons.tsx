@@ -1,6 +1,7 @@
 import mascaraAsset from "@/assets/sephora-mascara.png.asset.json";
 import sephoraCircularAsset from "@/assets/sephora-circular.png.asset.json";
 import sephoraDeliStackedAsset from "@/assets/sephora-deli-stacked.png.asset.json";
+import sephoraDeliFullAsset from "@/assets/sephora-deli-full.png.asset.json";
 import sephoraCollectionCircularAsset from "@/assets/sephora-collection-circular-clean.png.asset.json";
 const sephoraDeliHorizontalAsset = sephoraDeliStackedAsset;
 
@@ -144,28 +145,22 @@ export function CircularSephoraMark({
 }) {
   return (
     <div
-      className={`relative inline-flex flex-col items-center select-none ${className}`}
-      aria-label="Sephora Collection Deli"
+      className={`relative inline-flex items-center justify-center select-none ${className}`}
+      aria-label="Sephora Collection Deli — Made Fresh by Sephora since 1996"
     >
-      <div style={{ width: size, height: size }}>
-        <img
-          src={sephoraDeliStackedAsset.url}
-          alt="Sephora Collection Deli"
-          width={size}
-          height={size}
-          draggable={false}
-          style={{
-            display: "block",
-            width: "100%",
-            height: "100%",
-            objectFit: "contain",
-            pointerEvents: "none",
-          }}
-        />
-      </div>
-      <span className="mt-2 whitespace-nowrap text-center font-sans text-[9px] font-bold uppercase tracking-[0.2em] text-white">
-        MADE FRESH BY SEPHORA SINCE 1996
-      </span>
+      <img
+        src={sephoraDeliFullAsset.url}
+        alt="Sephora Collection Deli — Made Fresh by Sephora since 1996"
+        width={size}
+        draggable={false}
+        style={{
+          display: "block",
+          width: size,
+          height: "auto",
+          objectFit: "contain",
+          pointerEvents: "none",
+        }}
+      />
     </div>
   );
 }
