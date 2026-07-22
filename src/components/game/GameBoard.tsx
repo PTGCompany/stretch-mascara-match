@@ -622,7 +622,7 @@ export function GameBoard() {
                 mass: 0.8,
                 delay: 0.05,
               }}
-              className="relative mx-6 my-auto flex w-full max-w-xl flex-col items-center gap-6 border border-white/15 bg-black px-8 py-10 text-center sm:px-12"
+              className={`relative mx-6 my-auto flex w-full max-w-xl flex-col items-center gap-6 border border-white/15 px-8 py-10 text-center sm:px-12 ${status === "idle" ? "bg-[#ed6f7e]" : "bg-black"}`}
             >
               <span className="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t" style={{ borderColor: PINK }} />
               <span className="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t" style={{ borderColor: PINK }} />
@@ -631,16 +631,13 @@ export function GameBoard() {
 
               {status === "idle" && (
                 <>
-                  <span
-                    className="text-[10px] font-bold uppercase tracking-[0.32em]"
-                    style={{ color: PINK }}
-                  >
+                  <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-white">
                     Sephora Collection · Memory Game
                   </span>
-                  <h2 className="font-display text-[36px] uppercase leading-[0.9] text-white sm:text-[52px]">
+                  <h2 className="font-display text-[36px] uppercase leading-[0.9] text-black sm:text-[52px]">
                     ORDER
                   </h2>
-                  <p className="-mt-2 max-w-[36ch] text-[10px] font-bold uppercase tracking-[0.24em] text-white/55">
+                  <p className="-mt-2 max-w-[36ch] text-[10px] font-bold uppercase tracking-[0.24em] text-white">
                     {config.gridCols}×{config.gridRows} — {totalPairs} pairs —{" "}
                     {config.durationSeconds}s
                   </p>
