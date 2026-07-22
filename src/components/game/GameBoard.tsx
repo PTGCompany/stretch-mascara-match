@@ -596,14 +596,17 @@ export function GameBoard() {
           >
             {status === "idle" && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.85 }}
+                initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full"
               >
-                <CircularSephoraMark
-                  size={140}
-                  color="#ffffff"
-                  durationSec={MARQUEE.logoSpinSec}
+                <img
+                  src={sephoraDeliPinkAsset.url}
+                  alt="Sephora Collection Deli — Made Fresh by Sephora Since 1996"
+                  draggable={false}
+                  className="block w-full select-none"
+                  style={{ height: "auto", objectFit: "contain", pointerEvents: "none" }}
                 />
               </motion.div>
             )}
