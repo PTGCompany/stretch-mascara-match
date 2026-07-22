@@ -600,14 +600,15 @@ export function GameBoard() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="w-full"
+                className="flex w-full flex-1 items-center justify-center overflow-hidden"
+                style={{ backgroundColor: PINK }}
               >
                 <img
                   src={sephoraDeliPinkAsset.url}
                   alt="Sephora Collection Deli — Made Fresh by Sephora Since 1996"
                   draggable={false}
-                  className="mx-auto block w-full select-none"
-                  style={{ height: "auto", objectFit: "cover", objectPosition: "center", pointerEvents: "none" }}
+                  className="h-full w-full select-none object-cover object-center"
+                  style={{ pointerEvents: "none" }}
                 />
               </motion.div>
             )}
