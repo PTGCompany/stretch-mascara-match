@@ -593,12 +593,12 @@ export function GameBoard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-6 bg-black/85 backdrop-blur-md"
+            className="absolute inset-0 z-30 flex flex-col items-center gap-6 bg-black/85 pt-10 backdrop-blur-md"
           >
             {status === "idle" && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 className="w-full"
               >
@@ -606,8 +606,8 @@ export function GameBoard() {
                   src={sephoraDeliPinkAsset.url}
                   alt="Sephora Collection Deli — Made Fresh by Sephora Since 1996"
                   draggable={false}
-                  className="block w-full select-none"
-                  style={{ height: "auto", objectFit: "contain", pointerEvents: "none" }}
+                  className="mx-auto block w-full select-none"
+                  style={{ height: "auto", objectFit: "cover", objectPosition: "center", pointerEvents: "none" }}
                 />
               </motion.div>
             )}
@@ -621,7 +621,7 @@ export function GameBoard() {
                 mass: 0.8,
                 delay: 0.05,
               }}
-              className="relative mx-6 flex w-full max-w-xl flex-col items-center gap-6 border border-white/15 bg-black px-8 py-10 text-center sm:px-12"
+              className="relative mx-6 my-auto flex w-full max-w-xl flex-col items-center gap-6 border border-white/15 bg-black px-8 py-10 text-center sm:px-12"
             >
               <span className="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t" style={{ borderColor: PINK }} />
               <span className="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t" style={{ borderColor: PINK }} />
