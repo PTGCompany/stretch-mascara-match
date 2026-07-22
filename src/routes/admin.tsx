@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { MotionButton } from "@/components/MotionButton";
+import { supabase } from "@/integrations/supabase/client";
 import {
   DEFAULT_CONFIG,
   clearSessions,
