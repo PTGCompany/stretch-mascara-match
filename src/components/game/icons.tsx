@@ -1,6 +1,7 @@
 import mascaraAsset from "@/assets/sephora-mascara.png.asset.json";
 import sephoraCircularAsset from "@/assets/sephora-circular.png.asset.json";
 import sephoraDeliStackedAsset from "@/assets/sephora-deli-stacked.png.asset.json";
+import sephoraDeliFullAsset from "@/assets/sephora-deli-full.png.asset.json";
 import sephoraCollectionCircularAsset from "@/assets/sephora-collection-circular-clean.png.asset.json";
 const sephoraDeliHorizontalAsset = sephoraDeliStackedAsset;
 
