@@ -93,22 +93,62 @@ function AdminPage() {
     setTimeout(() => setSaved(false), 1500);
   };
 
-  const exportCsv = () => {
-    const header =
-      "id,completedReason,pairsFound,totalPairs,wrongAttempts,finalWinLevel,durationSeconds,createdAt\n";
-    const rows = sessions
-      .map(
-        (s) =>
-          `${s.id},${s.completedReason},${s.pairsFound},${s.totalPairs},${s.wrongAttempts},${s.finalWinLevel ?? ""},${s.durationSeconds},${new Date(s.createdAt).toISOString()}`,
-      )
-      .join("\n");
-    const blob = new Blob([header + rows], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `sephora-memory-sessions-${Date.now()}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+
+  const exportCsv = async () => {
+    setExporting(true);
+    setExportError(null);
+    try {
+      const { data, error } = await supabase
+        .from("game_sessions")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      const rows = data ?? [];
+      const columns = [
+        "id",
+        "ticket_code",
+        "completed_reason",
+        "is_win",
+        "pairs_found",
+        "total_pairs",
+        "wrong_attempts",
+        "score",
+        "final_win_level",
+        "reward_tier_label",
+        "reward_tier_message",
+        "reward_product_name",
+        "duration_seconds",
+        "time_remaining",
+        "completion_time_seconds",
+        "print_status",
+        "started_at",
+        "completed_at",
+        "created_at",
+        "updated_at",
+      ] as const;
+      const escape = (v: unknown) => {
+        if (v === null || v === undefined) return "";
+        const s = typeof v === "string" ? v : JSON.stringify(v);
+        return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+      };
+      const header = columns.join(",");
+      const body = rows
+        .map((r) => columns.map((c) => escape((r as Record<string, unknown>)[c])).join(","))
+        .join("\n");
+      const blob = new Blob([`${header}\n${body}`], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `sephora-memory-sessions-${Date.now()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setExportError(e instanceof Error ? e.message : "Export failed");
+    } finally {
+      setExporting(false);
+    }
   };
 
   const reset = () => {
