@@ -622,7 +622,7 @@ export function GameBoard() {
                 mass: 0.8,
                 delay: 0.05,
               }}
-              className="relative mx-6 my-auto flex w-full max-w-xl flex-col items-center gap-6 border border-white/15 bg-black px-8 py-10 text-center sm:px-12"
+              className={`relative mx-6 my-auto flex w-full max-w-xl flex-col items-center gap-6 border border-white/15 px-8 py-10 text-center sm:px-12 ${status === "idle" ? "bg-[#ed6f7e]" : "bg-black"}`}
             >
               <span className="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t" style={{ borderColor: PINK }} />
               <span className="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t" style={{ borderColor: PINK }} />
