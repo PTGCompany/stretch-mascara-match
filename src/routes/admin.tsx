@@ -437,14 +437,17 @@ function AdminPage() {
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-black">Sessions</h2>
             <div className="flex gap-2">
-              <MotionButton intent="ghost" size="sm" onClick={exportCsv}>
-                Export CSV
+              <MotionButton intent="ghost" size="sm" onClick={exportCsv} disabled={exporting}>
+                {exporting ? "Exporting…" : "Export CSV"}
               </MotionButton>
               <MotionButton intent="danger" size="sm" onClick={reset}>
                 Reset
               </MotionButton>
             </div>
           </div>
+          {exportError && (
+            <p className="mb-2 text-xs font-bold text-destructive">{exportError}</p>
+          )}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Stat label="Sessions" value={stats.total} />
             <Stat label="Best score" value={stats.best} />
