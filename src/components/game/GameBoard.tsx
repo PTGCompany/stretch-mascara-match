@@ -281,7 +281,7 @@ export function GameBoard() {
 
 
       {/* TOP MARQUEE */}
-      <div className="relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20 bg-[#ed6f7e]">
+      <div className={`relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20 ${status === "idle" ? "bg-[#ed6f7e]" : "bg-black"}`}>
         <div
           className="relative flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
           style={{ animation: `betc-marquee ${MARQUEE.topSec}s linear infinite` }}
