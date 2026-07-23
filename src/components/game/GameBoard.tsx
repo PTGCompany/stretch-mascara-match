@@ -276,7 +276,7 @@ export function GameBoard() {
   };
 
   return (
-    <div className="relative mx-auto flex min-h-dvh w-full max-w-[min(100vw,calc(100dvh*9/16))] flex-col overflow-hidden bg-[#ed6f7e] text-white">
+    <div className={`relative mx-auto flex min-h-dvh w-full max-w-[min(100vw,calc(100dvh*9/16))] flex-col overflow-hidden text-white ${status === "idle" ? "bg-[#ed6f7e]" : "bg-black"}`}>
 
 
 
