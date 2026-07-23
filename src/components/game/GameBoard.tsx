@@ -593,7 +593,7 @@ export function GameBoard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-0 z-30 flex flex-col items-center gap-6 bg-[#ed6f7e] pt-10 backdrop-blur-md"
+            className={`absolute inset-0 z-30 flex flex-col items-center gap-6 pt-10 backdrop-blur-md ${status === "idle" ? "bg-[#ed6f7e]" : "bg-black/90"}`}
           >
             {status === "idle" && (
               <motion.div
