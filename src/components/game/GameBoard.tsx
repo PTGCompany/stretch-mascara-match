@@ -276,12 +276,12 @@ export function GameBoard() {
   };
 
   return (
-    <div className="relative mx-auto flex min-h-dvh w-full max-w-[min(100vw,calc(100dvh*9/16))] flex-col overflow-hidden bg-[#ed6f7e] text-white">
+    <div className={`relative mx-auto flex min-h-dvh w-full max-w-[min(100vw,calc(100dvh*9/16))] flex-col overflow-hidden text-white ${status === "idle" ? "bg-[#ed6f7e]" : "bg-black"}`}>
 
 
 
       {/* TOP MARQUEE */}
-      <div className="relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20 bg-[#ed6f7e]">
+      <div className={`relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20 ${status === "idle" ? "bg-[#ed6f7e]" : "bg-black"}`}>
         <div
           className="relative flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
           style={{ animation: `betc-marquee ${MARQUEE.topSec}s linear infinite` }}
@@ -563,7 +563,7 @@ export function GameBoard() {
 
 
       {/* BOTTOM MARQUEE */}
-      <div className="relative z-20 flex h-10 items-center overflow-hidden border-t border-white/20 bg-[#ed6f7e]">
+      <div className={`relative z-20 flex h-10 items-center overflow-hidden border-t border-white/20 ${status === "idle" ? "bg-[#ed6f7e]" : "bg-black"}`}>
         <div
           className="relative flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
           style={{
@@ -593,7 +593,7 @@ export function GameBoard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-0 z-30 flex flex-col items-center gap-6 bg-[#ed6f7e] pt-10 backdrop-blur-md"
+            className={`absolute inset-0 z-30 flex flex-col items-center gap-6 pt-10 backdrop-blur-md ${status === "idle" ? "bg-[#ed6f7e]" : "bg-black/90"}`}
           >
             {status === "idle" && (
               <motion.div
@@ -759,8 +759,9 @@ export function GameBoard() {
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <MotionButton
                   onClick={status === "idle" ? showRules : startPlay}
-                  className="wordmark px-14 py-4 text-[12px]"
+                  className="wordmark px-14 py-4 text-[12px] border-2 border-black"
                   style={{ backgroundColor: PINK, color: "#000" }}
+
                 >
                   {status === "idle" ? "Start" : status === "rules" ? "Play now" : "Play again"}
                 </MotionButton>
