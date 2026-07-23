@@ -759,8 +759,9 @@ export function GameBoard() {
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <MotionButton
                   onClick={status === "idle" ? showRules : startPlay}
-                  className="wordmark px-14 py-4 text-[12px]"
+                  className="wordmark px-14 py-4 text-[12px] border-2 border-black"
                   style={{ backgroundColor: PINK, color: "#000" }}
+
                 >
                   {status === "idle" ? "Start" : status === "rules" ? "Play now" : "Play again"}
                 </MotionButton>
