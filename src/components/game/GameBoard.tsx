@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import sephoraCollectionHorizontalAsset from "@/assets/sephora-header-logo.png.asset.json";
-import sephoraDeliPinkAsset from "@/assets/sephora-deli-pink.png.asset.json";
+import sephoraDeliPinkAsset from "@/assets/sephora-deli-vertical-white.png.asset.json";
 import { motion, AnimatePresence } from "framer-motion";
 import { MotionButton } from "@/components/MotionButton";
 import {
