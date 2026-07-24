@@ -3,7 +3,8 @@ import sephoraCircularAsset from "@/assets/sephora-circular.png.asset.json";
 import sephoraDeliStackedAsset from "@/assets/sephora-deli-stacked.png.asset.json";
 import sephoraDeliFullAsset from "@/assets/sephora-deli-full.png.asset.json";
 import sephoraCollectionCircularAsset from "@/assets/sephora-collection-circular-clean.png.asset.json";
-const sephoraDeliHorizontalAsset = sephoraDeliStackedAsset;
+import sephoraDeliIngameAsset from "@/assets/sephora-deli-ingame.png.asset.json";
+const sephoraDeliHorizontalAsset = sephoraDeliIngameAsset;
 
 export function MascaraIcon({ className = "" }: { className?: string }) {
   return (
