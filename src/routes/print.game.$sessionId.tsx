@@ -7,7 +7,7 @@ import {
   type GameConfig,
   type GameSession,
 } from "@/lib/game-config";
-import ticketLogoAsset from "@/assets/sephora-deli-ticket.png.asset.json";
+import ticketLogoAsset from "@/assets/sephora-deli-ingame.png.asset.json";
 
 export const Route = createFileRoute("/print/game/$sessionId")({
   head: () => ({
