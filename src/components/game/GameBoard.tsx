@@ -310,7 +310,7 @@ export function GameBoard() {
           {/* TOP — title + timer */}
           <section className="flex min-w-0 flex-col">
             <div className="flex items-start justify-between gap-3">
-              <SephoraCollectionLogo color="#ffffff" size={24} className="shrink-0" />
+              <SephoraCollectionLogo color="#ffffff" size={32} className="shrink-0" />
               <Link
                 to="/admin"
                 className="text-white/40 transition-colors hover:text-white"
