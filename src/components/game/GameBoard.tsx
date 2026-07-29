@@ -757,10 +757,9 @@ export function GameBoard() {
                 <MotionButton
                   onClick={status === "idle" ? showRules : startPlay}
                   className="wordmark px-14 py-4 text-[12px] border-2 border-black"
-                  style={{ backgroundColor: PINK, color: "#000" }}
-
+                  style={{ backgroundColor: status === "idle" ? "#fff" : PINK, color: "#000" }}
                 >
-                  {status === "idle" ? "Start" : status === "rules" ? "Play now" : "Play again"}
+                  {status === "idle" ? "START TO ORDER" : status === "rules" ? "Play now" : "Play again"}
                 </MotionButton>
 
                 {status === "rules" && (
