@@ -634,9 +634,6 @@ export function GameBoard() {
                   <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-white">
                     Sephora Collection · Memory Game
                   </span>
-                  <h2 className="font-display text-[36px] uppercase leading-[0.9] text-black sm:text-[52px]">
-                    ORDER
-                  </h2>
                   <p className="-mt-2 max-w-[36ch] text-[10px] font-bold uppercase tracking-[0.24em] text-white">
                     {config.gridCols}×{config.gridRows} — {totalPairs} pairs —{" "}
                     {config.durationSeconds}s
