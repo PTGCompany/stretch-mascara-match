@@ -584,12 +584,18 @@ export function GameBoard() {
         </div>
       </div>
 
-      {/* Full-screen overlay (idle / result) */}
-      <AnimatePresence mode="wait">
+      {/*
+        Full-screen idle/rules/result shell.
+        INTENTIONAL: key="screen-overlay" + initial={false} (opaque first paint).
+        Do not key the shell by status or fade it from opacity 0 — that briefly
+        shows the game board (cold-load flash and Start→rules flash). Inner card
+        may still spring in; only this shell must stay opaque while overlayOpen.
+      */}
+      <AnimatePresence>
         {overlayOpen && (
           <motion.div
-            key={status}
-            initial={{ opacity: 0 }}
+            key="screen-overlay"
+            initial={false}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
@@ -597,9 +603,9 @@ export function GameBoard() {
           >
             {status === "idle" && (
               <motion.div
-                initial={{ opacity: 0 }}
+                // Keep opaque — fading this in from 0 clears the shell briefly
+                initial={false}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 className="flex w-full flex-1 items-center justify-center overflow-hidden"
                 style={{ backgroundColor: PINK }}
               >
@@ -613,6 +619,7 @@ export function GameBoard() {
               </motion.div>
             )}
             <motion.div
+              key={status}
               initial={{ y: 18, opacity: 0, scale: 0.96 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
               transition={{
