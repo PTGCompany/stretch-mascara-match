@@ -386,6 +386,7 @@ function AdminPage() {
                   checked={config.autoPrintEnabled}
                   onChange={(e) => update("autoPrintEnabled", e.target.checked)}
                 />
+                {/* Wired for hardware kiosk: print + hide chrome + auto-home. Also forced by ?kiosk=true. */}
                 <span className="text-xs">Trigger window.print() on load</span>
               </label>
             </Field>

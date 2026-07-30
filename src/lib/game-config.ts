@@ -90,7 +90,9 @@ export const DEFAULT_CONFIG: GameConfig = {
   brandColor: "#ed6f7e",
   ticketPrintingEnabled: true,
   printNoRewardTicketEnabled: false,
-  autoPrintEnabled: true,
+  // Default off for Lovable/web preview. Hardware kiosk forces on via ?kiosk=true
+  // (see kiosk-launch resolveConfig). Admin can also enable for lab testing.
+  autoPrintEnabled: false,
   ticketFooterText: "PICK UP YOUR ORDER!",
   ticketBrandTitle: "SEPHORA DELI",
   ticketBrandFallbackText: "SEPHORA DELI",

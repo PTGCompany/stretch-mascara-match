@@ -1,12 +1,12 @@
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute, useParams, useRouterState } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
   findSession,
-  loadConfig,
   updateSessionPrintStatus,
   type GameConfig,
   type GameSession,
 } from "@/lib/game-config";
+import { resolveConfig, withLaunchSearch } from "@/lib/kiosk-launch";
 import ticketLogoAsset from "@/assets/sephora-ticket-logo-new.png.asset.json";
 
 export const Route = createFileRoute("/print/game/$sessionId")({
@@ -19,8 +19,11 @@ export const Route = createFileRoute("/print/game/$sessionId")({
   component: PrintTicketPage,
 });
 
+const AUTO_HOME_MS = 10_000; // Venue kiosk: return to idle after auto-print (intentional)
+
 function PrintTicketPage() {
   const { sessionId } = useParams({ from: "/print/game/$sessionId" });
+  const searchStr = useRouterState({ select: (s) => s.location.searchStr });
   const [session, setSession] = useState<GameSession | null>(null);
   const [config, setConfig] = useState<GameConfig | null>(null);
   const [ready, setReady] = useState(false);
@@ -31,15 +34,17 @@ function PrintTicketPage() {
   const [buildError, setBuildError] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const builtOnceRef = useRef(false);
+  const autoPrintedRef = useRef(false);
+  const homeTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     const s = findSession(sessionId);
-    const c = loadConfig();
+    const c = resolveConfig(searchStr);
     setSession(s);
     setConfig(c);
     setLogoOk(Boolean(c.sephoraDeliLogoUrl));
     setReady(true);
-  }, [sessionId]);
+  }, [sessionId, searchStr]);
 
   const buildPdf = async () => {
     const node = document.querySelector<HTMLElement>('[data-testid="print-ticket-body"]');
@@ -121,7 +126,11 @@ function PrintTicketPage() {
         /* fall through */
       }
     }
-    if (pdfUrl) window.open(pdfUrl, "_blank");
+    if (pdfUrl) {
+      window.open(pdfUrl, "_blank");
+      return;
+    }
+    window.print();
   };
 
   const doDownloadPdf = async () => {
@@ -135,6 +144,36 @@ function PrintTicketPage() {
       if (session) updateSessionPrintStatus(session.id, "FAILED");
     }
   };
+
+  // Kiosk / autoPrintEnabled (admin or ?kiosk=true): auto window.print() once,
+  // then home after AUTO_HOME_MS. Do not treat missing Print/Download UI as a bug.
+  useEffect(() => {
+    if (!config?.autoPrintEnabled) return;
+    if (!previewImg && !buildError) return;
+
+    const goHome = () => {
+      window.location.assign(withLaunchSearch("/", searchStr));
+    };
+
+    let printT: number | undefined;
+    if (previewImg && !autoPrintedRef.current) {
+      autoPrintedRef.current = true;
+      printT = window.setTimeout(() => {
+        window.print();
+      }, 100);
+    }
+
+    if (homeTimerRef.current) window.clearTimeout(homeTimerRef.current);
+    homeTimerRef.current = window.setTimeout(goHome, AUTO_HOME_MS);
+
+    return () => {
+      if (printT) window.clearTimeout(printT);
+      if (homeTimerRef.current) {
+        window.clearTimeout(homeTimerRef.current);
+        homeTimerRef.current = null;
+      }
+    };
+  }, [config?.autoPrintEnabled, previewImg, buildError, searchStr]);
 
   if (!ready) {
     return <div className="p-10 text-center text-black">Loading…</div>;
@@ -158,6 +197,7 @@ function PrintTicketPage() {
   const rewardProduct = noReward
     ? "No reward"
     : session.rewardProductName ?? "Gift";
+  const autoPrint = config.autoPrintEnabled;
 
   return (
     <div className="min-h-dvh bg-white text-black">
@@ -255,30 +295,33 @@ function PrintTicketPage() {
 
       {/* Visible PDF viewer */}
       <div className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-4 p-4 sm:p-6">
-        <div className="no-print flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-sm font-bold uppercase tracking-[0.28em] text-black">
-            Reward ticket · {session.ticketCode}
-          </h1>
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={printEmbedded}
-              disabled={!pdfUrl}
-              data-testid="print-ticket"
-              className="rounded-none bg-black px-6 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white disabled:opacity-50"
-            >
-              Print
-            </button>
-            <button
-              type="button"
-              onClick={doDownloadPdf}
-              data-testid="download-pdf"
-              className="rounded-none border-2 border-black bg-white px-6 py-3 text-xs font-bold uppercase tracking-[0.28em] text-black"
-            >
-              Download PDF
-            </button>
+        {/* Manual Print/Download only when autoPrint is off — kiosk hides these on purpose */}
+        {!autoPrint && (
+          <div className="no-print flex flex-wrap items-center justify-between gap-3">
+            <h1 className="text-sm font-bold uppercase tracking-[0.28em] text-black">
+              Reward ticket · {session.ticketCode}
+            </h1>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={printEmbedded}
+                disabled={!pdfUrl}
+                data-testid="print-ticket"
+                className="rounded-none bg-black px-6 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white disabled:opacity-50"
+              >
+                Print
+              </button>
+              <button
+                type="button"
+                onClick={doDownloadPdf}
+                data-testid="download-pdf"
+                className="rounded-none border-2 border-black bg-white px-6 py-3 text-xs font-bold uppercase tracking-[0.28em] text-black"
+              >
+                Download PDF
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="relative min-h-[70dvh] flex-1 border-2 border-black bg-neutral-100 overflow-auto">
           {previewImg ? (
