@@ -46,6 +46,7 @@ function pad2(n: number) {
 }
 
 export function GameBoard() {
+  // Router search (not window) so SSR/hydration honour ?kiosk=true — see kiosk-launch.ts
   const searchStr = useRouterState({ select: (s) => s.location.searchStr });
   const { kiosk } = getKioskLaunch(searchStr);
   const config = useMemo(() => resolveConfig(searchStr), [searchStr]);
@@ -269,8 +270,7 @@ export function GameBoard() {
   const printTicket = useCallback(() => {
     if (!sessionId) return;
     updateSessionPrintStatus(sessionId, "REQUESTED");
-    // Preserve ?kiosk=&size= so auto-print mode survives the ticket round-trip.
-    // Same-tab assign — popups are blocked in Lovable preview / many browsers.
+    // Must keep ?kiosk=&size= or the ticket page drops out of auto-print mode.
     window.location.assign(withLaunchSearch(`/print/game/${sessionId}`, searchStr));
   }, [sessionId, searchStr]);
 
@@ -315,6 +315,7 @@ export function GameBoard() {
           <section className="flex min-w-0 flex-col">
             <div className="flex items-start justify-between gap-3">
               <SephoraCollectionLogo color="#ffffff" size={32} className="shrink-0" />
+              {/* Kiosk: invisible but clickable — lab can still open /admin without a visible cog */}
               <Link
                 to="/admin"
                 className={
@@ -642,6 +643,7 @@ export function GameBoard() {
                   <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-white">
                     Sephora Collection · Memory Game
                   </span>
+                  {/* Admin/debug grid summary — hide on venue kiosk (?kiosk=true) */}
                   {!kiosk && (
                     <p className="-mt-2 max-w-[36ch] text-[10px] font-bold uppercase tracking-[0.24em] text-white">
                       {config.gridCols}×{config.gridRows} — {totalPairs} pairs —{" "}

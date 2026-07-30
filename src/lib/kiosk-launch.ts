@@ -1,3 +1,10 @@
+/**
+ * In-store hardware kiosk launch helpers (?kiosk=true&size=sm|lg).
+ *
+ * Owned by the kiosk/hardware team — not Lovable product UI. Do not remove or
+ * “simplify” away: venue Chromium opens with these query params. Size presets
+ * are reserved (sm|lg parsed only; gameplay presets TBD).
+ */
 import { loadConfig, type GameConfig } from "@/lib/game-config";
 
 export type KioskSize = "sm" | "lg";
@@ -21,7 +28,10 @@ export function parseKioskSearch(search: string): KioskLaunch {
   return { kiosk, size };
 }
 
-/** Prefer an explicit search string (SSR-safe via router); fall back to window. */
+/**
+ * Prefer router `location.searchStr` (SSR-safe). Reading only `window` on the
+ * server always yields kiosk=false and caused the admin cog to stay visible.
+ */
 export function getKioskLaunch(search?: string): KioskLaunch {
   if (typeof search === "string") return parseKioskSearch(search);
   if (typeof window === "undefined") return { kiosk: false, size: null };
@@ -29,9 +39,8 @@ export function getKioskLaunch(search?: string): KioskLaunch {
 }
 
 /**
- * Defaults ← localStorage admin overrides ← kiosk URL forces autoPrintEnabled.
- * Pass router `location.searchStr` so SSR sees `?kiosk=true`.
- * Does not write URL overlays into localStorage.
+ * Defaults ← localStorage (admin) ← if ?kiosk=true, force autoPrintEnabled.
+ * Session-only overlay — do not persist URL overrides into localStorage.
  */
 export function resolveConfig(search?: string): GameConfig {
   const cfg = loadConfig();
@@ -40,7 +49,7 @@ export function resolveConfig(search?: string): GameConfig {
   return { ...cfg, autoPrintEnabled: true };
 }
 
-/** Current `?kiosk=&size=` (only recognised keys), or empty string. */
+/** Rebuild `?kiosk=&size=` from the launch parse (recognised keys only). */
 export function launchSearch(search?: string): string {
   const { kiosk, size } = getKioskLaunch(search);
   const params = new URLSearchParams();
@@ -50,7 +59,10 @@ export function launchSearch(search?: string): string {
   return q ? `?${q}` : "";
 }
 
-/** Append preserved launch search to a path (path may already include `?`). */
+/**
+ * Keep kiosk/size on navigations (game → print → idle). Dropping search exits
+ * kiosk mode on the next page.
+ */
 export function withLaunchSearch(path: string, search?: string): string {
   const q = launchSearch(search);
   if (!q) return path;
