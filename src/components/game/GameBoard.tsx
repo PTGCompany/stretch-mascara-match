@@ -10,7 +10,6 @@ import {
   CircularSephoraMark,
 } from "./icons";
 import {
-  loadConfig,
   saveSession,
   updateSessionPrintStatus,
   computeWinLevel,
@@ -19,8 +18,13 @@ import {
   type GameConfig,
   type CompletedReason,
 } from "@/lib/game-config";
+import {
+  getKioskLaunch,
+  resolveConfig,
+  withLaunchSearch,
+} from "@/lib/kiosk-launch";
 import { buildBoard, type BoardCard } from "@/lib/game-products";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { Settings } from "lucide-react";
 import { MARQUEE } from "@/lib/motion";
 
@@ -42,7 +46,9 @@ function pad2(n: number) {
 }
 
 export function GameBoard() {
-  const [config] = useState<GameConfig>(() => loadConfig());
+  const searchStr = useRouterState({ select: (s) => s.location.searchStr });
+  const { kiosk } = getKioskLaunch(searchStr);
+  const config = useMemo(() => resolveConfig(searchStr), [searchStr]);
 
   const total = config.gridRows * config.gridCols;
   const totalPairs = Math.min(config.totalPairs, Math.floor(total / 2));
@@ -263,12 +269,10 @@ export function GameBoard() {
   const printTicket = useCallback(() => {
     if (!sessionId) return;
     updateSessionPrintStatus(sessionId, "REQUESTED");
-    const url = `/print/game/${sessionId}`;
-    // Navigate in the same tab — popups are blocked inside the Lovable
-    // preview iframe and in most modern browsers when not triggered by a
-    // direct user gesture chain, which left the ticket invisible.
-    window.location.assign(url);
-  }, [sessionId]);
+    // Preserve ?kiosk=&size= so auto-print mode survives the ticket round-trip.
+    // Same-tab assign — popups are blocked in Lovable preview / many browsers.
+    window.location.assign(withLaunchSearch(`/print/game/${sessionId}`, searchStr));
+  }, [sessionId, searchStr]);
 
   const gridStyle: React.CSSProperties = {
     gridTemplateColumns: `repeat(${config.gridCols}, minmax(0, 1fr))`,
@@ -313,7 +317,11 @@ export function GameBoard() {
               <SephoraCollectionLogo color="#ffffff" size={32} className="shrink-0" />
               <Link
                 to="/admin"
-                className="text-white/40 transition-colors hover:text-white"
+                className={
+                  kiosk
+                    ? "opacity-0"
+                    : "text-white/40 transition-colors hover:text-white"
+                }
                 aria-label="Admin"
               >
                 <Settings className="h-4 w-4" />
@@ -634,10 +642,12 @@ export function GameBoard() {
                   <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-white">
                     Sephora Collection · Memory Game
                   </span>
-                  <p className="-mt-2 max-w-[36ch] text-[10px] font-bold uppercase tracking-[0.24em] text-white">
-                    {config.gridCols}×{config.gridRows} — {totalPairs} pairs —{" "}
-                    {config.durationSeconds}s
-                  </p>
+                  {!kiosk && (
+                    <p className="-mt-2 max-w-[36ch] text-[10px] font-bold uppercase tracking-[0.24em] text-white">
+                      {config.gridCols}×{config.gridRows} — {totalPairs} pairs —{" "}
+                      {config.durationSeconds}s
+                    </p>
+                  )}
                 </>
               )}
 

@@ -90,7 +90,7 @@ export const DEFAULT_CONFIG: GameConfig = {
   brandColor: "#ed6f7e",
   ticketPrintingEnabled: true,
   printNoRewardTicketEnabled: false,
-  autoPrintEnabled: true,
+  autoPrintEnabled: false,
   ticketFooterText: "PICK UP YOUR ORDER!",
   ticketBrandTitle: "SEPHORA DELI",
   ticketBrandFallbackText: "SEPHORA DELI",
