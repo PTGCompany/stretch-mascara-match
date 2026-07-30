@@ -19,7 +19,7 @@ export const Route = createFileRoute("/print/game/$sessionId")({
   component: PrintTicketPage,
 });
 
-const AUTO_HOME_MS = 10_000;
+const AUTO_HOME_MS = 10_000; // Venue kiosk: return to idle after auto-print (intentional)
 
 function PrintTicketPage() {
   const { sessionId } = useParams({ from: "/print/game/$sessionId" });
@@ -145,7 +145,8 @@ function PrintTicketPage() {
     }
   };
 
-  // When autoPrintEnabled: print once PDF is ready, then return to idle after 10s.
+  // Kiosk / autoPrintEnabled (admin or ?kiosk=true): auto window.print() once,
+  // then home after AUTO_HOME_MS. Do not treat missing Print/Download UI as a bug.
   useEffect(() => {
     if (!config?.autoPrintEnabled) return;
     if (!previewImg && !buildError) return;
@@ -294,6 +295,7 @@ function PrintTicketPage() {
 
       {/* Visible PDF viewer */}
       <div className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-4 p-4 sm:p-6">
+        {/* Manual Print/Download only when autoPrint is off — kiosk hides these on purpose */}
         {!autoPrint && (
           <div className="no-print flex flex-wrap items-center justify-between gap-3">
             <h1 className="text-sm font-bold uppercase tracking-[0.28em] text-black">
