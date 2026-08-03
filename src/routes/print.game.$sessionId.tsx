@@ -24,11 +24,15 @@ const AUTO_HOME_MS = 10_000; // Venue kiosk: return to idle after auto-print (in
 /**
  * Ticket print width in mm for PDF + @page.
  *
- * Physical roll is 80mm, but Star TSP100 / SK1 CUPS media is 72mm printable
- * (X72MM… in the Star PPD). Size the ticket to 72mm so the browser does not
- * scale-to-fit. Do not change this back to 80mm without also changing CUPS media.
+ * Physical roll is 80 mm; Star CUPS printable media is 72 mm (X72MM…).
+ * Size the ticket to 72 mm — the unused ~4 mm each side on the roll is the
+ * “page edge”. Do not draw a black border as a fake page frame. Do not set
+ * this to 80 mm or CUPS will scale-to-fit and shrink the art.
  */
 const TICKET_WIDTH_MM = 72;
+
+/** html2canvas scale: aim near Star’s native 203 DPI across 72 mm (~576 px). */
+const TICKET_CAPTURE_SCALE = 3;
 
 /**
  * Local kiosk print agent (OptiPlex). Prefer POSTing the 72 mm ticket PDF
@@ -79,7 +83,7 @@ async function printTicket(payload?: PrintTicketPayload | string | null): Promis
       const { default: html2canvas } = await import("html2canvas");
       const canvas = await html2canvas(node, {
         backgroundColor: "#ffffff",
-        scale: 2,
+        scale: TICKET_CAPTURE_SCALE,
         useCORS: true,
       });
       body = await (await fetch(canvas.toDataURL("image/png"))).blob();
@@ -146,7 +150,7 @@ function PrintTicketPage() {
     ]);
     const canvas = await html2canvas(node, {
       backgroundColor: "#ffffff",
-      scale: 2,
+      scale: TICKET_CAPTURE_SCALE,
       useCORS: true,
     });
     const imgData = canvas.toDataURL("image/png");
@@ -306,7 +310,8 @@ function PrintTicketPage() {
           width: 360px;
           background: #fff;
         }
-        .ticket-source .ticket { border: 2px solid #000; padding: 18px; font-family: 'Jost', system-ui, -apple-system, Arial, sans-serif; }
+        /* No black border — 72 mm art sits on 80 mm roll with ~4 mm natural side margins. */
+        .ticket-source .ticket { border: none; padding: 18px; font-family: 'Jost', system-ui, -apple-system, Arial, sans-serif; }
         .ticket-source .brand { text-align: center; font-weight: 900; letter-spacing: .32em; font-size: 14px; }
         .ticket-source .brand img { display: block; margin: 0 auto 3px; height: auto; width: 50%; max-width: 160px; object-fit: contain; image-rendering: -webkit-optimize-contrast; }
         .ticket-source .brand small { display: block; letter-spacing: .14em; font-weight: 700; margin-top: 4px; font-size: 9px; }
