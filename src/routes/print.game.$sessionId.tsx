@@ -31,12 +31,54 @@ const AUTO_HOME_MS = 10_000; // Venue kiosk: return to idle after auto-print (in
 const TICKET_WIDTH_MM = 72;
 
 /**
- * Only call site for printing a ticket (auto-print and the Print button).
- * Today: window.print() — kiosk Chromium uses --kiosk-printing (no dialog) + CUPS.
- * Later: replace the body with a POST to a local print agent if raw ESC/POS is needed.
- * Do not scatter extra window.print() calls on this page.
+ * Local kiosk print agent (OptiPlex). POSTs a PNG; agent `lp`s to CUPS SephoraTicket.
+ * Bound only on 127.0.0.1 — works for remote Lovable and local :3000 (same machine).
+ * Do not change the port without updating ~/kiosk/bin/print-agent on the kiosk.
  */
-function printTicket() {
+const PRINT_AGENT_URL = "http://127.0.0.1:3091/print";
+const PRINT_AGENT_TIMEOUT_MS = 3000;
+
+/**
+ * Only call site for printing a ticket (auto-print and the Print button).
+ *
+ * Kiosk path: POST ticket PNG to the local CUPS agent — no Chrome print dialog.
+ * Fallback: window.print() only if the agent is unreachable (dev laptop / agent down).
+ * Do not scatter extra window.print() calls on this page. Do not “fix” this by
+ * restoring dialog-based printing as the primary kiosk path.
+ */
+async function printTicket(pngDataUrl?: string | null): Promise<void> {
+  let dataUrl = pngDataUrl ?? null;
+  if (!dataUrl) {
+    const node = document.querySelector<HTMLElement>('[data-testid="print-ticket-body"]');
+    if (node) {
+      const { default: html2canvas } = await import("html2canvas");
+      const canvas = await html2canvas(node, {
+        backgroundColor: "#ffffff",
+        scale: 2,
+        useCORS: true,
+      });
+      dataUrl = canvas.toDataURL("image/png");
+    }
+  }
+
+  if (dataUrl) {
+    try {
+      const blob = await (await fetch(dataUrl)).blob();
+      const ctrl = new AbortController();
+      const timer = window.setTimeout(() => ctrl.abort(), PRINT_AGENT_TIMEOUT_MS);
+      const res = await fetch(PRINT_AGENT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "image/png" },
+        body: blob,
+        signal: ctrl.signal,
+      });
+      window.clearTimeout(timer);
+      if (res.ok) return;
+    } catch {
+      /* agent down or timed out — fall through */
+    }
+  }
+
   window.print();
 }
 
@@ -160,7 +202,7 @@ function PrintTicketPage() {
     if (previewImg && !autoPrintedRef.current) {
       autoPrintedRef.current = true;
       printT = window.setTimeout(() => {
-        printTicket();
+        void printTicket(previewImg);
       }, 100);
     }
 
@@ -325,7 +367,7 @@ function PrintTicketPage() {
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                onClick={() => printTicket()}
+                onClick={() => void printTicket(previewImg)}
                 disabled={!previewImg}
                 data-testid="print-ticket"
                 className="rounded-none bg-black px-6 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white disabled:opacity-50"
