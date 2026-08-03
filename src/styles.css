@@ -135,6 +135,11 @@ p, .text-balance-pretty {
 }
 
 
+/*
+  Legacy print rules for unused #sephora-ticket. Live ticket printing is owned by
+  print.game.$sessionId.tsx (TICKET_WIDTH_MM = 72). Keep these aligned so a future
+  prompt does not revive 80mm / non-zero margins here by mistake.
+*/
 @media print {
   body * { visibility: hidden !important; }
   #sephora-ticket, #sephora-ticket * { visibility: visible !important; }
@@ -142,11 +147,11 @@ p, .text-balance-pretty {
     position: fixed !important;
     inset: 0 !important;
     margin: 0 !important;
-    width: 80mm !important;
+    width: 72mm !important;
     border: none !important;
     box-shadow: none !important;
     background: white !important;
     color: black !important;
   }
-  @page { size: 80mm auto; margin: 4mm; }
+  @page { size: 72mm auto; margin: 0; }
 }

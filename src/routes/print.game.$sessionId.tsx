@@ -21,6 +21,25 @@ export const Route = createFileRoute("/print/game/$sessionId")({
 
 const AUTO_HOME_MS = 10_000; // Venue kiosk: return to idle after auto-print (intentional)
 
+/**
+ * Ticket print width in mm for PDF + @page.
+ *
+ * Physical roll is 80mm, but Star TSP100 / SK1 CUPS media is 72mm printable
+ * (X72MM… in the Star PPD). Size the ticket to 72mm so the browser does not
+ * scale-to-fit. Do not change this back to 80mm without also changing CUPS media.
+ */
+const TICKET_WIDTH_MM = 72;
+
+/**
+ * Only call site for printing a ticket (auto-print and the Print button).
+ * Today: window.print() — kiosk Chromium uses --kiosk-printing (no dialog) + CUPS.
+ * Later: replace the body with a POST to a local print agent if raw ESC/POS is needed.
+ * Do not scatter extra window.print() calls on this page.
+ */
+function printTicket() {
+  window.print();
+}
+
 function PrintTicketPage() {
   const { sessionId } = useParams({ from: "/print/game/$sessionId" });
   const searchStr = useRouterState({ select: (s) => s.location.searchStr });
@@ -32,7 +51,6 @@ function PrintTicketPage() {
   const [previewImg, setPreviewImg] = useState<string | null>(null);
   const [building, setBuilding] = useState(false);
   const [buildError, setBuildError] = useState<string | null>(null);
-  const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const builtOnceRef = useRef(false);
   const autoPrintedRef = useRef(false);
   const homeTimerRef = useRef<number | null>(null);
@@ -59,7 +77,7 @@ function PrintTicketPage() {
       useCORS: true,
     });
     const imgData = canvas.toDataURL("image/png");
-    const widthMm = 80;
+    const widthMm = TICKET_WIDTH_MM;
     const heightMm = (canvas.height * widthMm) / canvas.width;
     const pdf = new jsPDF({
       unit: "mm",
@@ -115,24 +133,6 @@ function PrintTicketPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const printEmbedded = () => {
-    const frame = iframeRef.current;
-    if (frame && frame.contentWindow) {
-      try {
-        frame.contentWindow.focus();
-        frame.contentWindow.print();
-        return;
-      } catch {
-        /* fall through */
-      }
-    }
-    if (pdfUrl) {
-      window.open(pdfUrl, "_blank");
-      return;
-    }
-    window.print();
-  };
-
   const doDownloadPdf = async () => {
     if (!session) return;
     try {
@@ -145,8 +145,9 @@ function PrintTicketPage() {
     }
   };
 
-  // Kiosk / autoPrintEnabled (admin or ?kiosk=true): auto window.print() once,
-  // then home after AUTO_HOME_MS. Do not treat missing Print/Download UI as a bug.
+  // Kiosk / autoPrintEnabled (admin or ?kiosk=true): auto printTicket() once,
+  // then home after AUTO_HOME_MS. Guests still see the on-screen preview.
+  // Do not treat missing Print/Download UI as a bug.
   useEffect(() => {
     if (!config?.autoPrintEnabled) return;
     if (!previewImg && !buildError) return;
@@ -159,7 +160,7 @@ function PrintTicketPage() {
     if (previewImg && !autoPrintedRef.current) {
       autoPrintedRef.current = true;
       printT = window.setTimeout(() => {
-        window.print();
+        printTicket();
       }, 100);
     }
 
@@ -202,12 +203,28 @@ function PrintTicketPage() {
   return (
     <div className="min-h-dvh bg-white text-black">
       <style>{`
-        @page { size: 80mm auto; margin: 6mm; }
+        /* Print geometry: 72mm × auto, zero margin — matches Star CUPS; do not add @page margin. */
+        @page { size: ${TICKET_WIDTH_MM}mm auto; margin: 0; }
         @media print {
-          .no-print { display: none !important; }
-          body { background: #fff !important; }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #fff !important;
+            width: ${TICKET_WIDTH_MM}mm !important;
+          }
+          /* Hide on-screen preview chrome when printing. Guests still see it on screen. */
+          .no-print,
+          .ticket-preview-shell { display: none !important; }
+          /* Bring the real ticket DOM into the print flow at exact width (not the scaled preview img). */
+          .ticket-source {
+            position: static !important;
+            left: auto !important;
+            top: auto !important;
+            width: ${TICKET_WIDTH_MM}mm !important;
+            background: #fff !important;
+          }
         }
-        /* Hide the source ticket off-screen — it's only used to rasterize the PDF. */
+        /* Screen: off-flow for html2canvas. Print: rules above override to on-flow ${TICKET_WIDTH_MM}mm. */
         .ticket-source {
           position: absolute;
           left: -10000px;
@@ -293,8 +310,12 @@ function PrintTicketPage() {
         </div>
       </div>
 
-      {/* Visible PDF viewer */}
-      <div className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-4 p-4 sm:p-6">
+      {/*
+        On-screen preview only (PNG of the ticket). Kept visible for guests.
+        .ticket-preview-shell is display:none in @media print so the printer
+        gets .ticket-source at TICKET_WIDTH_MM, not this padded UI shell.
+      */}
+      <div className="ticket-preview-shell mx-auto flex min-h-dvh max-w-3xl flex-col gap-4 p-4 sm:p-6">
         {/* Manual Print/Download only when autoPrint is off — kiosk hides these on purpose */}
         {!autoPrint && (
           <div className="no-print flex flex-wrap items-center justify-between gap-3">
@@ -304,8 +325,8 @@ function PrintTicketPage() {
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                onClick={printEmbedded}
-                disabled={!pdfUrl}
+                onClick={() => printTicket()}
+                disabled={!previewImg}
                 data-testid="print-ticket"
                 className="rounded-none bg-black px-6 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white disabled:opacity-50"
               >
