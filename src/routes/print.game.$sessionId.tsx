@@ -31,30 +31,49 @@ const AUTO_HOME_MS = 10_000; // Venue kiosk: return to idle after auto-print (in
 const TICKET_WIDTH_MM = 72;
 
 /**
- * Local kiosk print agent (OptiPlex). POSTs a PNG; agent `lp`s to CUPS SephoraTicket.
+ * Local kiosk print agent (OptiPlex). Prefer POSTing the 72 mm ticket PDF
+ * (correct physical size). PNG is a fallback the agent resizes to 72 mm @ 203 DPI.
  * Bound only on 127.0.0.1 — works for remote Lovable and local :3000 (same machine).
  * Do not change the port without updating ~/kiosk/bin/print-agent on the kiosk.
+ * Do not POST a raw PNG and expect CUPS to invent mm geometry — that blew metres of paper.
  */
 const PRINT_AGENT_URL = "http://127.0.0.1:3091/print";
-/** Agent should ACK quickly; allow headroom for PNG upload + queue. */
+/** Agent should ACK quickly; allow headroom for upload + queue. */
 const PRINT_AGENT_TIMEOUT_MS = 15000;
+
+type PrintTicketPayload = {
+  pdfBlob?: Blob | null;
+  pngDataUrl?: string | null;
+};
 
 /**
  * Only call site for printing a ticket (auto-print and the Print button).
  *
- * Kiosk path: POST ticket PNG to the local CUPS agent — no Chrome print dialog.
- * Fallback window.print() only when the agent is unreachable (network error /
- * timeout) AND we are not in kiosk mode. Never open the print dialog on the
- * venue kiosk: a failed agent print is better than a stuck empty dialog.
- * Do not scatter extra window.print() calls on this page.
+ * Kiosk path: POST ticket PDF (preferred) or PNG to the local CUPS agent —
+ * no Chrome print dialog. Fallback window.print() only when the agent is
+ * unreachable AND we are not in kiosk mode. Never open the print dialog on
+ * the venue kiosk. Do not scatter extra window.print() calls on this page.
  */
-async function printTicket(pngDataUrl?: string | null): Promise<void> {
+async function printTicket(payload?: PrintTicketPayload | string | null): Promise<void> {
   const kiosk =
     typeof window !== "undefined" &&
     /(?:^|[?&])kiosk(?:=true|=1|=)?(?:&|$)/i.test(window.location.search);
 
-  let dataUrl = pngDataUrl ?? null;
-  if (!dataUrl) {
+  // Back-compat: older call sites passed a PNG data URL string.
+  const opts: PrintTicketPayload =
+    typeof payload === "string" || payload == null
+      ? { pngDataUrl: payload ?? null }
+      : payload;
+
+  let body: Blob | null = opts.pdfBlob ?? null;
+  let contentType = "application/pdf";
+
+  if (!body && opts.pngDataUrl) {
+    body = await (await fetch(opts.pngDataUrl)).blob();
+    contentType = "image/png";
+  }
+
+  if (!body) {
     const node = document.querySelector<HTMLElement>('[data-testid="print-ticket-body"]');
     if (node) {
       const { default: html2canvas } = await import("html2canvas");
@@ -63,28 +82,27 @@ async function printTicket(pngDataUrl?: string | null): Promise<void> {
         scale: 2,
         useCORS: true,
       });
-      dataUrl = canvas.toDataURL("image/png");
+      body = await (await fetch(canvas.toDataURL("image/png"))).blob();
+      contentType = "image/png";
     }
   }
 
-  if (!dataUrl) {
+  if (!body) {
     if (!kiosk) window.print();
     return;
   }
 
   try {
-    const blob = await (await fetch(dataUrl)).blob();
     const ctrl = new AbortController();
     const timer = window.setTimeout(() => ctrl.abort(), PRINT_AGENT_TIMEOUT_MS);
     const res = await fetch(PRINT_AGENT_URL, {
       method: "POST",
-      headers: { "Content-Type": "image/png" },
-      body: blob,
+      headers: { "Content-Type": contentType },
+      body,
       signal: ctrl.signal,
     });
     window.clearTimeout(timer);
     if (res.ok) return;
-    // Agent reachable but CUPS/job failed — do not open a print dialog on kiosk.
     console.error("[printTicket] agent error", res.status, await res.text().catch(() => ""));
     if (!kiosk) window.print();
     return;
@@ -102,6 +120,7 @@ function PrintTicketPage() {
   const [ready, setReady] = useState(false);
   const [logoOk, setLogoOk] = useState<boolean>(true);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [previewImg, setPreviewImg] = useState<string | null>(null);
   const [building, setBuilding] = useState(false);
   const [buildError, setBuildError] = useState<string | null>(null);
@@ -156,6 +175,7 @@ function PrintTicketPage() {
         if (prev) URL.revokeObjectURL(prev);
         return url;
       });
+      setPdfBlob(blob);
       setPreviewImg(imgData);
       updateSessionPrintStatus(session.id, "PRINTED");
     } catch (e) {
@@ -211,10 +231,10 @@ function PrintTicketPage() {
     };
 
     let printT: number | undefined;
-    if (previewImg && !autoPrintedRef.current) {
+    if ((pdfBlob || previewImg) && !autoPrintedRef.current) {
       autoPrintedRef.current = true;
       printT = window.setTimeout(() => {
-        void printTicket(previewImg);
+        void printTicket({ pdfBlob, pngDataUrl: previewImg });
       }, 100);
     }
 
@@ -228,7 +248,7 @@ function PrintTicketPage() {
         homeTimerRef.current = null;
       }
     };
-  }, [config?.autoPrintEnabled, previewImg, buildError, searchStr]);
+  }, [config?.autoPrintEnabled, pdfBlob, previewImg, buildError, searchStr]);
 
   if (!ready) {
     return <div className="p-10 text-center text-black">Loading…</div>;
@@ -379,7 +399,7 @@ function PrintTicketPage() {
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                onClick={() => void printTicket(previewImg)}
+                onClick={() => void printTicket({ pdfBlob, pngDataUrl: previewImg })}
                 disabled={!previewImg}
                 data-testid="print-ticket"
                 className="rounded-none bg-black px-6 py-3 text-xs font-bold uppercase tracking-[0.28em] text-white disabled:opacity-50"
