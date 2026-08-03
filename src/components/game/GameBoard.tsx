@@ -27,6 +27,7 @@ import { buildBoard, type BoardCard } from "@/lib/game-products";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Settings } from "lucide-react";
 import { MARQUEE } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 type CardVisual = "hidden" | "flipped" | "matched";
 type GameStatus = "idle" | "rules" | "playing" | "completed" | "timeout";
@@ -48,7 +49,14 @@ function pad2(n: number) {
 export function GameBoard() {
   // Router search (not window) so SSR/hydration honour ?kiosk=true — see kiosk-launch.ts
   const searchStr = useRouterState({ select: (s) => s.location.searchStr });
-  const { kiosk } = getKioskLaunch(searchStr);
+  const { kiosk, size } = getKioskLaunch(searchStr);
+  /**
+   * Kiosk size=lg only (Sitech Industries). Without ?size=lg this is false —
+   * UI matches the default design path exactly. `lg ? larger : default` pairs:
+   * change default freely for Lovable; update the lg arm (~+30%) or check with
+   * Sitech Industries.
+   */
+  const lg = size === "lg";
   const config = useMemo(() => resolveConfig(searchStr), [searchStr]);
 
   const total = config.gridRows * config.gridCols;
@@ -328,22 +336,29 @@ export function GameBoard() {
                 <Settings className="h-4 w-4" />
               </Link>
             </div>
+            {/* Kiosk size=lg (~30%): title + timer. Else = default. Sitech Industries. */}
             <motion.h1
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
-              className="font-display mt-2 text-[36px] uppercase leading-[0.85] tracking-tight text-white"
+              className={cn(
+                "font-display mt-2 uppercase leading-[0.85] tracking-tight text-white",
+                lg ? "text-[47px]" : "text-[36px]",
+              )}
             >
               {config.title}{" "}
               <span style={{ color: PINK }}>{config.titleAccent}</span>
             </motion.h1>
 
             {/* Timer */}
-            <div className="mt-3 w-full">
+            <div className={cn("w-full", lg ? "mt-4" : "mt-3")}>
               <div className="flex items-end justify-between">
                 <span
                   data-testid="time-remaining-label"
-                  className="text-[9px] font-bold uppercase tracking-[0.32em] text-white/55"
+                  className={cn(
+                    "font-bold uppercase tracking-[0.32em] text-white/55",
+                    lg ? "text-[12px]" : "text-[9px]",
+                  )}
                 >
                   Time remaining
                 </span>
@@ -356,7 +371,10 @@ export function GameBoard() {
                       : { scale: 1, opacity: 1 }
                   }
                   transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-display text-[32px] leading-none tabular-nums tracking-tight"
+                  className={cn(
+                    "font-display leading-none tabular-nums tracking-tight",
+                    lg ? "text-[42px]" : "text-[32px]",
+                  )}
                   style={{ color: timeUrgent ? PINK : "#ffffff" }}
                 >
                   {status === "idle" || status === "rules"
@@ -364,7 +382,12 @@ export function GameBoard() {
                     : fmtTime(timeRemaining)}
                 </motion.span>
               </div>
-              <div className="mt-2 h-[3px] w-full overflow-hidden bg-white/10">
+              <div
+                className={cn(
+                  "w-full overflow-hidden bg-white/10",
+                  lg ? "mt-2.5 h-1" : "mt-2 h-[3px]",
+                )}
+              >
                 <motion.div
                   className="h-full"
                   animate={{ width: `${progress}%` }}
@@ -491,28 +514,49 @@ export function GameBoard() {
             </motion.div>
           </section>
 
-          {/* BOTTOM — stats + tiers */}
-          <section className="flex min-w-0 flex-col gap-2 border-t border-white/20 pt-2">
-            <div className="grid grid-cols-3 gap-2">
+          {/* Kiosk size=lg (~30%): pairs / points / misses / tiers. Else = default. Sitech Industries. */}
+          <section
+            className={cn(
+              "flex min-w-0 flex-col border-t border-white/20",
+              lg ? "gap-2.5 pt-2.5" : "gap-2 pt-2",
+            )}
+          >
+            <div className={cn("grid grid-cols-3", lg ? "gap-2.5" : "gap-2")}>
               <div className="flex flex-col">
-                <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-white/55">
+                <span
+                  className={cn(
+                    "font-bold uppercase tracking-[0.24em] text-white/55",
+                    lg ? "text-[12px]" : "text-[9px]",
+                  )}
+                >
                   Pairs
                 </span>
                 <span
                   data-testid="pairs-count"
-                  className="font-display text-[22px] leading-none tabular-nums"
+                  className={cn(
+                    "font-display leading-none tabular-nums",
+                    lg ? "text-[29px]" : "text-[22px]",
+                  )}
                 >
                   {pad2(pairsFound)}
                   <span className="text-white/30">/{pad2(totalPairs)}</span>
                 </span>
               </div>
               <div className="flex flex-col">
-                <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-white/55">
+                <span
+                  className={cn(
+                    "font-bold uppercase tracking-[0.24em] text-white/55",
+                    lg ? "text-[12px]" : "text-[9px]",
+                  )}
+                >
                   Points
                 </span>
                 <span
                   data-testid="current-score"
-                  className="font-display text-[22px] leading-none tabular-nums"
+                  className={cn(
+                    "font-display leading-none tabular-nums",
+                    lg ? "text-[29px]" : "text-[22px]",
+                  )}
                   style={{ color: pairsFound > 0 ? PINK : "rgba(255,255,255,0.4)" }}
                 >
                   {liveScore}
@@ -520,10 +564,20 @@ export function GameBoard() {
               </div>
               {config.trackWrongAttempts ? (
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-white/55">
+                  <span
+                    className={cn(
+                      "font-bold uppercase tracking-[0.24em] text-white/55",
+                      lg ? "text-[12px]" : "text-[9px]",
+                    )}
+                  >
                     Misses
                   </span>
-                  <span className="font-display text-[22px] leading-none tabular-nums text-white/70">
+                  <span
+                    className={cn(
+                      "font-display leading-none tabular-nums text-white/70",
+                      lg ? "text-[29px]" : "text-[22px]",
+                    )}
+                  >
                     {pad2(wrongAttempts)}
                   </span>
                 </div>
@@ -532,7 +586,7 @@ export function GameBoard() {
               )}
             </div>
 
-            <div className="flex flex-wrap gap-1">
+            <div className={cn("flex flex-wrap", lg ? "gap-1.5" : "gap-1")}>
               {config.winLevels.map((lv) => {
                 const isReached =
                   currentTier != null && currentTier.level >= lv.level;
@@ -541,7 +595,10 @@ export function GameBoard() {
                 return (
                   <div
                     key={lv.level}
-                    className="flex flex-1 min-w-0 items-center justify-between gap-1 border border-white/10 px-2 py-1"
+                    className={cn(
+                      "flex flex-1 min-w-0 items-center justify-between border border-white/10",
+                      lg ? "gap-1.5 px-2.5 py-1.5" : "gap-1 px-2 py-1",
+                    )}
                     style={
                       isCurrent
                         ? {
@@ -551,11 +608,19 @@ export function GameBoard() {
                         : undefined
                     }
                   >
-                    <span className="text-[8px] font-bold uppercase tracking-[0.16em] text-white/70">
+                    <span
+                      className={cn(
+                        "font-bold uppercase tracking-[0.16em] text-white/70",
+                        lg ? "text-[10px]" : "text-[8px]",
+                      )}
+                    >
                       T{lv.level}
                     </span>
                     <span
-                      className="text-[9px] font-bold tabular-nums"
+                      className={cn(
+                        "font-bold tabular-nums",
+                        lg ? "text-[12px]" : "text-[9px]",
+                      )}
                       style={{
                         color: isReached ? PINK : "rgba(255,255,255,0.4)",
                       }}
@@ -618,15 +683,20 @@ export function GameBoard() {
                 className="flex w-full flex-1 items-center justify-center overflow-hidden"
                 style={{ backgroundColor: PINK }}
               >
+                {/* Kiosk size=lg (~30%): idle Deli logo. Else = default. Sitech Industries. */}
                 <img
                   src={sephoraDeliPinkAsset.url}
                   alt="Sephora Collection Deli — Made Fresh by Sephora Since 1996"
                   draggable={false}
-                  className="h-full w-[55%] max-w-[360px] select-none object-contain object-center"
+                  className={cn(
+                    "h-full select-none object-contain object-center",
+                    lg ? "w-[72%] max-w-[468px]" : "w-[55%] max-w-[360px]",
+                  )}
                   style={{ pointerEvents: "none" }}
                 />
               </motion.div>
             )}
+            {/* Kiosk size=lg (~30%): overlay card + type/CTAs. Else = default. Sitech Industries. */}
             <motion.div
               key={status}
               initial={{ y: 18, opacity: 0, scale: 0.96 }}
@@ -638,21 +708,61 @@ export function GameBoard() {
                 mass: 0.8,
                 delay: 0.05,
               }}
-              className={`relative mx-6 my-auto flex w-full max-w-xl flex-col items-center gap-6 border border-white/15 px-8 py-10 text-center sm:px-12 ${status === "idle" ? "bg-[#ed6f7e]" : "bg-black"}`}
+              className={cn(
+                "relative mx-6 my-auto flex w-full flex-col items-center border border-white/15 text-center",
+                lg
+                  ? "max-w-[46.8rem] gap-8 px-10 py-[3.25rem] sm:px-[3.9rem]"
+                  : "max-w-xl gap-6 px-8 py-10 sm:px-12",
+                status === "idle" ? "bg-[#ed6f7e]" : "bg-black",
+              )}
             >
-              <span className="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t" style={{ borderColor: PINK }} />
-              <span className="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t" style={{ borderColor: PINK }} />
-              <span className="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l" style={{ borderColor: PINK }} />
-              <span className="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r" style={{ borderColor: PINK }} />
+              <span
+                className={cn(
+                  "pointer-events-none absolute -left-px -top-px border-l border-t",
+                  lg ? "h-4 w-4" : "h-3 w-3",
+                )}
+                style={{ borderColor: PINK }}
+              />
+              <span
+                className={cn(
+                  "pointer-events-none absolute -right-px -top-px border-r border-t",
+                  lg ? "h-4 w-4" : "h-3 w-3",
+                )}
+                style={{ borderColor: PINK }}
+              />
+              <span
+                className={cn(
+                  "pointer-events-none absolute -bottom-px -left-px border-b border-l",
+                  lg ? "h-4 w-4" : "h-3 w-3",
+                )}
+                style={{ borderColor: PINK }}
+              />
+              <span
+                className={cn(
+                  "pointer-events-none absolute -bottom-px -right-px border-b border-r",
+                  lg ? "h-4 w-4" : "h-3 w-3",
+                )}
+                style={{ borderColor: PINK }}
+              />
 
               {status === "idle" && (
                 <>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-white">
+                  <span
+                    className={cn(
+                      "font-bold uppercase tracking-[0.32em] text-white",
+                      lg ? "text-[13px]" : "text-[10px]",
+                    )}
+                  >
                     Sephora Collection · Memory Game
                   </span>
                   {/* Admin/debug grid summary — hide on venue kiosk (?kiosk=true) */}
                   {!kiosk && (
-                    <p className="-mt-2 max-w-[36ch] text-[10px] font-bold uppercase tracking-[0.24em] text-white">
+                    <p
+                      className={cn(
+                        "-mt-2 max-w-[36ch] font-bold uppercase tracking-[0.24em] text-white",
+                        lg ? "text-[13px]" : "text-[10px]",
+                      )}
+                    >
                       {config.gridCols}×{config.gridRows} — {totalPairs} pairs —{" "}
                       {config.durationSeconds}s
                     </p>
@@ -663,29 +773,76 @@ export function GameBoard() {
               {status === "rules" && (
                 <>
                   <span
-                    className="text-[10px] font-bold uppercase tracking-[0.32em]"
+                    className={cn(
+                      "font-bold uppercase tracking-[0.32em]",
+                      lg ? "text-[13px]" : "text-[10px]",
+                    )}
                     style={{ color: PINK }}
                   >
                     How to play
                   </span>
-                  <h2 className="font-display text-[32px] uppercase leading-[0.9] text-white sm:text-[44px]">
+                  <h2
+                    className={cn(
+                      "font-display uppercase leading-[0.9] text-white",
+                      lg
+                        ? "text-[42px] sm:text-[57px]"
+                        : "text-[32px] sm:text-[44px]",
+                    )}
+                  >
                     Find the&nbsp;<span style={{ color: PINK }}>pairs</span>
                   </h2>
-                  <ul className="flex max-w-[42ch] flex-col gap-3 text-left text-[12px] font-medium uppercase leading-relaxed tracking-[0.16em] text-white/75">
-                    <li className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>1</span>
+                  <ul
+                    className={cn(
+                      "flex max-w-[42ch] flex-col text-left font-medium uppercase leading-relaxed tracking-[0.16em] text-white/75",
+                      lg ? "gap-4 text-[16px]" : "gap-3 text-[12px]",
+                    )}
+                  >
+                    <li className={cn("flex items-start", lg ? "gap-4" : "gap-3")}>
+                      <span
+                        className={cn(
+                          "mt-0.5 flex shrink-0 items-center justify-center rounded-full font-black",
+                          lg ? "h-6 w-6 text-[13px]" : "h-5 w-5 text-[10px]",
+                        )}
+                        style={{ backgroundColor: PINK, color: "#000" }}
+                      >
+                        1
+                      </span>
                       <span data-testid="rule-step-1">Tap a card to reveal a Sephora Collection product.</span>
                     </li>
-                    <li className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>2</span>
+                    <li className={cn("flex items-start", lg ? "gap-4" : "gap-3")}>
+                      <span
+                        className={cn(
+                          "mt-0.5 flex shrink-0 items-center justify-center rounded-full font-black",
+                          lg ? "h-6 w-6 text-[13px]" : "h-5 w-5 text-[10px]",
+                        )}
+                        style={{ backgroundColor: PINK, color: "#000" }}
+                      >
+                        2
+                      </span>
                       <span data-testid="rule-step-2">Find the matching card to complete the pair.</span>
                     </li>
-                    <li className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>3</span>
+                    <li className={cn("flex items-start", lg ? "gap-4" : "gap-3")}>
+                      <span
+                        className={cn(
+                          "mt-0.5 flex shrink-0 items-center justify-center rounded-full font-black",
+                          lg ? "h-6 w-6 text-[13px]" : "h-5 w-5 text-[10px]",
+                        )}
+                        style={{ backgroundColor: PINK, color: "#000" }}
+                      >
+                        3
+                      </span>
                       <span data-testid="rule-step-3">You have 30 seconds to find as many pairs as possible.</span>
                     </li>
-                    <li className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: PINK, color: "#000" }}>4</span>
+                    <li className={cn("flex items-start", lg ? "gap-4" : "gap-3")}>
+                      <span
+                        className={cn(
+                          "mt-0.5 flex shrink-0 items-center justify-center rounded-full font-black",
+                          lg ? "h-6 w-6 text-[13px]" : "h-5 w-5 text-[10px]",
+                        )}
+                        style={{ backgroundColor: PINK, color: "#000" }}
+                      >
+                        4
+                      </span>
                       <span data-testid="rule-step-4">Unlock rewards based on the number of pairs you find.</span>
                     </li>
                   </ul>
@@ -696,7 +853,10 @@ export function GameBoard() {
               {(status === "completed" || status === "timeout") && (
                 <>
                   <span
-                    className="text-[10px] font-bold uppercase tracking-[0.32em]"
+                    className={cn(
+                      "font-bold uppercase tracking-[0.32em]",
+                      lg ? "text-[13px]" : "text-[10px]",
+                    )}
                     style={{ color: PINK }}
                   >
                     {completedReason === "PERFECT_SCORE"
@@ -705,12 +865,24 @@ export function GameBoard() {
                   </span>
                   <h2
                     data-testid="final-headline"
-                    className="font-display text-[32px] uppercase leading-[0.95] text-white sm:text-[44px]"
+                    className={cn(
+                      "font-display uppercase leading-[0.95] text-white",
+                      lg
+                        ? "text-[42px] sm:text-[57px]"
+                        : "text-[32px] sm:text-[44px]",
+                    )}
                   >
                     {pairsFound === 0 ? (
                       <>
                         NO&nbsp;<span style={{ color: PINK }}>REWARD</span>
-                        <span className="mt-2 block text-[14px] tracking-[0.28em] text-white/60">TRY AGAIN!</span>
+                        <span
+                          className={cn(
+                            "mt-2 block tracking-[0.28em] text-white/60",
+                            lg ? "text-[18px]" : "text-[14px]",
+                          )}
+                        >
+                          TRY AGAIN!
+                        </span>
                       </>
                     ) : (
                       <>{finalTier?.message ?? "WELL PLAYED!"}</>
@@ -718,64 +890,116 @@ export function GameBoard() {
                   </h2>
                   <div className="flex flex-col items-center gap-1">
                     <div
-                      className="font-display text-[40px] uppercase leading-none tabular-nums text-white sm:text-[52px]"
+                      className={cn(
+                        "font-display uppercase leading-none tabular-nums text-white",
+                        lg
+                          ? "text-[52px] sm:text-[68px]"
+                          : "text-[40px] sm:text-[52px]",
+                      )}
                       data-testid="final-pairs"
                     >
                       {pairsFound}
                       <span className="text-white/40">/{totalPairs}</span>
                     </div>
-                    <div className="text-[11px] font-bold uppercase tracking-[0.28em] text-white/70">
+                    <div
+                      className={cn(
+                        "font-bold uppercase tracking-[0.28em] text-white/70",
+                        lg ? "text-[14px]" : "text-[11px]",
+                      )}
+                    >
                       Pairs found
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-1">
                     <div
                       data-testid="final-score"
-                      className="font-display text-[28px] leading-none tabular-nums"
+                      className={cn(
+                        "font-display leading-none tabular-nums",
+                        lg ? "text-[36px]" : "text-[28px]",
+                      )}
                       style={{ color: PINK }}
                     >
                       {finalScore} pts
                     </div>
-                    <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/55">
+                    <div
+                      className={cn(
+                        "font-bold uppercase tracking-[0.28em] text-white/55",
+                        lg ? "text-[13px]" : "text-[10px]",
+                      )}
+                    >
                       Final score
                     </div>
                   </div>
                   {finalTier && (
                     <div
                       data-testid="final-level"
-                      className="mt-1 flex flex-col items-center gap-1 border px-5 py-3"
+                      className={cn(
+                        "mt-1 flex flex-col items-center gap-1 border",
+                        lg ? "px-6 py-4" : "px-5 py-3",
+                      )}
                       style={{ borderColor: PINK }}
                     >
                       <span
-                        className="text-[11px] font-black uppercase tracking-[0.24em]"
+                        className={cn(
+                          "font-black uppercase tracking-[0.24em]",
+                          lg ? "text-[14px]" : "text-[11px]",
+                        )}
                         style={{ color: PINK }}
                       >
                         {finalTier.label} · Tier {finalTier.level} / 3
                       </span>
                       {finalTier.gainDescription && (
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
+                        <span
+                          className={cn(
+                            "font-bold uppercase tracking-[0.2em] text-white/70",
+                            lg ? "text-[13px]" : "text-[10px]",
+                          )}
+                        >
                           {finalTier.gainDescription}
                         </span>
                       )}
                     </div>
                   )}
                   {ticketCode && (
-                    <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.32em] text-white/55">
+                    <div
+                      className={cn(
+                        "mt-1 font-bold uppercase tracking-[0.32em] text-white/55",
+                        lg ? "text-[13px]" : "text-[10px]",
+                      )}
+                    >
                       Ticket&nbsp;<span className="text-white" data-testid="ticket-code">{ticketCode}</span>
                     </div>
                   )}
                   {config.trackWrongAttempts && (
-                    <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/45">
+                    <div
+                      className={cn(
+                        "font-bold uppercase tracking-[0.24em] text-white/45",
+                        lg ? "text-[13px]" : "text-[10px]",
+                      )}
+                    >
                       Misses: {wrongAttempts}
                     </div>
                   )}
                 </>
               )}
 
-              <div className="flex flex-wrap items-center justify-center gap-3">
+              <div
+                className={cn(
+                  "flex flex-wrap items-center justify-center",
+                  lg ? "gap-4" : "gap-3",
+                )}
+              >
                 <MotionButton
                   onClick={status === "idle" ? showRules : startPlay}
-                  className="wordmark px-14 py-4 text-[12px] border-2 border-black"
+                  className={cn(
+                    "wordmark border-2 border-black",
+                    // Kiosk size=lg: idle Start ~1.56× (30%+20%); other CTAs ~30%. Else = default. Sitech Industries.
+                    lg && status === "idle"
+                      ? "px-[5.46rem] py-6 text-[19px]"
+                      : lg
+                        ? "px-[4.55rem] py-5 text-[16px]"
+                        : "px-14 py-4 text-[12px]",
+                  )}
                   style={{ backgroundColor: status === "idle" ? "#fff" : PINK, color: "#000" }}
                 >
                   {status === "idle" ? "START TO ORDER" : status === "rules" ? "Play now" : "Play again"}
@@ -784,7 +1008,12 @@ export function GameBoard() {
                 {status === "rules" && (
                   <MotionButton
                     onClick={goHome}
-                    className="wordmark px-10 py-4 text-[12px] border border-white/30 text-white"
+                    className={cn(
+                      "wordmark border border-white/30 text-white",
+                      lg
+                        ? "px-[3.25rem] py-5 text-[16px]"
+                        : "px-10 py-4 text-[12px]",
+                    )}
                     style={{ backgroundColor: "transparent" }}
                   >
                     Back
@@ -797,7 +1026,12 @@ export function GameBoard() {
                       (finalTier || config.printNoRewardTicketEnabled) && (
                         <MotionButton
                           onClick={printTicket}
-                          className="wordmark px-10 py-4 text-[12px]"
+                          className={cn(
+                            "wordmark",
+                            lg
+                              ? "px-[3.25rem] py-5 text-[16px]"
+                              : "px-10 py-4 text-[12px]",
+                          )}
                           style={{ backgroundColor: "#fff", color: "#000" }}
                           data-testid="print-ticket"
                         >
@@ -806,7 +1040,12 @@ export function GameBoard() {
                       )}
                     <MotionButton
                       onClick={goHome}
-                      className="wordmark px-10 py-4 text-[12px] border border-white/30 text-white"
+                      className={cn(
+                        "wordmark border border-white/30 text-white",
+                        lg
+                          ? "px-[3.25rem] py-5 text-[16px]"
+                          : "px-10 py-4 text-[12px]",
+                      )}
                       style={{ backgroundColor: "transparent" }}
                     >
                       Home
