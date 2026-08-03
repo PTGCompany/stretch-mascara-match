@@ -1,9 +1,10 @@
 /**
  * In-store hardware kiosk launch helpers (?kiosk=true&size=sm|lg).
  *
- * Owned by the kiosk/hardware team — not Lovable product UI. Do not remove or
+ * Owned by Sitech Industries — not Lovable product UI. Do not remove or
  * “simplify” away: venue Chromium opens with these query params. Size presets
- * are reserved (sm|lg parsed only; gameplay presets TBD).
+ * are reserved (sm|lg parsed only; gameplay presets TBD). If navigation stops
+ * preserving `kiosk`/`size` on the query string, tell Sitech Industries.
  */
 import { loadConfig, type GameConfig } from "@/lib/game-config";
 

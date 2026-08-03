@@ -24,12 +24,16 @@ const AUTO_HOME_MS = 10_000; // Venue kiosk: return to idle after auto-print (in
 /**
  * Guest ticket / browser print / Download PDF width (partner-owned look).
  * Keep 80 mm + bordered art — do not “align” this to the kiosk thermal width.
+ * Sitech Industries owns the Star/thermal path; if ticket size or framing changes
+ * for guests, they can edit `.ticket-source` freely — check with Sitech Industries
+ * only if unsure whether hardware print will still match.
  */
 const TICKET_GUEST_WIDTH_MM = 80;
 /**
  * Kiosk Star printable width only (?kiosk=true thermal twin). Physical roll is
  * 80 mm; Star prints 72 mm. Unused side margin on the roll is the page edge —
  * do not draw a black border on the thermal twin as a fake frame.
+ * Owned by Sitech Industries — do not restyle to match the guest ticket.
  */
 const TICKET_THERMAL_WIDTH_MM = 72;
 
@@ -57,6 +61,8 @@ const PRINT_AGENT_TIMEOUT_MS = 15000;
  *   Never fall back to window.print() on the venue (dialog flash / Save as PDF).
  * Otherwise: window.print() on the guest `.ticket-source` (original behaviour).
  * Do not merge thermal DOM into the guest on-screen preview.
+ * Sitech Industries owns the kiosk branch of this function — leave it alone
+ * unless changing guest Print behaviour; then double-check with them.
  */
 async function printTicket(opts?: { kiosk?: boolean }): Promise<void> {
   const kiosk =
@@ -297,7 +303,15 @@ function PrintTicketPage() {
             background: #fff !important;
           }
         }
-        /* Hide the source ticket off-screen — used to rasterize preview / PDF. */
+        /*
+          Guest / PDF / window.print ticket — partner-owned visual design.
+          Edit freely for Lovable/web. A separate `.ticket-thermal` twin exists
+          for venue Star printers (?kiosk=true only). Layout/CSS changes here do
+          NOT update the thermal twin — if paper tickets must match a redesign,
+          flag Sitech Industries. Logo: `sephora-ticket-logo-new` (+ crop rules
+          on the thermal side); CDN `__l5e` game art is installed on the kiosk
+          separately when assets change.
+        */
         .ticket-source {
           position: absolute;
           left: -10000px;
@@ -342,6 +356,10 @@ function PrintTicketPage() {
           (html2canvas clips otherwise); open letterforms via word-spacing /
           spacing ticketCode characters in the DOM instead.
           Tier/code/foot use extra bottom padding so optical centre survives capture.
+          Owned by Sitech Industries — do not delete, merge into .ticket-source,
+          or “simplify” away. New ticket fields/copy/rows must be mirrored here
+          (and often in the header/body split) or the paper ticket will drift;
+          check with Sitech Industries if unsure.
         */
         .ticket-thermal {
           position: absolute;
@@ -520,7 +538,7 @@ function PrintTicketPage() {
         }
       `}</style>
 
-      {/* Guest / PDF source — unchanged visual language */}
+      {/* Guest / PDF source — partner visual language; see .ticket-source comment */}
       <div className="ticket-source" aria-hidden="true">
         <div className="ticket" data-testid="print-ticket-body">
           <div className="brand" data-testid="ticket-brand">
@@ -569,7 +587,12 @@ function PrintTicketPage() {
         </div>
       </div>
 
-      {/* Kiosk Star twin — only mounted when ?kiosk=true; not shown to guests */}
+      {/*
+        Star twin — Sitech Industries. Mounted only with ?kiosk=true.
+        Keep field bindings in sync with .ticket-source (Date / pairs / score /
+        reward / tier / code / footer). Renaming session/config keys or adding
+        rows? Tell Sitech Industries so paper capture stays correct.
+      */}
       {kiosk && (
         <div className="ticket-thermal" aria-hidden="true">
           <div className="th-header" data-testid="thermal-ticket-header">
