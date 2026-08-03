@@ -1,8 +1,9 @@
 /**
  * In-store hardware kiosk launch helpers (?kiosk=true&size=sm|lg).
  *
- * Owned by Sitech Industries (kiosk/hardware) — not Lovable product UI.
- * Do not remove or “simplify” away: venue Chromium opens with these query params.
+ * Owned by Sitech Industries — not Lovable product UI. Do not remove or
+ * “simplify” away: venue Chromium opens with these query params. If navigation
+ * stops preserving `kiosk`/`size` on the query string, tell Sitech Industries.
  *
  * size=sm | absent | unrecognised → same UI as before this kiosk work (default).
  * size=lg → GameBoard scales selected chrome ~30% via layout-token ternaries
