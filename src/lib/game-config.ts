@@ -38,6 +38,9 @@ export type GameConfig = {
  * Reward tiers based on `pairsFound` (not raw score) so a time bonus never
  * bumps a lower pair count into a higher tier. 0 pairs = no-reward and is
  * handled at render time, not as a tier.
+ * Ticket print (guest + Sitech Industries Star twin) reads label/message/
+ * rewardProductName and `finalWinLevel` — changing tier count or field names
+ * may need a twin update; check with Sitech Industries if unsure.
  */
 export const DEFAULT_WIN_LEVELS: WinLevel[] = [
   {
@@ -92,10 +95,16 @@ export const DEFAULT_CONFIG: GameConfig = {
   printNoRewardTicketEnabled: false,
   // Default off for Lovable/web preview. Hardware kiosk forces on via ?kiosk=true
   // (see kiosk-launch resolveConfig). Admin can also enable for lab testing.
+  // Sitech Industries relies on this + ?kiosk=true — do not remove the field.
   autoPrintEnabled: false,
+  // Printed on guest PDF and Star thermal. Wording changes are fine; if you
+  // change length a lot or remove the field, check with Sitech Industries.
   ticketFooterText: "PICK UP YOUR ORDER!",
   ticketBrandTitle: "SEPHORA DELI",
   ticketBrandFallbackText: "SEPHORA DELI",
+  // On-screen / config logo path (__l5e). Ticket PNG is separate:
+  // assets/sephora-ticket-logo-new — swapping ticket art needs Sitech Industries
+  // (thermal crop + OptiPlex local backup asset install).
   sephoraDeliLogoUrl: "/__l5e/assets-v1/72bf6f6a-492a-4d63-9dde-a4c41a951b75/sephora-deli-stacked.png",
 };
 

@@ -136,9 +136,9 @@ p, .text-balance-pretty {
 
 
 /*
-  Legacy print rules for unused #sephora-ticket. Live ticket printing is owned by
-  print.game.$sessionId.tsx (TICKET_WIDTH_MM = 72). Keep these aligned so a future
-  prompt does not revive 80mm / non-zero margins here by mistake.
+  Legacy print rules for unused #sephora-ticket. Live guest printing lives in
+  print.game.$sessionId.tsx (TICKET_GUEST_WIDTH_MM = 80, bordered ticket).
+  Kiosk Star thermal is a separate twin at 72 mm — do not “unify” these widths.
 */
 @media print {
   body * { visibility: hidden !important; }
@@ -147,11 +147,11 @@ p, .text-balance-pretty {
     position: fixed !important;
     inset: 0 !important;
     margin: 0 !important;
-    width: 72mm !important;
+    width: 80mm !important;
     border: none !important;
     box-shadow: none !important;
     background: white !important;
     color: black !important;
   }
-  @page { size: 72mm auto; margin: 0; }
+  @page { size: 80mm auto; margin: 4mm; }
 }
