@@ -36,17 +36,23 @@ const TICKET_WIDTH_MM = 72;
  * Do not change the port without updating ~/kiosk/bin/print-agent on the kiosk.
  */
 const PRINT_AGENT_URL = "http://127.0.0.1:3091/print";
-const PRINT_AGENT_TIMEOUT_MS = 3000;
+/** Agent should ACK quickly; allow headroom for PNG upload + queue. */
+const PRINT_AGENT_TIMEOUT_MS = 15000;
 
 /**
  * Only call site for printing a ticket (auto-print and the Print button).
  *
  * Kiosk path: POST ticket PNG to the local CUPS agent — no Chrome print dialog.
- * Fallback: window.print() only if the agent is unreachable (dev laptop / agent down).
- * Do not scatter extra window.print() calls on this page. Do not “fix” this by
- * restoring dialog-based printing as the primary kiosk path.
+ * Fallback window.print() only when the agent is unreachable (network error /
+ * timeout) AND we are not in kiosk mode. Never open the print dialog on the
+ * venue kiosk: a failed agent print is better than a stuck empty dialog.
+ * Do not scatter extra window.print() calls on this page.
  */
 async function printTicket(pngDataUrl?: string | null): Promise<void> {
+  const kiosk =
+    typeof window !== "undefined" &&
+    /(?:^|[?&])kiosk(?:=true|=1|=)?(?:&|$)/i.test(window.location.search);
+
   let dataUrl = pngDataUrl ?? null;
   if (!dataUrl) {
     const node = document.querySelector<HTMLElement>('[data-testid="print-ticket-body"]');
@@ -61,25 +67,31 @@ async function printTicket(pngDataUrl?: string | null): Promise<void> {
     }
   }
 
-  if (dataUrl) {
-    try {
-      const blob = await (await fetch(dataUrl)).blob();
-      const ctrl = new AbortController();
-      const timer = window.setTimeout(() => ctrl.abort(), PRINT_AGENT_TIMEOUT_MS);
-      const res = await fetch(PRINT_AGENT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "image/png" },
-        body: blob,
-        signal: ctrl.signal,
-      });
-      window.clearTimeout(timer);
-      if (res.ok) return;
-    } catch {
-      /* agent down or timed out — fall through */
-    }
+  if (!dataUrl) {
+    if (!kiosk) window.print();
+    return;
   }
 
-  window.print();
+  try {
+    const blob = await (await fetch(dataUrl)).blob();
+    const ctrl = new AbortController();
+    const timer = window.setTimeout(() => ctrl.abort(), PRINT_AGENT_TIMEOUT_MS);
+    const res = await fetch(PRINT_AGENT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "image/png" },
+      body: blob,
+      signal: ctrl.signal,
+    });
+    window.clearTimeout(timer);
+    if (res.ok) return;
+    // Agent reachable but CUPS/job failed — do not open a print dialog on kiosk.
+    console.error("[printTicket] agent error", res.status, await res.text().catch(() => ""));
+    if (!kiosk) window.print();
+    return;
+  } catch (e) {
+    console.error("[printTicket] agent unreachable", e);
+    if (!kiosk) window.print();
+  }
 }
 
 function PrintTicketPage() {
