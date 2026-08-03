@@ -2,9 +2,18 @@
  * In-store hardware kiosk launch helpers (?kiosk=true&size=sm|lg).
  *
  * Owned by Sitech Industries — not Lovable product UI. Do not remove or
- * “simplify” away: venue Chromium opens with these query params. Size presets
- * are reserved (sm|lg parsed only; gameplay presets TBD). If navigation stops
- * preserving `kiosk`/`size` on the query string, tell Sitech Industries.
+ * “simplify” away: venue Chromium opens with these query params. If navigation
+ * stops preserving `kiosk`/`size` on the query string, tell Sitech Industries.
+ *
+ * size=sm | absent | unrecognised → same UI as before this kiosk work (default).
+ * size=lg → GameBoard scales selected chrome ~30% via layout-token ternaries
+ * (`lg ? … : default`). Idle “START TO ORDER” is ~56% (30% + extra 20%).
+ * Ticket route is intentionally not size-scaled.
+ *
+ * Lovable / design AI: keep the `lg === false` / non-`size=lg` classes as the
+ * product default. If you change type, padding, or layout on GameBoard, also
+ * update the paired `lg ? …` branch (~+30% of the new default) — or flag the
+ * change and check with Sitech Industries before shipping.
  */
 import { loadConfig, type GameConfig } from "@/lib/game-config";
 
