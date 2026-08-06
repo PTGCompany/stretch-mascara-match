@@ -305,11 +305,11 @@ function PrintTicketPage() {
         }
         /*
           Guest / PDF / window.print ticket — partner-owned visual design.
-          Edit freely for Lovable/web. A separate `.ticket-thermal` twin exists
+          Edit freely for Lovable/web. A separate .ticket-thermal twin exists
           for venue Star printers (?kiosk=true only). Layout/CSS changes here do
           NOT update the thermal twin — if paper tickets must match a redesign,
-          flag Sitech Industries. Logo: `sephora-ticket-logo-new` (+ crop rules
-          on the thermal side); CDN `__l5e` game art is installed on the kiosk
+          flag Sitech Industries. Logo: sephora-ticket-logo-new (+ crop rules
+          on the thermal side); CDN __l5e game art is installed on the kiosk
           separately when assets change.
         */
         .ticket-source {
