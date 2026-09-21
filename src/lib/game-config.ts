@@ -210,16 +210,50 @@ export function saveSession(s: GameSession) {
   const all = loadSessions();
   all.unshift(s);
   localStorage.setItem(SESS_KEY, JSON.stringify(all.slice(0, 500)));
+  postKioskSession(s);
 }
 
 export function updateSessionPrintStatus(id: string, printStatus: PrintStatus) {
   const all = loadSessions();
   const next = all.map((s) => (s.id === id ? { ...s, printStatus } : s));
   localStorage.setItem(SESS_KEY, JSON.stringify(next));
+  const row = next.find((s) => s.id === id);
+  if (row) postKioskSession(row);
 }
 
 export function clearSessions() {
   localStorage.removeItem(SESS_KEY);
+}
+
+const KIOSK_SESSION_URL = "http://127.0.0.1:3091/session";
+const KIOSK_CLEAR_URL = "http://127.0.0.1:3091/session-clear-pending";
+
+function isKioskBrowser(): boolean {
+  if (typeof window === "undefined") return false;
+  const k = new URLSearchParams(window.location.search).get("kiosk");
+  return k === "true" || k === "1" || k === "";
+}
+
+function postKioskSession(s: GameSession) {
+  if (!isKioskBrowser()) return;
+  void fetch(KIOSK_SESSION_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(s),
+  }).catch(() => {});
+}
+
+/** Kiosk-only: honour USB clear_stats after Chromium restart. */
+export async function consumeKioskClearPending(): Promise<void> {
+  if (!isKioskBrowser()) return;
+  try {
+    const res = await fetch(KIOSK_CLEAR_URL, { cache: "no-store" });
+    if (!res.ok) return;
+    const data = (await res.json()) as { clear?: boolean };
+    if (data && data.clear) clearSessions();
+  } catch {
+    // Agent down — keep localStorage
+  }
 }
 
 export function generateTicketCode(): string {

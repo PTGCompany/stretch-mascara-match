@@ -12,6 +12,7 @@ import {
 import {
   saveSession,
   updateSessionPrintStatus,
+  consumeKioskClearPending,
   computeWinLevel,
   computeScore,
   generateTicketCode,
@@ -78,6 +79,10 @@ export function GameBoard() {
   const startedAt = useRef<number>(0);
   const flipTimerRef = useRef<number | null>(null);
   const sessionSavedRef = useRef(false);
+
+  useEffect(() => {
+    void consumeKioskClearPending();
+  }, []);
 
   const liveScore = useMemo(
     () => computeScore(pairsFound, timeRemaining, config),
