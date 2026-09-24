@@ -1002,7 +1002,7 @@ export function GameBoard() {
                   )}
                   style={{ backgroundColor: status === "idle" ? "#fff" : PINK, color: "#000" }}
                 >
-                  {status === "idle" ? "START ORDER" : status === "rules" ? "Play now" : "Play again"}
+                  {status === "idle" ? "START TO ORDER" : status === "rules" ? "Play now" : "Play again"}
                 </MotionButton>
 
                 {status === "rules" && (
