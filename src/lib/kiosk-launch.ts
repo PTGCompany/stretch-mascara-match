@@ -9,6 +9,7 @@
  * size=lg → GameBoard scales selected chrome ~30% via layout-token ternaries
  * (`lg ? … : default`). Idle “START TO ORDER” is ~56% (30% + extra 20%).
  * Ticket route is intentionally not size-scaled.
+ * Browsers that are not the venue kiosk ignore these params.
  *
  * Lovable / design AI: keep the `lg === false` / non-`size=lg` classes as the
  * product default. If you change type, padding, or layout on GameBoard, also
