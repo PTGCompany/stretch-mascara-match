@@ -206,19 +206,23 @@ export function findSession(id: string): GameSession | null {
   return loadSessions().find((s) => s.id === id) ?? null;
 }
 
-export function saveSession(s: GameSession) {
+export function saveSession(s: GameSession, kiosk?: boolean) {
   const all = loadSessions();
   all.unshift(s);
   localStorage.setItem(SESS_KEY, JSON.stringify(all.slice(0, 500)));
-  postKioskSession(s);
+  postKioskSession(s, kiosk);
 }
 
-export function updateSessionPrintStatus(id: string, printStatus: PrintStatus) {
+export function updateSessionPrintStatus(
+  id: string,
+  printStatus: PrintStatus,
+  kiosk?: boolean,
+) {
   const all = loadSessions();
   const next = all.map((s) => (s.id === id ? { ...s, printStatus } : s));
   localStorage.setItem(SESS_KEY, JSON.stringify(next));
   const row = next.find((s) => s.id === id);
-  if (row) postKioskSession(row);
+  if (row) postKioskSession(row, kiosk);
 }
 
 export function clearSessions() {
@@ -233,8 +237,9 @@ function isKioskBrowser(): boolean {
   return k === "true" || k === "1" || k === "";
 }
 
-function postKioskSession(s: GameSession) {
-  if (!isKioskBrowser()) return;
+function postKioskSession(s: GameSession, kiosk?: boolean) {
+  // Router search can still say kiosk after the address bar has dropped it.
+  if (!(kiosk ?? isKioskBrowser())) return;
   void fetch(KIOSK_SESSION_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
