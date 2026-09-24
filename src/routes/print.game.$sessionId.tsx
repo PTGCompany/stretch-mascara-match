@@ -184,10 +184,10 @@ function PrintTicketPage() {
       const canvas = await captureGuestTicketCanvas();
       if (!canvas) return;
       setPreviewImg(canvas.toDataURL("image/png"));
-      updateSessionPrintStatus(session.id, "PRINTED");
+      updateSessionPrintStatus(session.id, "PRINTED", kiosk);
     } catch (e) {
       setBuildError(e instanceof Error ? e.message : "Failed to build ticket");
-      updateSessionPrintStatus(session.id, "FAILED");
+      updateSessionPrintStatus(session.id, "FAILED", kiosk);
     } finally {
       setBuilding(false);
     }
@@ -217,9 +217,9 @@ function PrintTicketPage() {
       const built = await buildPdf();
       if (!built) return;
       built.pdf.save(`sephora-ticket-${session.ticketCode}.pdf`);
-      updateSessionPrintStatus(session.id, "PRINTED");
+      updateSessionPrintStatus(session.id, "PRINTED", kiosk);
     } catch {
-      if (session) updateSessionPrintStatus(session.id, "FAILED");
+      if (session) updateSessionPrintStatus(session.id, "FAILED", kiosk);
     }
   };
 

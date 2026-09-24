@@ -149,29 +149,32 @@ export function GameBoard() {
       const score = computeScore(finalPairs, finalTimeRemaining, config);
       const id = crypto.randomUUID();
       const code = generateTicketCode();
-      saveSession({
-        id,
-        pairsFound: finalPairs,
-        totalPairs,
-        wrongAttempts: finalWrong,
-        finalWinLevel: tier?.level ?? null,
-        rewardTierLabel: tier?.label ?? null,
-        rewardTierMessage: tier?.message ?? null,
-        rewardProductName: tier?.rewardProductName ?? null,
-        score,
-        timeRemaining: finalTimeRemaining,
-        durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
-        ticketCode: code,
-        printStatus: "NOT_REQUESTED",
-        completedReason: reason,
-        createdAt: Date.now(),
-      });
+      saveSession(
+        {
+          id,
+          pairsFound: finalPairs,
+          totalPairs,
+          wrongAttempts: finalWrong,
+          finalWinLevel: tier?.level ?? null,
+          rewardTierLabel: tier?.label ?? null,
+          rewardTierMessage: tier?.message ?? null,
+          rewardProductName: tier?.rewardProductName ?? null,
+          score,
+          timeRemaining: finalTimeRemaining,
+          durationSeconds: Math.round((Date.now() - startedAt.current) / 1000),
+          ticketCode: code,
+          printStatus: "NOT_REQUESTED",
+          completedReason: reason,
+          createdAt: Date.now(),
+        },
+        kiosk,
+      );
       setSessionId(id);
       setTicketCode(code);
       setCompletedReason(reason);
       setStatus(reason === "PERFECT_SCORE" ? "completed" : "timeout");
     },
-    [config, totalPairs],
+    [config, totalPairs, kiosk],
   );
 
   const onTapCard = (idx: number) => {
@@ -277,10 +280,10 @@ export function GameBoard() {
 
   const printTicket = useCallback(() => {
     if (!sessionId) return;
-    updateSessionPrintStatus(sessionId, "REQUESTED");
+    updateSessionPrintStatus(sessionId, "REQUESTED", kiosk);
     // Must keep ?kiosk=&size= or the ticket page drops out of auto-print mode.
     window.location.assign(withLaunchSearch(`/print/game/${sessionId}`, searchStr));
-  }, [sessionId, searchStr]);
+  }, [sessionId, searchStr, kiosk]);
 
   const gridStyle: React.CSSProperties = {
     gridTemplateColumns: `repeat(${config.gridCols}, minmax(0, 1fr))`,
