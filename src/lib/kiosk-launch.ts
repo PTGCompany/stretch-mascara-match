@@ -7,7 +7,7 @@
  *
  * size=sm | absent | unrecognised → same UI as before this kiosk work (default).
  * size=lg → GameBoard scales selected chrome ~30% via layout-token ternaries
- * (`lg ? … : default`). Idle “START TO ORDER” is ~56% (30% + extra 20%).
+ * (`lg ? … : default`). Idle “START ORDER” is ~56% (30% + extra 20%).
  * Ticket route is intentionally not size-scaled.
  *
  * Lovable / design AI: keep the `lg === false` / non-`size=lg` classes as the
