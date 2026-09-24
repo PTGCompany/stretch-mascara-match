@@ -230,6 +230,7 @@ export function clearSessions() {
 }
 
 const KIOSK_SESSION_URL = "http://127.0.0.1:3091/session";
+const KIOSK_SEEN_KEY = "sephora-kiosk-seen";
 
 function isKioskBrowser(): boolean {
   if (typeof window === "undefined") return false;
@@ -237,12 +238,32 @@ function isKioskBrowser(): boolean {
   return k === "true" || k === "1" || k === "";
 }
 
+function rememberKiosk(): void {
+  try {
+    sessionStorage.setItem(KIOSK_SEEN_KEY, "1");
+  } catch {
+    // private mode
+  }
+}
+
+function kioskSeen(): boolean {
+  try {
+    return sessionStorage.getItem(KIOSK_SEEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
 function postKioskSession(s: GameSession, kiosk?: boolean) {
-  // Router search can still say kiosk after the address bar has dropped it.
-  if (!(kiosk ?? isKioskBrowser())) return;
+  // A false flag from the router must not hide ?kiosk=true, or a launch
+  // already seen in this tab. Non-kiosk browsers never set either.
+  if (kiosk || isKioskBrowser()) rememberKiosk();
+  if (!(kiosk || isKioskBrowser() || kioskSeen())) return;
+  // text/plain is a simple CORS request. application/json is preflighted
+  // and Chromium was dropping it before the print agent saw it.
   void fetch(KIOSK_SESSION_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "text/plain" },
     body: JSON.stringify(s),
   }).catch(() => {});
 }
