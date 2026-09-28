@@ -90,7 +90,7 @@ export const DEFAULT_CONFIG: GameConfig = {
   timeBonusEnabled: true,
   timeBonusPointsPerSecond: 10,
   winLevels: DEFAULT_WIN_LEVELS,
-  brandColor: "#ed6f7e",
+  brandColor: "#ff808b",
   ticketPrintingEnabled: true,
   printNoRewardTicketEnabled: false,
   // Default off for Lovable/web preview. Hardware kiosk forces on via ?kiosk=true

@@ -327,8 +327,8 @@ function PrintTicketPage() {
         .ticket-source .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dotted #999; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
         .ticket-source .row .k { color: #555; font-weight: 700; }
         .ticket-source .row .v { font-weight: 900; }
-        .ticket-source .tier { margin-top: 12px; padding: 12px; border: 2px solid #ed6f7e; text-align: center; }
-        .ticket-source .tier .t { font-size: 11px; letter-spacing: .28em; font-weight: 900; color: #ed6f7e; text-transform: uppercase; }
+        .ticket-source .tier { margin-top: 12px; padding: 12px; border: 2px solid #ff808b; text-align: center; }
+        .ticket-source .tier .t { font-size: 11px; letter-spacing: .28em; font-weight: 900; color: #ff808b; text-transform: uppercase; }
         .ticket-source .tier .g { font-size: 14px; font-weight: 900; margin-top: 6px; text-transform: uppercase; letter-spacing: .16em; }
         .ticket-source .code { margin-top: 14px; text-align: center; font-family: 'Courier New', monospace; font-size: 18px; letter-spacing: .32em; font-weight: 900; border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 10px 0; }
         .ticket-source .foot-cta {

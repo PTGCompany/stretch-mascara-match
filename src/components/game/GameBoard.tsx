@@ -33,7 +33,7 @@ type CardVisual = "hidden" | "flipped" | "matched";
 type GameStatus = "idle" | "rules" | "playing" | "completed" | "timeout";
 
 
-const PINK = "#ed6f7e";
+const PINK = "#ff808b";
 
 function fmtTime(s: number) {
   const safe = Math.max(0, Math.floor(s));
@@ -291,12 +291,12 @@ export function GameBoard() {
   };
 
   return (
-    <div className={`relative mx-auto flex min-h-dvh w-full max-w-[min(100vw,calc(100dvh*9/16))] flex-col overflow-hidden text-white ${status === "idle" ? "bg-[#ed6f7e]" : "bg-black"}`}>
+    <div className={`relative mx-auto flex min-h-dvh w-full max-w-[min(100vw,calc(100dvh*9/16))] flex-col overflow-hidden text-white ${status === "idle" ? "bg-[#ff808b]" : "bg-black"}`}>
 
 
 
       {/* TOP MARQUEE */}
-      <div className={`relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20 ${status === "idle" ? "bg-[#ed6f7e]" : "bg-black"}`}>
+      <div className={`relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20 ${status === "idle" ? "bg-[#ff808b]" : "bg-black"}`}>
         <div
           className="relative flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
           style={{ animation: `betc-marquee ${MARQUEE.topSec}s linear infinite` }}
@@ -494,7 +494,7 @@ export function GameBoard() {
                               backgroundColor: "#ffffff",
                               color: "#000",
                               boxShadow: isMatched
-                                ? `0 0 0 2px ${PINK}, 0 10px 28px -8px rgba(237,111,126,0.55)`
+                                ? `0 0 0 2px ${PINK}, 0 10px 28px -8px rgba(255,128,139,0.55)`
                                 : "0 0 0 1px rgba(0,0,0,0.1)",
                             }}
                           >
@@ -606,7 +606,7 @@ export function GameBoard() {
                       isCurrent
                         ? {
                             borderColor: PINK,
-                            backgroundColor: "rgba(237,111,126,0.08)",
+                            backgroundColor: "rgba(255,128,139,0.08)",
                           }
                         : undefined
                     }
@@ -640,7 +640,7 @@ export function GameBoard() {
 
 
       {/* BOTTOM MARQUEE */}
-      <div className={`relative z-20 flex h-10 items-center overflow-hidden border-t border-white/20 ${status === "idle" ? "bg-[#ed6f7e]" : "bg-black"}`}>
+      <div className={`relative z-20 flex h-10 items-center overflow-hidden border-t border-white/20 ${status === "idle" ? "bg-[#ff808b]" : "bg-black"}`}>
         <div
           className="relative flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
           style={{
@@ -676,7 +676,7 @@ export function GameBoard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className={`absolute inset-0 z-30 flex flex-col items-center gap-6 pt-10 backdrop-blur-md ${status === "idle" ? "bg-[#ed6f7e]" : "bg-black/90"}`}
+            className={`absolute inset-0 z-30 flex flex-col items-center gap-6 pt-10 backdrop-blur-md ${status === "idle" ? "bg-[#ff808b]" : "bg-black/90"}`}
           >
             {status === "idle" && (
               <motion.div
@@ -716,7 +716,7 @@ export function GameBoard() {
                 lg
                   ? "max-w-[46.8rem] gap-8 px-10 py-[3.25rem] sm:px-[3.9rem]"
                   : "max-w-xl gap-6 px-8 py-10 sm:px-12",
-                status === "idle" ? "bg-[#ed6f7e]" : "bg-black",
+                status === "idle" ? "bg-[#ff808b]" : "bg-black",
               )}
             >
               <span
