@@ -6,8 +6,9 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, lazy, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { MotionButton } from "@/components/MotionButton";
 
 import appCss from "../styles.css?url";
