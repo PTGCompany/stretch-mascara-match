@@ -73,6 +73,9 @@ function ErrorFallback({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
+// TanStack Start expects a lazy route component for errorComponent.
+const ErrorComponent = lazy(async () => ({ default: ErrorFallback }));
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
