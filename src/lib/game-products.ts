@@ -26,7 +26,7 @@ export const PRODUCTS: Product[] = [
   { id: "p02", productId: "p02", productName: "OUTRAGEOUS PLUMP", productCategory: "LIPS", imageUrl: outrageousPlump.url, isHeroProduct: false },
   { id: "p03", productId: "p03", productName: "ALL THAT MATTE(R)S", productCategory: "EYE PALETTE", imageUrl: allThatMatters.url, isHeroProduct: false },
   { id: "p04", productId: "p04", productName: "BEST SKIN EVER MATTE", productCategory: "COMPLEXION", imageUrl: bseMatte.url, isHeroProduct: false },
-  { id: "p05", productId: "p05", productName: "BRIGHTENING MOCHI CLEANSER", productCategory: "SKINCARE", imageUrl: watchThatGlow.url, isHeroProduct: false },
+  { id: "p05", productId: "p05", productName: "WATCH THAT GLOW", productCategory: "SKINCARE", imageUrl: watchThatGlow.url, isHeroProduct: false },
   { id: "p06", productId: "p06", productName: "LIFT & FIRM SERUM", productCategory: "SKINCARE", imageUrl: liftFirm.url, isHeroProduct: false },
   { id: "p07", productId: "p07", productName: "JELLY TONER PADS GLOW", productCategory: "SKINCARE", imageUrl: jellyGlow.url, isHeroProduct: false },
   { id: "p08", productId: "p08", productName: "CLEAR & PURIFY TONER", productCategory: "SKINCARE", imageUrl: clearPurify.url, isHeroProduct: false },
