@@ -15,7 +15,14 @@ import {
 } from "@/lib/game-config";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Admin — Sephora Memory Game" }] }),
+  head: () => ({ meta: [
+    { title: "Admin — Sephora Collection Memory Game" },
+    { name: "description", content: "Manage the Sephora Collection memory game and view session results." },
+    { property: "og:title", content: "Admin — Sephora Collection Memory Game" },
+    { property: "og:description", content: "Manage the Sephora Collection memory game and view session results." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AdminPage,
 });
 

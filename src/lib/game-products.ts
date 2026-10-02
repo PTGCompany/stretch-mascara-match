@@ -1,13 +1,13 @@
 import allThatMatters from "@/assets/products/all-that-matters.jpg.asset.json";
 import jellySoothe from "@/assets/products/jelly-soothe.jpg.asset.json";
 import jellyGlow from "@/assets/products/jelly-glow.jpg.asset.json";
-import mochiCleanser from "@/assets/products/mochi-cleanser.jpg.asset.json";
+import watchThatGlow from "@/assets/products/watch-that-glow.jpg.asset.json";
 import clearPurify from "@/assets/products/clear-purify.jpg.asset.json";
 import stretchMascara from "@/assets/products/stretch-mascara.jpg.asset.json";
 import liftFirm from "@/assets/products/lift-firm.jpg.asset.json";
-import bseMatte from "@/assets/products/bse-matte.jpg.asset.json";
-import blushShimmer from "@/assets/products/blush-shimmer.jpg.asset.json";
-import outrageousPlump from "@/assets/products/outrageous-plump.jpg.asset.json";
+import bseMatte from "@/assets/products/best-skin-ever-matte-2.jpg.asset.json";
+import blushShimmer from "@/assets/products/blush-shimmer-2.jpg.asset.json";
+import outrageousPlump from "@/assets/products/outrageous-plump-2.jpg.asset.json";
 
 export type Product = {
   id: string;
@@ -26,7 +26,7 @@ export const PRODUCTS: Product[] = [
   { id: "p02", productId: "p02", productName: "OUTRAGEOUS PLUMP", productCategory: "LIPS", imageUrl: outrageousPlump.url, isHeroProduct: false },
   { id: "p03", productId: "p03", productName: "ALL THAT MATTE(R)S", productCategory: "EYE PALETTE", imageUrl: allThatMatters.url, isHeroProduct: false },
   { id: "p04", productId: "p04", productName: "BEST SKIN EVER MATTE", productCategory: "COMPLEXION", imageUrl: bseMatte.url, isHeroProduct: false },
-  { id: "p05", productId: "p05", productName: "BRIGHTENING MOCHI CLEANSER", productCategory: "SKINCARE", imageUrl: mochiCleanser.url, isHeroProduct: false },
+  { id: "p05", productId: "p05", productName: "BRIGHTENING MOCHI CLEANSER", productCategory: "SKINCARE", imageUrl: watchThatGlow.url, isHeroProduct: false },
   { id: "p06", productId: "p06", productName: "LIFT & FIRM SERUM", productCategory: "SKINCARE", imageUrl: liftFirm.url, isHeroProduct: false },
   { id: "p07", productId: "p07", productName: "JELLY TONER PADS GLOW", productCategory: "SKINCARE", imageUrl: jellyGlow.url, isHeroProduct: false },
   { id: "p08", productId: "p08", productName: "CLEAR & PURIFY TONER", productCategory: "SKINCARE", imageUrl: clearPurify.url, isHeroProduct: false },

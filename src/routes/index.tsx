@@ -16,6 +16,8 @@ export const Route = createFileRoute("/")({
         content:
           "4×5 board — 10 pairs to find — 5 reward tiers to unlock.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: GameBoard,

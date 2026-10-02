@@ -14,6 +14,11 @@ export const Route = createFileRoute("/print/game/$sessionId")({
     meta: [
       { title: "Print — Sephora Collection Reward Ticket" },
       { name: "robots", content: "noindex" },
+      { name: "description", content: "View and print your Sephora Collection game reward ticket." },
+      { property: "og:title", content: "Print — Sephora Collection Reward Ticket" },
+      { property: "og:description", content: "View and print your Sephora Collection game reward ticket." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: PrintTicketPage,
