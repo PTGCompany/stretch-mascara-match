@@ -36,12 +36,13 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorFallback({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
+function ErrorFallback({ error, reset }: ErrorComponentProps) {
+  const err = error instanceof Error ? error : new Error(String(error));
+  console.error(err);
   const router = useRouter();
   useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
+    reportLovableError(err, { boundary: "tanstack_root_error_component" });
+  }, [err]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -73,9 +74,6 @@ function ErrorFallback({ error, reset }: { error: Error; reset: () => void }) {
     </div>
   );
 }
-
-// TanStack Start expects a lazy route component for errorComponent.
-const ErrorComponent = lazy(async () => ({ default: ErrorFallback }));
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
