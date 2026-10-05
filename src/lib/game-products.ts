@@ -4,7 +4,7 @@ import jellyGlow from "@/assets/products/jelly-glow.jpg.asset.json";
 import watchThatGlow from "@/assets/products/watch-that-glow.jpg.asset.json";
 import clearPurify from "@/assets/products/clear-purify.jpg.asset.json";
 import stretchMascara from "@/assets/products/stretch-mascara.jpg.asset.json";
-import liftFirm from "@/assets/products/lift-firm.jpg.asset.json";
+import liftFirm from "@/assets/products/lift-and-firm-serum-2.jpg.asset.json";
 import bseMatte from "@/assets/products/best-skin-ever-matte-2.jpg.asset.json";
 import blushShimmer from "@/assets/products/blush-shimmer-2.jpg.asset.json";
 import outrageousPlump from "@/assets/products/outrageous-plump-2.jpg.asset.json";
