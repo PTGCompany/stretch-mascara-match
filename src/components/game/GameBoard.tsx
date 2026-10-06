@@ -33,7 +33,8 @@ type CardVisual = "hidden" | "flipped" | "matched";
 type GameStatus = "idle" | "rules" | "playing" | "completed" | "timeout";
 
 
-const PINK = "#ff808b";
+/** Screen match for the 177 C bag on the kiosk panel. */
+const PINK = "#ff8c7d";
 
 function fmtTime(s: number) {
   const safe = Math.max(0, Math.floor(s));
@@ -63,6 +64,25 @@ export function GameBoard() {
   const totalPairs = Math.min(config.totalPairs, Math.floor(total / 2));
 
   const [status, setStatus] = useState<GameStatus>("idle");
+  // Kiosk sm and lg are 1.5× the existing kiosk sizes. Non-kiosk stays on the default classes.
+  const buttonSize = (role: "primary" | "secondary") => {
+    if (!kiosk) {
+      if (role === "primary" && lg && status === "idle") return "px-[5.46rem] py-6 text-[19px]";
+      if (lg) {
+        return role === "primary"
+          ? "px-[4.55rem] py-5 text-[16px]"
+          : "px-[3.25rem] py-5 text-[16px]";
+      }
+      return role === "primary" ? "px-14 py-4 text-[12px]" : "px-10 py-4 text-[12px]";
+    }
+    if (role === "primary" && lg && status === "idle") {
+      return "px-[8.19rem] py-[2.25rem] text-[29px]";
+    }
+    if (role === "primary" && lg) return "px-[6.825rem] py-[1.875rem] text-[24px]";
+    if (role === "primary") return "px-[5.25rem] py-6 text-[18px]";
+    if (lg) return "px-[4.875rem] py-[1.875rem] text-[24px]";
+    return "px-[3.75rem] py-6 text-[18px]";
+  };
   const [cards, setCards] = useState<BoardCard[]>([]);
   const [cardStates, setCardStates] = useState<CardVisual[]>([]);
   const [flippedIds, setFlippedIds] = useState<number[]>([]);
@@ -251,6 +271,14 @@ export function GameBoard() {
     };
   }, []);
 
+  // Kiosk only: result screen (Play again / Print my ticket / Home) returns to idle after 20s.
+  useEffect(() => {
+    if (!kiosk) return;
+    if (status !== "completed" && status !== "timeout") return;
+    const id = window.setTimeout(goHome, 20_000);
+    return () => window.clearTimeout(id);
+  }, [kiosk, status, goHome]);
+
   const progress = useMemo(() => {
     if (status === "playing")
       return (timeRemaining / config.durationSeconds) * 100;
@@ -291,12 +319,12 @@ export function GameBoard() {
   };
 
   return (
-    <div className={`relative mx-auto flex min-h-dvh w-full max-w-[min(100vw,calc(100dvh*9/16))] flex-col overflow-hidden text-white ${status === "idle" ? "bg-[#ff808b]" : "bg-black"}`}>
+    <div className={`relative mx-auto flex min-h-dvh w-full max-w-[min(100vw,calc(100dvh*9/16))] flex-col overflow-hidden text-white ${status === "idle" ? "bg-[#ff8c7d]" : "bg-black"}`}>
 
 
 
       {/* TOP MARQUEE */}
-      <div className={`relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20 ${status === "idle" ? "bg-[#ff808b]" : "bg-black"}`}>
+      <div className={`relative z-20 flex h-10 items-center overflow-hidden border-b border-white/20 ${status === "idle" ? "bg-[#ff8c7d]" : "bg-black"}`}>
         <div
           className="relative flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
           style={{ animation: `betc-marquee ${MARQUEE.topSec}s linear infinite` }}
@@ -325,7 +353,11 @@ export function GameBoard() {
           {/* TOP — title + timer */}
           <section className="flex min-w-0 flex-col">
             <div className="flex items-start justify-between gap-3">
-              <SephoraCollectionLogo color="#ffffff" size={32} className="shrink-0" />
+              <SephoraCollectionLogo
+                color="#ffffff"
+                size={kiosk ? 80 : 32}
+                className="shrink-0"
+              />
               {/* Kiosk: invisible but clickable — lab can still open /admin without a visible cog */}
               <Link
                 to="/admin"
@@ -402,18 +434,28 @@ export function GameBoard() {
           </section>
 
           {/* CENTER — board */}
-          <section className="flex min-h-0 flex-1 items-center justify-center">
+          <section className="flex h-full min-h-0 items-center justify-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
               className="relative border border-white/15 bg-white/[0.04] p-2 backdrop-blur-sm sm:p-3"
-              style={{
-                aspectRatio: `${config.gridCols} / ${config.gridRows}`,
-                maxWidth: "100%",
-                maxHeight: "100%",
-                width: `min(100%, calc(100% * ${config.gridCols} / ${config.gridRows}))`,
-              }}
+              style={
+                kiosk
+                  ? {
+                      aspectRatio: `${config.gridCols} / ${config.gridRows}`,
+                      height: "100%",
+                      width: "auto",
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                    }
+                  : {
+                      aspectRatio: `${config.gridCols} / ${config.gridRows}`,
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                      width: `min(100%, calc(100% * ${config.gridCols} / ${config.gridRows}))`,
+                    }
+              }
             >
 
               <span className="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t" style={{ borderColor: PINK }} />
@@ -470,9 +512,11 @@ export function GameBoard() {
                             backfaceVisibility: "hidden",
                             WebkitBackfaceVisibility: "hidden",
                             backgroundColor: "#000",
-                            boxShadow: interactive
-                              ? "inset 0 0 0 1px rgba(255,255,255,0.4)"
-                              : "inset 0 0 0 1px rgba(255,255,255,0.12)",
+                            boxShadow: kiosk
+                              ? undefined
+                              : interactive
+                                ? "inset 0 0 0 1px rgba(255,255,255,0.4)"
+                                : "inset 0 0 0 1px rgba(255,255,255,0.12)",
                           }}
                         >
                           <SephoraToken />
@@ -494,7 +538,7 @@ export function GameBoard() {
                               backgroundColor: "#ffffff",
                               color: "#000",
                               boxShadow: isMatched
-                                ? `0 0 0 2px ${PINK}, 0 10px 28px -8px rgba(255,128,139,0.55)`
+                                ? `0 0 0 2px ${PINK}, 0 10px 28px -8px rgba(255,140,125,0.55)`
                                 : "0 0 0 1px rgba(0,0,0,0.1)",
                             }}
                           >
@@ -606,7 +650,7 @@ export function GameBoard() {
                       isCurrent
                         ? {
                             borderColor: PINK,
-                            backgroundColor: "rgba(255,128,139,0.08)",
+                            backgroundColor: "rgba(255,140,125,0.08)",
                           }
                         : undefined
                     }
@@ -640,7 +684,7 @@ export function GameBoard() {
 
 
       {/* BOTTOM MARQUEE */}
-      <div className={`relative z-20 flex h-10 items-center overflow-hidden border-t border-white/20 ${status === "idle" ? "bg-[#ff808b]" : "bg-black"}`}>
+      <div className={`relative z-20 flex h-10 items-center overflow-hidden border-t border-white/20 ${status === "idle" ? "bg-[#ff8c7d]" : "bg-black"}`}>
         <div
           className="relative flex shrink-0 items-center gap-10 whitespace-nowrap pl-10 will-change-transform"
           style={{
@@ -676,14 +720,18 @@ export function GameBoard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className={`absolute inset-0 z-30 flex flex-col items-center gap-6 pt-10 backdrop-blur-md ${status === "idle" ? "bg-[#ff808b]" : "bg-black/90"}`}
+            className={`absolute inset-0 z-30 flex flex-col items-center backdrop-blur-md ${kiosk && status === "idle" ? "" : "gap-6 pt-10"} ${status === "idle" ? "bg-[#ff8c7d]" : "bg-black/90"}`}
           >
+            {kiosk && status === "idle" && <div className="w-full flex-1" aria-hidden />}
             {status === "idle" && (
               <motion.div
                 // Keep opaque — fading this in from 0 clears the shell briefly
                 initial={false}
                 animate={{ opacity: 1 }}
-                className="flex w-full flex-1 items-center justify-center overflow-hidden"
+                className={cn(
+                  "flex w-full items-center justify-center overflow-hidden",
+                  kiosk ? "shrink-0" : "flex-1",
+                )}
                 style={{ backgroundColor: PINK }}
               >
                 {/* Kiosk size=lg (~30%): idle Deli logo. Else = default. Sitech Industries. */}
@@ -692,14 +740,27 @@ export function GameBoard() {
                   alt="Sephora Collection Deli — Made Fresh by Sephora Since 1996"
                   draggable={false}
                   className={cn(
-                    "h-full select-none object-contain object-center",
-                    lg ? "w-[72%] max-w-[468px]" : "w-[55%] max-w-[360px]",
+                    "select-none object-contain object-center",
+                    kiosk
+                      ? lg
+                        ? "h-auto w-full max-w-[702px]"
+                        : "h-auto w-[82.5%] max-w-[540px]"
+                      : lg
+                        ? "h-full w-[72%] max-w-[468px]"
+                        : "h-full w-[55%] max-w-[360px]",
                   )}
                   style={{ pointerEvents: "none" }}
                 />
               </motion.div>
             )}
             {/* Kiosk size=lg (~30%): overlay card + type/CTAs. Else = default. Sitech Industries. */}
+            <div
+              className={
+                kiosk && status === "idle"
+                  ? "flex w-full flex-1 items-center justify-center"
+                  : "contents"
+              }
+            >
             <motion.div
               key={status}
               initial={{ y: 18, opacity: 0, scale: 0.96 }}
@@ -712,11 +773,12 @@ export function GameBoard() {
                 delay: 0.05,
               }}
               className={cn(
-                "relative mx-6 my-auto flex w-full flex-col items-center border border-white/15 text-center",
+                "relative mx-6 flex w-full flex-col items-center border border-white/15 text-center",
+                kiosk && status === "idle" ? "my-0" : "my-auto",
                 lg
                   ? "max-w-[46.8rem] gap-8 px-10 py-[3.25rem] sm:px-[3.9rem]"
                   : "max-w-xl gap-6 px-8 py-10 sm:px-12",
-                status === "idle" ? "bg-[#ff808b]" : "bg-black",
+                status === "idle" ? "bg-[#ff8c7d]" : "bg-black",
               )}
             >
               <span
@@ -748,7 +810,7 @@ export function GameBoard() {
                 style={{ borderColor: PINK }}
               />
 
-              {status === "idle" && (
+              {status === "idle" && !kiosk && (
                 <>
                   <span
                     className={cn(
@@ -995,27 +1057,29 @@ export function GameBoard() {
                 <MotionButton
                   onClick={status === "idle" ? showRules : startPlay}
                   className={cn(
-                    "wordmark border-2 border-black",
+                    "wordmark border-black",
+                    kiosk ? "border-[3px]" : "border-2",
                     // Kiosk size=lg: idle Start ~1.56× (30%+20%); other CTAs ~30%. Else = default. Sitech Industries.
-                    lg && status === "idle"
-                      ? "px-[5.46rem] py-6 text-[19px]"
-                      : lg
-                        ? "px-[4.55rem] py-5 text-[16px]"
-                        : "px-14 py-4 text-[12px]",
+                    buttonSize("primary"),
                   )}
                   style={{ backgroundColor: status === "idle" ? "#fff" : PINK, color: "#000" }}
                 >
-                  {status === "idle" ? "START TO ORDER" : status === "rules" ? "Play now" : "Play again"}
+                  {status === "idle"
+                    ? kiosk
+                      ? "Order Now"
+                      : "START TO ORDER"
+                    : status === "rules"
+                      ? "Play now"
+                      : "Play again"}
                 </MotionButton>
 
                 {status === "rules" && (
                   <MotionButton
                     onClick={goHome}
                     className={cn(
-                      "wordmark border border-white/30 text-white",
-                      lg
-                        ? "px-[3.25rem] py-5 text-[16px]"
-                        : "px-10 py-4 text-[12px]",
+                      "wordmark border-white/30 text-white",
+                      kiosk ? "border-[1.5px]" : "border",
+                      buttonSize("secondary"),
                     )}
                     style={{ backgroundColor: "transparent" }}
                   >
@@ -1029,12 +1093,7 @@ export function GameBoard() {
                       (finalTier || config.printNoRewardTicketEnabled) && (
                         <MotionButton
                           onClick={printTicket}
-                          className={cn(
-                            "wordmark",
-                            lg
-                              ? "px-[3.25rem] py-5 text-[16px]"
-                              : "px-10 py-4 text-[12px]",
-                          )}
+                          className={cn("wordmark", buttonSize("secondary"))}
                           style={{ backgroundColor: "#fff", color: "#000" }}
                           data-testid="print-ticket"
                         >
@@ -1044,10 +1103,9 @@ export function GameBoard() {
                     <MotionButton
                       onClick={goHome}
                       className={cn(
-                        "wordmark border border-white/30 text-white",
-                        lg
-                          ? "px-[3.25rem] py-5 text-[16px]"
-                          : "px-10 py-4 text-[12px]",
+                        "wordmark border-white/30 text-white",
+                        kiosk ? "border-[1.5px]" : "border",
+                        buttonSize("secondary"),
                       )}
                       style={{ backgroundColor: "transparent" }}
                     >
@@ -1058,6 +1116,17 @@ export function GameBoard() {
               </div>
 
             </motion.div>
+            </div>
+            {kiosk && status === "idle" && (
+              <span
+                className={cn(
+                  "absolute inset-x-0 bottom-8 text-center font-bold uppercase tracking-[0.32em] text-white",
+                  lg ? "text-[13px]" : "text-[10px]",
+                )}
+              >
+                Sephora Collection · Memory Game
+              </span>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

@@ -7,6 +7,7 @@ import {
   type GameSession,
 } from "@/lib/game-config";
 import { getKioskLaunch, resolveConfig, withLaunchSearch } from "@/lib/kiosk-launch";
+import { cn } from "@/lib/utils";
 import ticketLogoAsset from "@/assets/sephora-ticket-logo-new.png.asset.json";
 
 export const Route = createFileRoute("/print/game/$sessionId")({
@@ -129,7 +130,8 @@ async function printTicket(opts?: { kiosk?: boolean }): Promise<void> {
 function PrintTicketPage() {
   const { sessionId } = useParams({ from: "/print/game/$sessionId" });
   const searchStr = useRouterState({ select: (s) => s.location.searchStr });
-  const kiosk = getKioskLaunch(searchStr).kiosk;
+  const { kiosk, size } = getKioskLaunch(searchStr);
+  const lg = size === "lg";
   const [session, setSession] = useState<GameSession | null>(null);
   const [config, setConfig] = useState<GameConfig | null>(null);
   const [ready, setReady] = useState(false);
@@ -332,8 +334,8 @@ function PrintTicketPage() {
         .ticket-source .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dotted #999; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
         .ticket-source .row .k { color: #555; font-weight: 700; }
         .ticket-source .row .v { font-weight: 900; }
-        .ticket-source .tier { margin-top: 12px; padding: 12px; border: 2px solid #ff808b; text-align: center; }
-        .ticket-source .tier .t { font-size: 11px; letter-spacing: .28em; font-weight: 900; color: #ff808b; text-transform: uppercase; }
+        .ticket-source .tier { margin-top: 12px; padding: 12px; border: 2px solid #ff8c7d; text-align: center; }
+        .ticket-source .tier .t { font-size: 11px; letter-spacing: .28em; font-weight: 900; color: #ff8c7d; text-transform: uppercase; }
         .ticket-source .tier .g { font-size: 14px; font-weight: 900; margin-top: 6px; text-transform: uppercase; letter-spacing: .16em; }
         .ticket-source .code { margin-top: 14px; text-align: center; font-family: 'Courier New', monospace; font-size: 18px; letter-spacing: .32em; font-weight: 900; border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 10px 0; }
         .ticket-source .foot-cta {
@@ -681,14 +683,22 @@ function PrintTicketPage() {
           </div>
         )}
 
-        <div className="relative min-h-[70dvh] flex-1 border-2 border-black bg-neutral-100 overflow-auto">
+        <div
+          className={cn(
+            "relative flex-1 overflow-auto border-2 border-black bg-neutral-100",
+            kiosk ? "min-h-0" : "min-h-[70dvh]",
+          )}
+        >
           {previewImg ? (
             <div className="flex min-h-full items-center justify-center p-6">
               <img
                 src={previewImg}
                 alt="Reward ticket preview"
                 data-testid="ticket-pdf-frame"
-                className="max-h-[80dvh] w-auto max-w-full object-contain shadow-[0_20px_60px_-20px_rgba(0,0,0,0.35)] bg-white"
+                className={cn(
+                  "w-auto max-w-full bg-white object-contain shadow-[0_20px_60px_-20px_rgba(0,0,0,0.35)]",
+                  kiosk ? "max-h-[62dvh]" : "max-h-[80dvh]",
+                )}
               />
             </div>
           ) : (
@@ -704,6 +714,23 @@ function PrintTicketPage() {
             </div>
           )}
         </div>
+
+        {kiosk && (
+          <div className="no-print flex justify-center pb-6">
+            <button
+              type="button"
+              onClick={() => window.location.assign(withLaunchSearch("/", searchStr))}
+              className={cn(
+                "wordmark border-[3px] border-black bg-white text-black",
+                lg
+                  ? "px-[8.19rem] py-[2.25rem] text-[29px]"
+                  : "px-[5.25rem] py-6 text-[18px]",
+              )}
+            >
+              Play Again
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
