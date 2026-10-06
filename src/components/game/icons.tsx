@@ -2,7 +2,7 @@ import mascaraAsset from "@/assets/sephora-mascara.png.asset.json";
 import sephoraCircularAsset from "@/assets/sephora-circular.png.asset.json";
 import sephoraDeliStackedAsset from "@/assets/sephora-deli-stacked.png.asset.json";
 import sephoraDeliFullAsset from "@/assets/sephora-deli-full.png.asset.json";
-import sephoraCollectionCircularAsset from "@/assets/sephora-collection-circular-clean.png.asset.json";
+import sephoraCardBackAsset from "@/assets/sephora-card-back.png.asset.json";
 import sephoraDeliIngameAsset from "@/assets/sephora-deli-ingame.png.asset.json";
 const sephoraDeliHorizontalAsset = sephoraDeliIngameAsset;
 
@@ -119,7 +119,7 @@ export function SephoraToken() {
   return (
     <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-black p-1.5 leading-none">
       <img
-        src={sephoraCollectionCircularAsset.url}
+        src={sephoraCardBackAsset.url}
         alt="Sephora Collection"
         draggable={false}
         className="relative max-h-[85%] max-w-full select-none"
