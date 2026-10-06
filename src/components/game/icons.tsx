@@ -119,7 +119,7 @@ export function SephoraToken() {
   return (
     <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-black p-1.5 leading-none">
       <img
-        src={sephoraCollectionCircularAsset.url}
+        src={sephoraCardBackAsset.url}
         alt="Sephora Collection"
         draggable={false}
         className="relative max-h-[85%] max-w-full select-none"
