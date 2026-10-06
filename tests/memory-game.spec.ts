@@ -32,7 +32,7 @@ async function seedConfig(page: Page, overrides: ConfigOverride): Promise<void> 
     pointsPerPair: 100,
     timeBonusEnabled: true,
     timeBonusPointsPerSecond: 10,
-    brandColor: "#ff808b",
+    brandColor: "#ff8c7d",
     ticketPrintingEnabled: true,
     printNoRewardTicketEnabled: false,
     autoPrintEnabled: false,
