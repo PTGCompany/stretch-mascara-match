@@ -146,6 +146,45 @@ export function validateWinLevels(levels: WinLevel[]): string | null {
   return null;
 }
 
+/**
+ * Move one side of a tier breakpoint and keep the shared edge glued
+ * (`next.min = previous.max + 1`). Returns null when the step would put a
+ * tier's min above its max, or outside 1–10. Tier 1 min and the last tier's
+ * max have no neighbour, so only that field moves.
+ * Kiosk settings steppers use this. Typed admin edits do not.
+ */
+export function stepWinLevelBound(
+  levels: WinLevel[],
+  index: number,
+  bound: "min" | "max",
+  delta: number,
+): WinLevel[] | null {
+  if (!Number.isInteger(delta) || delta === 0) return null;
+  if (index < 0 || index >= levels.length) return null;
+  const next = levels.map((lv) => ({ ...lv }));
+  const lv = next[index];
+  if (bound === "min") {
+    const newMin = lv.min + delta;
+    if (newMin < 1 || newMin > 10 || newMin > lv.max) return null;
+    if (index > 0) {
+      const prevMax = newMin - 1;
+      if (prevMax < next[index - 1].min || prevMax > 10) return null;
+      next[index - 1] = { ...next[index - 1], max: prevMax };
+    }
+    next[index] = { ...lv, min: newMin };
+    return next;
+  }
+  const newMax = lv.max + delta;
+  if (newMax < 1 || newMax > 10 || newMax < lv.min) return null;
+  if (index < next.length - 1) {
+    const nextMin = newMax + 1;
+    if (nextMin < 1 || nextMin > 10 || nextMin > next[index + 1].max) return null;
+    next[index + 1] = { ...next[index + 1], min: nextMin };
+  }
+  next[index] = { ...lv, max: newMax };
+  return next;
+}
+
 export function computeWinLevel(
   pairsFound: number,
   levels: WinLevel[],

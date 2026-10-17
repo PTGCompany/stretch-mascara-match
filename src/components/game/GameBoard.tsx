@@ -320,6 +320,17 @@ export function GameBoard() {
 
   return (
     <div className={`relative mx-auto flex min-h-dvh w-full max-w-[min(100vw,calc(100dvh*9/16))] flex-col overflow-hidden text-white ${status === "idle" ? "bg-[#ff8c7d]" : "bg-black"}`}>
+      {/* Kiosk: invisible, above the idle overlay, same corner as the cog.
+          opacity-0 keeps it unseen; z-40 keeps a finger able to open /admin. */}
+      {kiosk && (
+        <a
+          href={withLaunchSearch("/admin", searchStr)}
+          className="absolute right-4 top-14 z-40 inline-flex h-11 w-11 items-center justify-center opacity-0"
+          aria-label="Admin"
+        >
+          <Settings className="h-4 w-4" />
+        </a>
+      )}
 
 
 
@@ -358,18 +369,16 @@ export function GameBoard() {
                 size={kiosk ? 80 : 32}
                 className="shrink-0"
               />
-              {/* Kiosk: invisible but clickable — lab can still open /admin without a visible cog */}
-              <Link
-                to="/admin"
-                className={
-                  kiosk
-                    ? "opacity-0"
-                    : "text-white/40 transition-colors hover:text-white"
-                }
-                aria-label="Admin"
-              >
-                <Settings className="h-4 w-4" />
-              </Link>
+              {/* Visible cog is the non-kiosk path. Kiosk uses the overlay link above. */}
+              {!kiosk && (
+                <Link
+                  to="/admin"
+                  className="text-white/40 transition-colors hover:text-white"
+                  aria-label="Admin"
+                >
+                  <Settings className="h-4 w-4" />
+                </Link>
+              )}
             </div>
             {/* Kiosk size=lg (~30%): title + timer. Else = default. Sitech Industries. */}
             <motion.h1

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { MotionButton } from "@/components/MotionButton";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,11 +8,13 @@ import {
   loadConfig,
   loadSessions,
   saveConfig,
+  stepWinLevelBound,
   validateWinLevels,
   type GameConfig,
   type GameSession,
   type WinLevel,
 } from "@/lib/game-config";
+import { getKioskLaunch, withLaunchSearch } from "@/lib/kiosk-launch";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [
@@ -27,6 +29,8 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminPage() {
+  const searchStr = useRouterState({ select: (s) => s.location.searchStr });
+  const kiosk = getKioskLaunch(searchStr).kiosk;
   const [config, setConfig] = useState<GameConfig>(DEFAULT_CONFIG);
   const [sessions, setSessions] = useState<GameSession[]>([]);
   const [saved, setSaved] = useState(false);
@@ -92,12 +96,13 @@ function AdminPage() {
     const err = validateWinLevels(config.winLevels);
     if (err) {
       setError(err);
-      return;
+      return false;
     }
     setError(null);
     saveConfig(config);
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
+    return true;
   };
 
   const [exporting, setExporting] = useState(false);
@@ -170,13 +175,27 @@ function AdminPage() {
           <h1 className="text-2xl font-black tracking-tight">
             Admin · Memory Game
           </h1>
-          <Link
-            to="/"
-            className="rounded-full px-4 py-2 text-sm font-bold uppercase tracking-wider"
-            style={{ backgroundColor: "var(--sephora-pink)" }}
-          >
-            ← Game
-          </Link>
+          {kiosk ? (
+            <button
+              type="button"
+              onClick={() => {
+                if (!save()) return;
+                window.location.assign(withLaunchSearch("/", searchStr));
+              }}
+              className="rounded-full px-4 py-2 text-sm font-bold"
+              style={{ backgroundColor: "var(--sephora-pink)", color: "#000" }}
+            >
+              Save
+            </button>
+          ) : (
+            <a
+              href={withLaunchSearch("/", searchStr)}
+              className="rounded-full px-4 py-2 text-sm font-bold uppercase tracking-wider"
+              style={{ backgroundColor: "var(--sephora-pink)" }}
+            >
+              ← Game
+            </a>
+          )}
         </div>
 
         {/* settings */}
@@ -212,56 +231,53 @@ function AdminPage() {
               />
             </Field>
             <Field label="Duration (s)">
-              <input
-                type="number"
-                min={5}
-                className="input"
+              <NumericSetting
+                kiosk={kiosk}
+                label="duration"
                 value={config.durationSeconds}
-                onChange={(e) =>
-                  update("durationSeconds", Number(e.target.value))
-                }
+                min={5}
+                onChange={(n) => update("durationSeconds", n)}
               />
             </Field>
             <Field label="Total pairs">
-              <input
-                type="number"
+              <NumericSetting
+                kiosk={kiosk}
+                label="total pairs"
+                value={config.totalPairs}
                 min={2}
                 max={32}
-                className="input"
-                value={config.totalPairs}
-                onChange={(e) => update("totalPairs", Number(e.target.value))}
+                onChange={(n) => update("totalPairs", n)}
               />
             </Field>
             <Field label="Grid rows">
-              <input
-                type="number"
+              <NumericSetting
+                kiosk={kiosk}
+                label="grid rows"
+                value={config.gridRows}
                 min={2}
                 max={8}
-                className="input"
-                value={config.gridRows}
-                onChange={(e) => update("gridRows", Number(e.target.value))}
+                onChange={(n) => update("gridRows", n)}
               />
             </Field>
             <Field label="Grid columns">
-              <input
-                type="number"
+              <NumericSetting
+                kiosk={kiosk}
+                label="grid columns"
+                value={config.gridCols}
                 min={2}
                 max={8}
-                className="input"
-                value={config.gridCols}
-                onChange={(e) => update("gridCols", Number(e.target.value))}
+                onChange={(n) => update("gridCols", n)}
               />
             </Field>
             <Field label="Flip-back delay (ms)">
-              <input
-                type="number"
+              <NumericSetting
+                kiosk={kiosk}
+                label="flip-back delay"
+                value={config.flipBackDelayMs}
                 min={300}
                 max={2000}
-                className="input"
-                value={config.flipBackDelayMs}
-                onChange={(e) =>
-                  update("flipBackDelayMs", Number(e.target.value))
-                }
+                step={100}
+                onChange={(n) => update("flipBackDelayMs", n)}
               />
             </Field>
             <Field label="Brand color">
@@ -302,26 +318,48 @@ function AdminPage() {
                   Reward Level {lv.level}
                 </div>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  <div className={kiosk ? "col-span-2 flex items-end gap-8" : "contents"}>
                   <Field label="Min pairs">
-                    <input
-                      type="number"
+                    <NumericSetting
+                      kiosk={kiosk}
+                      compact
+                      label={`reward level ${lv.level} minimum pairs`}
+                      value={lv.min}
                       min={1}
                       max={10}
-                      className="input"
-                      value={lv.min}
-                      onChange={(e) => updateLevel(idx, { min: Number(e.target.value) })}
+                      onChange={(n) => updateLevel(idx, { min: n })}
+                      canStep={(delta) =>
+                        stepWinLevelBound(config.winLevels, idx, "min", delta) !== null
+                      }
+                      onStep={(delta) =>
+                        setConfig((c) => {
+                          const next = stepWinLevelBound(c.winLevels, idx, "min", delta);
+                          return next ? { ...c, winLevels: next } : c;
+                        })
+                      }
                     />
                   </Field>
                   <Field label="Max pairs">
-                    <input
-                      type="number"
+                    <NumericSetting
+                      kiosk={kiosk}
+                      compact
+                      label={`reward level ${lv.level} maximum pairs`}
+                      value={lv.max}
                       min={1}
                       max={10}
-                      className="input"
-                      value={lv.max}
-                      onChange={(e) => updateLevel(idx, { max: Number(e.target.value) })}
+                      onChange={(n) => updateLevel(idx, { max: n })}
+                      canStep={(delta) =>
+                        stepWinLevelBound(config.winLevels, idx, "max", delta) !== null
+                      }
+                      onStep={(delta) =>
+                        setConfig((c) => {
+                          const next = stepWinLevelBound(c.winLevels, idx, "max", delta);
+                          return next ? { ...c, winLevels: next } : c;
+                        })
+                      }
                     />
                   </Field>
+                  </div>
                   <Field label="Tier label">
                     <input
                       className="input"
@@ -431,7 +469,12 @@ function AdminPage() {
             <p className="mt-3 text-xs font-bold text-destructive">{error}</p>
           )}
           <div className="mt-6 flex items-center gap-3">
-            <MotionButton intent="primary" size="sm" onClick={save}>
+            <MotionButton
+              intent="primary"
+              size="sm"
+              onClick={save}
+              style={kiosk ? { color: "#000", border: "1px solid #000" } : undefined}
+            >
               Save
             </MotionButton>
             {saved && (
@@ -531,6 +574,93 @@ function AdminPage() {
       <style>{`
         .input { width: 100%; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.5rem 0.75rem; background: white; color: var(--foreground); }
       `}</style>
+    </div>
+  );
+}
+
+function NumericSetting({
+  kiosk,
+  label,
+  value,
+  min,
+  max,
+  step = 1,
+  compact = false,
+  onChange,
+  onStep,
+  canStep,
+}: {
+  kiosk: boolean;
+  label: string;
+  value: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  compact?: boolean;
+  onChange: (next: number) => void;
+  onStep?: (delta: number) => void;
+  canStep?: (delta: number) => boolean;
+}) {
+  if (!kiosk) {
+    return (
+      <input
+        type="number"
+        min={min}
+        max={max}
+        className="input"
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+      />
+    );
+  }
+
+  const allowed = (delta: number) => {
+    if (canStep) return canStep(delta);
+    const next = value + delta;
+    if (min !== undefined && next < min) return false;
+    if (max !== undefined && next > max) return false;
+    return true;
+  };
+
+  const apply = (delta: number) => {
+    if (!allowed(delta)) return;
+    if (onStep) onStep(delta);
+    else onChange(value + delta);
+  };
+
+  const buttonClass = compact
+    ? "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-current text-sm font-black leading-none disabled:opacity-30"
+    : "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-current text-lg font-black leading-none disabled:opacity-30";
+
+  return (
+    <div className={compact ? "flex w-fit items-center gap-1.5" : "flex items-center gap-2"}>
+      <button
+        type="button"
+        aria-label={`Decrease ${label}`}
+        disabled={!allowed(-step)}
+        onClick={() => apply(-step)}
+        className={buttonClass}
+      >
+        −
+      </button>
+      <span
+        className={
+          compact
+            ? "min-w-[1.25rem] text-center text-sm font-black tabular-nums"
+            : "min-w-[4.5rem] flex-1 text-center text-base font-black tabular-nums"
+        }
+      >
+        {value}
+      </span>
+      <button
+        type="button"
+        aria-label={`Increase ${label}`}
+        disabled={!allowed(step)}
+        onClick={() => apply(step)}
+        className={buttonClass}
+      >
+        +
+      </button>
     </div>
   );
 }
